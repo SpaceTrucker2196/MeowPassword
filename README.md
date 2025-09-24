@@ -1,153 +1,102 @@
 # MeowPassword 🐾
 
-A command-line utility that generates secure, random passwords based on a database of cat names using Kolmogorov complexity analysis to select the most secure option.
+A simple command-line utility that generates secure, phrase-based passwords using cat names and Kolmogorov complexity analysis.
 
 ## Features
 
-- 🐱 Uses 16,926+ cat names as the base for password generation
-- 🔐 Generates passwords with 15-25 characters meeting strict security requirements
-- 🧮 Evaluates password complexity using Kolmogorov complexity algorithms
+- 🐱 Uses 16,926+ cat names from `catNamesText.txt`
+- 🔐 Generates secure passwords (15-25 characters) from 3-5 cat names
+- 🔧 Applies security transformations:
+  - 3 letters randomly capitalized
+  - 3-5 numbers inserted randomly
+  - 2 symbols replacing letters
+  - Removes repeating letters with random digits
+- 🧮 Analyzes password complexity using Kolmogorov algorithms
 - 🎯 Selects the most secure password from 5 candidates
-- 📋 Supports clipboard copying (macOS only)
-- 📊 Provides detailed complexity analysis
-
-## Password Security Specifications
-
-Each generated password meets these requirements:
-
-- **Length**: 15-25 characters from 3-5 cat names
-- **Capitalization**: 3 letters randomly capitalized
-- **Numbers**: 3-5 numbers inserted randomly
-- **Symbols**: 2 symbols randomly replacing letters
-- **Uniqueness**: Repeating letters replaced with random digits
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/SpaceTrucker2196/MeowPassword.git
-cd MeowPassword
-```
-
-2. Build the project:
-```bash
-swift build -c release
-```
+- 📋 Clipboard support (macOS only)
 
 ## Usage
 
-### Basic Usage
-Generate a secure password:
+### Generate Password
 ```bash
-swift run meowpass
+swift MeowPassword/main.swift
 ```
 
-### Options
-- `--verbose`: Show detailed analysis for all 5 candidates
-- `--copy`: Copy the selected password to clipboard (macOS only)
-
-### Examples
-
-Generate a password with verbose output:
+### Copy to Clipboard
 ```bash
-swift run meowpass --verbose
+swift MeowPassword/main.swift --copy
 ```
 
-Generate and copy to clipboard:
+### Run Tests
 ```bash
-swift run meowpass --copy
+swift MeowPassword/main.swift --test
 ```
+
+## Implementation Details
+
+The password generator follows these steps:
+
+1. **Load Cat Names**: Reads names from `catNamesText.txt`
+2. **Select Names**: Randomly picks 3-5 cat names
+3. **Create Base Phrase**: Joins names to create 15-25 character phrase
+4. **Apply Transformations**: 
+   - Randomly capitalize 3 letters
+   - Insert 3-5 random numbers
+   - Replace 2 letters with symbols
+   - Remove repeating letters (replace with digits)
+5. **Generate 5 Candidates**: Repeat process 5 times
+6. **Analyze Complexity**: Use Kolmogorov complexity metrics
+7. **Select Best**: Choose password with highest complexity score
+
+## Complexity Analysis
+
+The Kolmogorov complexity evaluation includes:
+
+- **Shannon Entropy**: Character distribution randomness
+- **Compression Resistance**: Algorithmic complexity approximation  
+- **Pattern Uniqueness**: Substring repetition analysis
+- **Character Diversity**: Usage of different character types
+- **Length Normalization**: Accounts for password length
+
+## Functions
+
+Each step is implemented as a separate, testable function:
+
+- `loadCatNames(from:)` - Loads cat names from file
+- `selectRandomCatNames(from:count:)` - Randomly selects names
+- `createBasePhrase(from:)` - Creates base phrase
+- `randomlyCapitalizeLetters(in:count:)` - Capitalizes letters
+- `insertRandomNumbers(into:count:)` - Inserts random numbers
+- `replaceLettersWithSymbols(in:count:)` - Replaces with symbols
+- `removeRepeatingLetters(in:)` - Removes duplicate letters
+- `generateSecurePassword(from:)` - Complete password generation
+- `analyzeComplexity(of:)` - Kolmogorov complexity analysis
+
+## Requirements
+
+- Swift 5.0+
+- `catNamesText.txt` file in the same directory
 
 ## Sample Output
 
 ```
-🐱 Loaded 16926 cat names
+🐾 MeowPassword Generator
+📝 Loaded 16926 cat names
 🔄 Generating 5 secure password candidates...
 
-🔐 Candidate 1: Vo0d37san4lerc:107?i2 16Hub7
-   Complexity Score: 1.79/10.0
-
-🔐 Candidate 2: geh9N57a (73Br53[ 3fo[ "70L9
-   Complexity Score: 1.66/10.0
-
-🔐 Candidate 3: dUnc6a- 7o6994rmE65{b4l477196
-   Complexity Score: 1.67/10.0
-
-🔐 Candidate 4: az8%litchy8 b2r1o86E06m21%U32
-   Complexity Score: 1.74/10.0
-
-🔐 Candidate 5: pa0nc6&e8ri@ v39 W76kl40j493
-   Complexity Score: 1.75/10.0
+🔐 Candidate 1: judg7Es4c8^a15r60m?3
+   Complexity Score: 1.71/10.0
 
 🏆 Most Secure Password Selected:
-🔐 Vo0d37san4lerc:107?i2 16Hub7
-📊 Final Complexity Score: 1.79/10.0
+🔐 ke0i;< (f6n235sh 5o64r "cat")
+📊 Final Complexity Score: 1.75/10.0
 
-🔍 Kolmogorov Complexity Analysis:
-
-📊 Overall Complexity Score: 1.79/10.0
-
-📈 Component Analysis:
-• Shannon Entropy: 4.495 bits
-• Compression Resistance: -3.6%
-• Pattern Uniqueness: 100.0%
-• Character Diversity: 100.0%
-
-🎯 Character Composition:
-• Length: 28 characters
-• Unique Characters: 24
-• Lowercase Letters: ✅
-• Uppercase Letters: ✅
-• Digits: ✅
-• Symbols: ✅
-
-💡 Complexity Interpretation: Very Low - Highly predictable pattern
+Kolmogorov Complexity Analysis:
+- Password: ke0i;< (f6n235sh 5o64r "cat")
+- Length: 29 characters
+- Shannon Entropy: 4.487 bits
+- Compression Resistance: -3.4%
+- Pattern Uniqueness: 100.0%
+- Character Diversity: 75.0%
+- Overall Complexity Score: 1.75/10.0
 ```
-
-## Algorithm Details
-
-### Kolmogorov Complexity Analysis
-
-The password selection uses multiple complexity metrics:
-
-1. **Shannon Entropy**: Measures character distribution randomness
-2. **Compression Resistance**: Approximates algorithmic complexity
-3. **Pattern Uniqueness**: Analyzes substring repetition
-4. **Character Diversity**: Evaluates character set usage
-5. **Length Normalization**: Accounts for password length
-
-### Password Generation Process
-
-1. Load cat names from `catNamesText.txt`
-2. Select 3-5 random cat names
-3. Create base phrase (15-25 characters)
-4. Apply security transformations:
-   - Random capitalization (3 letters)
-   - Number insertion (3-5 random digits)
-   - Symbol replacement (2 random symbols)
-   - Remove repeating letters with digits
-5. Generate 5 candidates using this process
-6. Analyze each with Kolmogorov complexity
-7. Select the most complex/secure password
-
-## Testing
-
-Run the test suite:
-```bash
-swift test
-```
-
-The project includes comprehensive unit tests and integration tests covering:
-- Cat name loading
-- Password generation algorithms
-- Kolmogorov complexity analysis
-- End-to-end password generation workflow
-
-## Requirements
-
-- Swift 5.8+
-- macOS (for clipboard functionality) or Linux
-
-## License
-
-This project is open source. See LICENSE file for details.
