@@ -7,16 +7,17 @@
 
 import Foundation
 
+// MARK: - Embedded Cat Names Data (automatically generated)
+// This file contains all 16,926 cat names embedded directly in the executable
+func getEmbeddedCatNames() -> [String] {
+    // Read the embedded cat names from the generated Swift file
+    return embeddedCatNames
+}
+
 // MARK: - Cat Name Loading
-func loadCatNames(from filePath: String) -> [String] {
-    guard let content = try? String(contentsOfFile: filePath, encoding: .utf8) else {
-        print("Error: Could not load cat names from \(filePath)")
-        return []
-    }
-    
-    return content.components(separatedBy: .newlines)
-        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        .filter { !$0.isEmpty }
+func loadCatNames(from filePath: String? = nil) -> [String] {
+    // Always use embedded cat names for production builds
+    return getEmbeddedCatNames()
 }
 
 // MARK: - Random Cat Name Selection
@@ -237,15 +238,16 @@ func assertEqual<T: Equatable>(_ actual: T, _ expected: T, _ message: String) {
 func testLoadCatNames() {
     print("\n🧪 Testing Cat Name Loading...")
     
-    let catNames = loadCatNames(from: "catNamesText.txt")
-    assert(!catNames.isEmpty, "Should load cat names from catNamesText.txt")
+    let catNames = loadCatNames()
+    assert(!catNames.isEmpty, "Should load cat names from embedded data")
     assert(catNames.count > 1000, "Should load a substantial number of cat names")
     
     let nonEmptyNames = catNames.filter { !$0.isEmpty }
     assertEqual(nonEmptyNames.count, catNames.count, "All loaded names should be non-empty")
     
-    let emptyNames = loadCatNames(from: "nonexistent.txt")
-    assertEqual(emptyNames.count, 0, "Should return empty array for non-existent file")
+    // Test that embedded loading works consistently
+    let embeddedNames = loadCatNames(from: nil)  
+    assertEqual(embeddedNames.count, catNames.count, "Should return same count for embedded names")
     
     print("Cat names loaded: \(catNames.count)")
     print("First few names: \(Array(catNames.prefix(5)))")
@@ -299,10 +301,10 @@ func main() {
     
     print("🐾 MeowPassword Generator")
     
-    // Load cat names
-    let catNames = loadCatNames(from: "catNamesText.txt")
+    // Load cat names (now from embedded data)
+    let catNames = loadCatNames()
     guard !catNames.isEmpty else {
-        print("Error: No cat names loaded. Please ensure catNamesText.txt exists.")
+        print("Error: No cat names loaded from embedded data.")
         return
     }
     
