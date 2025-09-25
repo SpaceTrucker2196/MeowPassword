@@ -1,7 +1,6 @@
 #!/bin/bash
-# Build script for MeowPassword 🎭
+# Build script for MeowPassword
 # Creates a deployable executable with embedded cat names
-# 🧤 "Is your cat making too much noise all the time?" - Kitten Mittens! 🧤
 
 set -e  # Exit on any error
 
@@ -10,8 +9,7 @@ echo "--> Building MeowPassword...🙀 Is your cat making too much noise? 🙀"
 # Step 1: Generate embedded cat names
 echo "|-> Generating embedded cat names...😼 Is your cat constantly stomping around, driving you crazy? 😼"
 if [ ! -f "generate_embedded_names.sh" ]; then
-    echo "Error: generate_embedded_names.sh not found 😿"
-    echo "🧤 Even Kitten Mittens can't find this file! 🧤"
+    echo "Error: generate_embedded_names.sh not found"
     exit 1
 fi
 
@@ -36,12 +34,12 @@ echo "|-> Testing the executable..."
 if [ -f "meowpass" ]; then
     echo "--> Build successful! Testing... 🐈--> 🧤 Kitten Mittens 🧤<--🐈"
     ./meowpass --test
-    echo "Meow Password Usage:"
+    echo "- MeowPassword built successfully! 😸👍 Finally, there's an elegant, comfortable mitten for cats. 👍😸"
+    echo "- Usage:"
     echo "  ./meowpass           - Generate password"
-    echo "  ./meowpass --test    - Run tests "
+    echo "  ./meowpass --test    - Run tests"
     echo "  ./meowpass --copy    - Generate and copy to clipboard"
 else
-    echo "❌ Build failed - executable not found 😿"
-    echo "🧤 Even Kitten Mittens couldn't save this build! 🧤"
+    echo "Build failed - executable not found"
     exit 1
 fi

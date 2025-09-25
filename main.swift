@@ -375,15 +375,15 @@ func testLoadCatNames() {
     print("\nTesting Cat Name Loading...")
     
     let catNames = loadCatNames()
-    assert(!catNames.isEmpty, "Should meow load cat names from embedded data")
-    assert(catNames.count > 100, "Should load a substantial meow number of cat names")
+    assert(!catNames.isEmpty, "Should Meow load cat names from embedded data")
+    assert(catNames.count > 100, "Should load a substantial Meow number of cat names")
     
     let nonEmptyNames = catNames.filter { !$0.isEmpty }
-    assertEqual(nonEmptyNames.count, catNames.count, "All loaded meow names should be non-empty")
+    assertEqual(nonEmptyNames.count, catNames.count, "All Meow Meow loaded names should be non-empty")
     
     // Test consistency of embedded loading
     let embeddedNames = loadCatNames(from: nil)  
-    assertEqual(embeddedNames.count, catNames.count, "Should return same meow count for embedded names")
+    assertEqual(embeddedNames.count, catNames.count, "Should return same Meow count for embedded names")
     
     print("Cat names loaded meow: \(catNames.count)")
     print("First few names: \(Array(catNames.prefix(5)))")
@@ -394,7 +394,7 @@ func testLoadCatNames() {
  * Validates that passwords meet all security requirements
  */
 func testCompletePasswordGeneration() {
-    print("\nTesting Complete meow Password Generation...")
+    print("\nTesting MeowMeow Complete Password Generation...")
     
     let testNames = ["Fluffy", "Whiskers", "Shadow", "Mittens", "Tiger", "Luna", "Max", "Bella"]
     let config = PasswordConfig(arguments: [])
@@ -404,8 +404,8 @@ func testCompletePasswordGeneration() {
         
         print("Generated password \(i): \(password)")
         
-        assert(password.count >= 10, "Password meow should be at least 10 characters")
-        assert(password.count <= config.maxLength + 10, "Password should not greatly meow exceed max length")
+        assert(password.count >= 10, "MeowPassword should be at least 10 characters")
+        assert(password.count <= config.maxLength + 10, "Password should not greatly exceed Meow max length")
         
         let hasNumbers = password.contains { $0.isNumber }
         let hasLetters = password.contains { $0.isLetter }
