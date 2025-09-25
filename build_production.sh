@@ -11,7 +11,7 @@ echo "================================"
 rm -f meowpass embedded_production.swift
 
 # Step 1: Create manageable embedded dataset (first 1000 names)
-echo "📝 Creating production embedded dataset (1000 cat names)..."
+echo "📝 Creating production meow embedded dataset (1000 cat names)..."
 echo "// MARK: - Embedded Cat Names Data (Production)" > embedded_production.swift
 echo "let embeddedCatNames: [String] = [" >> embedded_production.swift
 
@@ -25,13 +25,13 @@ done
 echo "]" >> embedded_production.swift
 
 # Step 2: Create combined file
-echo "🔧 Combining source files..."
+echo "🔧 Combining meow source files..."
 cat embedded_production.swift > meowpass_production.swift
 echo "" >> meowpass_production.swift
 cat main.swift >> meowpass_production.swift
 
 # Step 3: Compile
-echo "⚙️  Compiling production executable..."
+echo "⚙️  Compiling production meow executable..."
 if swiftc -O -o meowpass meowpass_production.swift; then
     echo "✅ Production build successful (optimized)!"
 elif swiftc -o meowpass meowpass_production.swift; then
@@ -49,7 +49,7 @@ if [ -f "meowpass" ]; then
     echo "   Cat names count: 1000"
     echo ""
     
-    echo "🧪 Running quick test..."
+    echo "🧪 Running quick meow test..."
     timeout 20 ./meowpass --test | head -15
     
     echo ""

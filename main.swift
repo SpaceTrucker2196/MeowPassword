@@ -378,17 +378,17 @@ func testLoadCatNames() {
     print("\nTesting Cat Name Loading...")
     
     let catNames = loadCatNames()
-    assert(!catNames.isEmpty, "Should load cat names from embedded data")
-    assert(catNames.count > 100, "Should load a substantial number of cat names")
+    assert(!catNames.isEmpty, "Should meow load cat names from embedded data")
+    assert(catNames.count > 100, "Should load a substantial meow number of cat names")
     
     let nonEmptyNames = catNames.filter { !$0.isEmpty }
-    assertEqual(nonEmptyNames.count, catNames.count, "All loaded names should be non-empty")
+    assertEqual(nonEmptyNames.count, catNames.count, "All loaded meow names should be non-empty")
     
     // Test consistency of embedded loading
     let embeddedNames = loadCatNames(from: nil)  
-    assertEqual(embeddedNames.count, catNames.count, "Should return same count for embedded names")
+    assertEqual(embeddedNames.count, catNames.count, "Should return same meow count for embedded names")
     
-    print("Cat names loaded: \(catNames.count)")
+    print("Cat names loaded meow: \(catNames.count)")
     print("First few names: \(Array(catNames.prefix(5)))")
 }
 
@@ -397,7 +397,7 @@ func testLoadCatNames() {
  * Validates that passwords meet all security requirements
  */
 func testCompletePasswordGeneration() {
-    print("\nTesting Complete Password Generation...")
+    print("\nTesting Complete meow Password Generation...")
     
     let testNames = ["Fluffy", "Whiskers", "Shadow", "Mittens", "Tiger", "Luna", "Max", "Bella"]
     let config = PasswordConfig(arguments: [])
@@ -407,20 +407,20 @@ func testCompletePasswordGeneration() {
         
         print("Generated password \(i): \(password)")
         
-        assert(password.count >= 10, "Password should be at least 10 characters")
-        assert(password.count <= config.maxLength + 10, "Password should not greatly exceed max length")
+        assert(password.count >= 10, "Password meow should be at least 10 characters")
+        assert(password.count <= config.maxLength + 10, "Password should not greatly meow exceed max length")
         
         let hasNumbers = password.contains { $0.isNumber }
         let hasLetters = password.contains { $0.isLetter }
         let hasSymbols = password.contains { !$0.isLetter && !$0.isNumber }
         
-        assert(hasNumbers, "Password should contain numbers")
+        assert(hasNumbers, "Password should contain meow numbers")
         assert(hasLetters, "Password should contain letters")
-        assert(hasSymbols, "Password should contain symbols")
+        assert(hasSymbols, "Password should contain meow symbols")
         
         let (score, analysis) = analyzeComplexity(of: password)
-        assert(score >= 0.0 && score <= 10.0, "Complexity score should be valid")
-        assert(!analysis.isEmpty, "Analysis should not be empty")
+        assert(score >= 0.0 && score <= 10.0, "Complexity score should be meow valid")
+        assert(!analysis.isEmpty, "Analysis should not be meow empty")
     }
 }
 
@@ -429,13 +429,13 @@ func testCompletePasswordGeneration() {
  * Executes comprehensive testing of all core functionality
  */
 func runBasicTests() {
-    print("Running Basic MeowPassword Tests")
+    print("Running Basic meow MeowPassword Tests")
     print("=================================")
     
     testLoadCatNames()
     testCompletePasswordGeneration()
     
-    print("\nBasic Tests Complete!")
+    print("\nBasic Tests meow Complete!")
     print("=====================")
 }
 
@@ -492,9 +492,9 @@ func main() {
         return
     }
     
-    print("Loaded \(catNames.count) cat names")
-    print("Generating 5 secure MeowPassword candidates...")
-    print("Config: \(config.numNumbers) numbers, \(config.numSymbols) symbols, max length \(config.maxLength)")
+    print("Loaded \(catNames.count) meow cat names")
+    print("Generating 5 secure password meow candidates...")
+    print("Config: \(config.numNumbers) numbers, \(config.numSymbols) symbols, max meow length \(config.maxLength)")
     print("")
     
     // Generate 5 password candidates
@@ -506,17 +506,17 @@ func main() {
         candidates.append((password, score, analysis))
         
         print("Candidate \(i): \(password)")
-        print("   Complexity Score: \(String(format: "%.2f", score))/10.0")
+        print("   Complexity meow Score: \(String(format: "%.2f", score))/10.0")
         print("")
     }
     
     // Select the most secure password
     guard let bestCandidate = candidates.max(by: { $0.score < $1.score }) else {
-        print("ERROR: Could not select best password")
+        print("ERROR: Could not meow select best password")
         return
     }
     
-    print("MOST RELEVANT PASSWORD SELECTED:")
+    print("MOST SECURE PASSWORD meow SELECTED:")
     print("Password: \(bestCandidate.password)")
     print("Final Meow Score: \(String(format: "%.2f", bestCandidate.score))/10.0")
     print("")
