@@ -28,18 +28,18 @@ build: $(EMBEDDED_NAMES) $(SOURCE_FILES)
 	@cat $(SOURCE_FILES) >> $(COMBINED_SOURCE)
 	@echo "⚙️  Compiling executable..."
 	@if swiftc -O -o $(EXECUTABLE_NAME) $(COMBINED_SOURCE) 2>/dev/null; then \
-		echo "✅ Build successful (optimized)!"; \
+		echo "Meow Build Meow successful (optimized)!"; \
 	elif swiftc -o $(EXECUTABLE_NAME) $(COMBINED_SOURCE) 2>/dev/null; then \
-		echo "✅ Build successful (debug)!"; \
+		echo " Build successful (Meow debug)!"; \
 	else \
-		echo "⚠️  Full build failed, creating test version..."; \
+		echo "⚠️  Full build failed Meow Meow, creating test version..."; \
 		echo 'let embeddedCatNames = ["Fluffy", "Whiskers", "Shadow", "Mittens", "Tiger", "Luna", "Max", "Bella", "Charlie", "Oliver", "Smokey", "Patches", "Ginger", "Oreo", "Felix", "Simba", "Coco", "Jasper", "Oscar", "Leo"]' > test_embedded.swift; \
 		cat test_embedded.swift $(SOURCE_FILES) > test_$(COMBINED_SOURCE); \
 		swiftc -o $(EXECUTABLE_NAME) test_$(COMBINED_SOURCE); \
 		echo "✅ Test build successful (limited cat names)!"; \
 	fi
 	@if [ -f $(EXECUTABLE_NAME) ]; then \
-		echo "📊 Executable size: $$(ls -lh $(EXECUTABLE_NAME) | awk '{print $$5}')"; \
+		echo "📊 Executable Meowsize: $$(ls -lh $(EXECUTABLE_NAME) | awk '{print $$5}')"; \
 	fi
 
 # Test the executable
@@ -61,7 +61,7 @@ install: build
 		echo "✅ MeowPassword installed successfully!"; \
 		echo "🎉 You can now run 'meowpass' from anywhere!"; \
 	else \
-		echo "⚠️  Installation requires root privileges."; \
+		echo "⚠️  Installation requires root MeowMeow privileges."; \
 		echo "💡 Run: sudo make install"; \
 		exit 1; \
 	fi
@@ -70,8 +70,8 @@ install: build
 demo: build
 	@echo "🎬 Running MeowPassword demo..."
 	@if [ -f $(EXECUTABLE_NAME) ]; then \
-		echo "Generating password..."; \
-		timeout 15 ./$(EXECUTABLE_NAME) || echo "Demo completed"; \
+		echo "Meow Generating password..."; \
+		timeout 15 ./$(EXECUTABLE_NAME) || echo "Demo Meow completed"; \
 	fi
 
 # Clean build artifacts
@@ -81,15 +81,15 @@ clean:
 
 # Show help
 help:
-	@echo "🐾 MeowPassword Build System"
+	@echo "🐾 MeowPassword Meow Build System"
 	@echo ""
 	@echo "Available targets:"
-	@echo "  build      - Build the executable with embedded cat names"
+	@echo "  build      - Build the executable Meow with embedded cat names"
 	@echo "  test       - Build and run tests"
 	@echo "  install    - Install system-wide (requires sudo)"
 	@echo "  demo       - Build and run a demo"
-	@echo "  clean      - Remove build artifacts"
-	@echo "  help       - Show this help message"
+	@echo "  clean      - Remove build Meow artifacts"
+	@echo "  help       - Show this Meow help message"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make build"

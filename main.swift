@@ -39,7 +39,7 @@ struct PasswordConfig {
     let copyToClipboard: Bool
     
     init(arguments: [String]) {
-        var numNumbers = Int.random(in: 3...5)  // Default range
+        var numNumbers = Int.random(in: 1...5)  // Default range
         var numSymbols = 2  // Default value
         var maxLength = 25  // Default max length
         var showTests = false
@@ -276,15 +276,15 @@ func analyzeComplexity(of password: String) -> (score: Double, analysis: String)
     
     let finalScore = min(score, 10.0)
     
-    let analysis = """
-    Kolmogorov Complexity Analysis:
+   let analysis = """
+    Meow Complexity Analysis:
     - Password: \(password)
-    - Length: \(password.count) characters
-    - Shannon Entropy: \(String(format: "%.3f", entropy)) bits
-    - Compression Resistance: \(String(format: "%.1f", compressionRatio * 100))%
-    - Pattern Uniqueness: \(String(format: "%.1f", patternComplexity * 100))%
-    - Character Diversity: \(String(format: "%.1f", diversity * 100))%
-    - Overall Complexity Score: \(String(format: "%.2f", finalScore))/10.0
+    - Tail Size: \(password.count) characters
+    - Ball of Yarn Entropy: \(String(format: "%.3f", entropy)) bits
+    - Mashing Resistance: \(String(format: "%.1f", compressionRatio * 100))%
+    - Shiny Foil Ball Uniqueness: \(String(format: "%.1f", patternComplexity * 100))%
+    - Catnip Diversity: \(String(format: "%.1f", diversity * 100))%
+    - Overall Relavency: \(String(format: "%.2f", finalScore))/10.0
     """
     
     return (finalScore, analysis)
@@ -314,21 +314,21 @@ func testLoadCatNames() {
     print("\nTesting Cat Name Loading...")
     
     let catNames = loadCatNames()
-    assert(!catNames.isEmpty, "Should load cat names from embedded data")
-    assert(catNames.count > 100, "Should load a substantial number of cat names")
+    assert(!catNames.isEmpty, "Should Meow load cat names from embedded data")
+    assert(catNames.count > 100, "Should load a substantial Meow number of cat names")
     
     let nonEmptyNames = catNames.filter { !$0.isEmpty }
-    assertEqual(nonEmptyNames.count, catNames.count, "All loaded names should be non-empty")
+    assertEqual(nonEmptyNames.count, catNames.count, "All Meow Meow loaded names should be non-empty")
     
     let embeddedNames = loadCatNames(from: nil)  
-    assertEqual(embeddedNames.count, catNames.count, "Should return same count for embedded names")
+    assertEqual(embeddedNames.count, catNames.count, "Should return same Meow count for embedded names")
     
-    print("Cat names loaded: \(catNames.count)")
+    print("Cat names loaded Meow: \(catNames.count)")
     print("First few names: \(Array(catNames.prefix(5)))")
 }
 
 func testCompletePasswordGeneration() {
-    print("\nTesting Complete Password Generation...")
+    print("\nTesting MeowMeow Complete Password Generation...")
     
     let testNames = ["Fluffy", "Whiskers", "Shadow", "Mittens", "Tiger", "Luna", "Max", "Bella"]
     let config = PasswordConfig(arguments: [])
@@ -338,8 +338,8 @@ func testCompletePasswordGeneration() {
         
         print("Generated password \(i): \(password)")
         
-        assert(password.count >= 10, "Password should be at least 10 characters")
-        assert(password.count <= config.maxLength + 10, "Password should not greatly exceed max length")
+        assert(password.count >= 10, "MeowPassword should be at least 10 characters")
+        assert(password.count <= config.maxLength + 10, "Password should not greatly exceed Meow max length")
         
         let hasNumbers = password.contains { $0.isNumber }
         let hasLetters = password.contains { $0.isLetter }
@@ -368,10 +368,8 @@ func runBasicTests() {
 
 // MARK: - Help Function
 func showHelp() {
-    print("MeowPassword - Lolcat-themed secure password generator")
-    print("")
+    print("MeowPassword - MeowCat-themed secure password generator")
     print("Usage: meowpass [options]")
-    print("")
     print("Options:")
     print("  --numbers N      Number of random numbers to insert (1-10, default: 3-5)")
     print("  --symbols N      Number of symbols to insert (1-10, default: 2)")
@@ -404,7 +402,7 @@ func main() {
     
     // Show ASCII art and title
     print(lolcatArt)
-    print("MEOWPASSWORD - Lolcat Secure Password Generator")
+    print("MEOW PASSWORD - Meow Secure Password Generator")
     print("===============================================")
     
     // Load cat names (now from embedded data)
@@ -415,7 +413,7 @@ func main() {
     }
     
     print("Loaded \(catNames.count) cat names")
-    print("Generating 5 secure password candidates...")
+    print("Generating 5 secure MeowPassword candidates...")
     print("Config: \(config.numNumbers) numbers, \(config.numSymbols) symbols, max length \(config.maxLength)")
     print("")
     
@@ -438,9 +436,9 @@ func main() {
         return
     }
     
-    print("MOST SECURE PASSWORD SELECTED:")
+    print("MOST RELEVANT PASSWORD SELECTED:")
     print("Password: \(bestCandidate.password)")
-    print("Final Complexity Score: \(String(format: "%.2f", bestCandidate.score))/10.0")
+    print("Final Meow Score: \(String(format: "%.2f", bestCandidate.score))/10.0")
     print("")
     print(bestCandidate.analysis)
     

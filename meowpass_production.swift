@@ -1,18 +1,5 @@
 // MARK: - Embedded Cat Names Data (Production)
 let embeddedCatNames: [String] = [
-    "A Cappella",
-    "A Cat",
-    "A Net (aka Nettie)",
-    "A'ja (pronounced \"Asia\")",
-    "A.C. (Alternating Current)",
-    "A.C. (Another Cat)",
-    "A.C. (Attack Cat)",
-    "A.C. (Attitude Cat)",
-    "A.D.D. (Attention Deficit Disorder)",
-    "A.J. (Angelina Jolie)",
-    "A.J. (Angelo Jo)",
-    "A.L.F. (Alien Life Form)",
-    "A.V.P. (Alien vs Predator)",
     "Aaargh",
     "Aaliyah",
     "Aaron",
