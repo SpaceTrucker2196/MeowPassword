@@ -31,21 +31,30 @@ _pb__\\,`"=,,,=="',___,,,-----'''----'_'_'_''-;''
 """
 
 // MARK: - Configuration Structure
+
+/**
+ * Configuration structure for password generation parameters
+ * Handles command-line argument parsing and parameter validation
+ */
 struct PasswordConfig {
-    let numNumbers: Int
-    let numSymbols: Int
-    let maxLength: Int
-    let showTests: Bool
-    let copyToClipboard: Bool
+    let numNumbers: Int     // Number of random numbers to insert (1-10)
+    let numSymbols: Int     // Number of random symbols to insert (1-10)
+    let maxLength: Int      // Maximum password length (15-50)
+    let showTests: Bool     // Whether to run test mode
+    let copyToClipboard: Bool // Whether to copy result to clipboard
     
+    /**
+     * Initialize configuration from command line arguments
+     * @param arguments: Array of command line arguments
+     */
     init(arguments: [String]) {
-        var numNumbers = Int.random(in: 1...5)  // Default range
-        var numSymbols = 2  // Default value
-        var maxLength = 25  // Default max length
+        var numNumbers = Int.random(in: 3...5)  // Default range as specified in requirements
+        var numSymbols = 2  // Default value as specified in requirements
+        var maxLength = 25  // Default max length as specified in requirements
         var showTests = false
         var copyToClipboard = false
         
-        // Parse command line arguments
+        // Parse command line arguments with validation
         for i in 0..<arguments.count {
             switch arguments[i] {
             case "--numbers":
@@ -77,20 +86,37 @@ struct PasswordConfig {
     }
 }
 
-// MARK: - Embedded Cat Names Data (automatically generated)
-// This file contains all cat names embedded directly in the executable
+// MARK: - Embedded Cat Names Data
+
+/**
+ * Get embedded cat names from the compiled-in data
+ * Cat names are embedded during the build process to create a self-contained executable
+ * @return Array of cat names embedded during build process
+ */
 func getEmbeddedCatNames() -> [String] {
     // Read the embedded cat names from the generated Swift file
     return embeddedCatNames
 }
 
-// MARK: - Cat Name Loading
+/**
+ * Load cat names from embedded data (legacy interface for compatibility)
+ * This function maintains backward compatibility while using embedded data
+ * @param filePath: Ignored parameter - always uses embedded data
+ * @return Array of cat names from embedded data
+ */
 func loadCatNames(from filePath: String? = nil) -> [String] {
     // Always use embedded cat names for production builds
     return getEmbeddedCatNames()
 }
 
-// MARK: - Random Cat Name Selection
+// MARK: - Cat Name Selection and Processing
+
+/**
+ * Select random cat names from the available pool
+ * @param catNames: Array of available cat names to choose from
+ * @param count: Number of names to select (will be clamped to available count)
+ * @return Array of randomly selected cat names
+ */
 func selectRandomCatNames(from catNames: [String], count: Int) -> [String] {
     guard !catNames.isEmpty, count > 0 else { return [] }
     
@@ -98,13 +124,19 @@ func selectRandomCatNames(from catNames: [String], count: Int) -> [String] {
     return Array(catNames.shuffled().prefix(actualCount))
 }
 
-// MARK: - Base Phrase Creation
+/**
+ * Create base phrase from selected cat names with length constraints
+ * Ensures the phrase meets the 15-25 character requirement from specifications
+ * @param catNames: Array of selected cat names to combine
+ * @param maxLength: Maximum allowed length for the phrase
+ * @return Base phrase string within specified length constraints
+ */
 func createBasePhrase(from catNames: [String], maxLength: Int) -> String {
     let joinedNames = catNames.joined()
     
-    // Ensure phrase is between 15 and maxLength characters
+    // Ensure phrase is between 15 and maxLength characters as per specifications
     if joinedNames.count < 15 {
-        // If too short, try adding more names
+        // If too short, try adding more names to meet minimum length requirement
         let additionalNames = selectRandomCatNames(from: catNames, count: 2)
         let extended = joinedNames + additionalNames.joined()
         return String(extended.prefix(maxLength))
@@ -116,6 +148,13 @@ func createBasePhrase(from catNames: [String], maxLength: Int) -> String {
 }
 
 // MARK: - Password Security Transformations
+
+/**
+ * Randomly capitalize letters in the password array
+ * Implements the "3 letters randomly capitalized" requirement
+ * @param password: Mutable array of characters to modify
+ * @param count: Number of letters to capitalize (typically 3)
+ */
 func randomlyCapitalizeLetters(in password: inout [Character], count: Int) {
     let letterIndices = password.enumerated().compactMap { index, char in
         char.isLetter ? index : nil
@@ -128,6 +167,12 @@ func randomlyCapitalizeLetters(in password: inout [Character], count: Int) {
     }
 }
 
+/**
+ * Insert random numbers into the password at random positions
+ * Implements the "3-5 numbers inserted randomly" requirement
+ * @param password: Mutable array of characters to modify
+ * @param count: Number of random numbers to insert
+ */
 func insertRandomNumbers(into password: inout [Character], count: Int) {
     let numbers = "0123456789"
     
@@ -138,6 +183,12 @@ func insertRandomNumbers(into password: inout [Character], count: Int) {
     }
 }
 
+/**
+ * Replace letters with symbols at random positions
+ * Implements the "2 symbols randomly replacing letters" requirement
+ * @param password: Mutable array of characters to modify
+ * @param count: Number of letters to replace with symbols (typically 2)
+ */
 func replaceLettersWithSymbols(in password: inout [Character], count: Int) {
     let symbols = "!@#$%^&*()-_=+[]{}|;:,.<>?"
     let letterIndices = password.enumerated().compactMap { index, char in
@@ -290,9 +341,13 @@ func analyzeComplexity(of password: String) -> (score: Double, analysis: String)
     return (finalScore, analysis)
 }
 
-// MARK: - Test Functions (Include here for single-file approach)
+// MARK: - Test Functions
 
-// Test Helper Functions
+/**
+ * Helper function to assert test conditions and print results
+ * @param condition: Boolean condition to test
+ * @param message: Description of what is being tested
+ */
 func assert(_ condition: Bool, _ message: String) {
     if condition {
         print("PASS: \(message)")
@@ -301,6 +356,12 @@ func assert(_ condition: Bool, _ message: String) {
     }
 }
 
+/**
+ * Helper function to assert equality and print results
+ * @param actual: The actual value received
+ * @param expected: The expected value
+ * @param message: Description of what is being tested
+ */
 func assertEqual<T: Equatable>(_ actual: T, _ expected: T, _ message: String) {
     if actual == expected {
         print("PASS: \(message)")
@@ -309,26 +370,34 @@ func assertEqual<T: Equatable>(_ actual: T, _ expected: T, _ message: String) {
     }
 }
 
-// Specific test functions
+/**
+ * Test the cat name loading functionality
+ * Verifies that embedded cat names are properly loaded and accessible
+ */
 func testLoadCatNames() {
     print("\nTesting Cat Name Loading...")
     
     let catNames = loadCatNames()
-    assert(!catNames.isEmpty, "Should Meow load cat names from embedded data")
-    assert(catNames.count > 100, "Should load a substantial Meow number of cat names")
+    assert(!catNames.isEmpty, "Should load cat names from embedded data")
+    assert(catNames.count > 100, "Should load a substantial number of cat names")
     
     let nonEmptyNames = catNames.filter { !$0.isEmpty }
-    assertEqual(nonEmptyNames.count, catNames.count, "All Meow Meow loaded names should be non-empty")
+    assertEqual(nonEmptyNames.count, catNames.count, "All loaded names should be non-empty")
     
+    // Test consistency of embedded loading
     let embeddedNames = loadCatNames(from: nil)  
-    assertEqual(embeddedNames.count, catNames.count, "Should return same Meow count for embedded names")
+    assertEqual(embeddedNames.count, catNames.count, "Should return same count for embedded names")
     
-    print("Cat names loaded Meow: \(catNames.count)")
+    print("Cat names loaded: \(catNames.count)")
     print("First few names: \(Array(catNames.prefix(5)))")
 }
 
+/**
+ * Test the complete password generation process
+ * Validates that passwords meet all security requirements
+ */
 func testCompletePasswordGeneration() {
-    print("\nTesting MeowMeow Complete Password Generation...")
+    print("\nTesting Complete Password Generation...")
     
     let testNames = ["Fluffy", "Whiskers", "Shadow", "Mittens", "Tiger", "Luna", "Max", "Bella"]
     let config = PasswordConfig(arguments: [])
@@ -338,8 +407,8 @@ func testCompletePasswordGeneration() {
         
         print("Generated password \(i): \(password)")
         
-        assert(password.count >= 10, "MeowPassword should be at least 10 characters")
-        assert(password.count <= config.maxLength + 10, "Password should not greatly exceed Meow max length")
+        assert(password.count >= 10, "Password should be at least 10 characters")
+        assert(password.count <= config.maxLength + 10, "Password should not greatly exceed max length")
         
         let hasNumbers = password.contains { $0.isNumber }
         let hasLetters = password.contains { $0.isLetter }
@@ -355,6 +424,10 @@ func testCompletePasswordGeneration() {
     }
 }
 
+/**
+ * Run all basic tests for the MeowPassword system
+ * Executes comprehensive testing of all core functionality
+ */
 func runBasicTests() {
     print("Running Basic MeowPassword Tests")
     print("=================================")
@@ -367,9 +440,16 @@ func runBasicTests() {
 }
 
 // MARK: - Help Function
+
+/**
+ * Display help information for command-line usage
+ * Shows all available options and example usage
+ */
 func showHelp() {
-    print("MeowPassword - MeowCat-themed secure password generator")
+    print("MeowPassword - Lolcat-themed secure password generator")
+    print("")
     print("Usage: meowpass [options]")
+    print("")
     print("Options:")
     print("  --numbers N      Number of random numbers to insert (1-10, default: 3-5)")
     print("  --symbols N      Number of symbols to insert (1-10, default: 2)")
@@ -402,7 +482,7 @@ func main() {
     
     // Show ASCII art and title
     print(lolcatArt)
-    print("MEOW PASSWORD - Meow Secure Password Generator")
+    print("MEOWPASSWORD - Lolcat Secure Password Generator")
     print("===============================================")
     
     // Load cat names (now from embedded data)
