@@ -1,17 +1,20 @@
 #!/bin/bash
-# Production build script for MeowPassword
+# Production build script for MeowPassword 🐱
 # Creates a practical deployable version with 1000+ cat names
+# 🧤 "Is your cat making too much noise all the time?" - Kitten Mittens! 🧤
 
 set -e
 
-echo "🐾 MeowPassword Production Build"
-echo "================================"
+echo "🐾 MeowPassword Production Build 🎭"
+echo "=================================="
+echo "🧤 Building the purrfect password generator! 🧤"
 
 # Clean previous builds
 rm -f meowpass embedded_production.swift
 
 # Step 1: Create manageable embedded dataset (first 1000 names)
-echo "📝 Creating production meow embedded dataset (1000 cat names)..."
+echo "📝 Creating production meow embedded dataset (1000 cat names)... 🗂️"
+echo "🧤 Kitten Mittens approved data collection! 🧤"
 echo "// MARK: - Embedded Cat Names Data (Production)" > embedded_production.swift
 echo "let embeddedCatNames: [String] = [" >> embedded_production.swift
 
@@ -25,48 +28,55 @@ done
 echo "]" >> embedded_production.swift
 
 # Step 2: Create combined file
-echo "🔧 Combining meow source files..."
+echo "🔧 Combining meow source files... 🔗"
+echo "🧤 Kitten Mittens: Softly combining your code! 🧤"
 cat embedded_production.swift > meowpass_production.swift
 echo "" >> meowpass_production.swift
 cat main.swift >> meowpass_production.swift
 
 # Step 3: Compile
-echo "⚙️  Compiling production meow executable..."
+echo "⚙️  Compiling production meow executable... 🛠️"
+echo "🧤 Kitten Mittens: Making compilation quieter! 🧤"
 if swiftc -O -o meowpass meowpass_production.swift; then
-    echo "✅ Production build successful (optimized)!"
+    echo "✅ Production build successful (optimized)! 🎉"
 elif swiftc -o meowpass meowpass_production.swift; then
-    echo "✅ Production build successful (debug)!"
+    echo "✅ Production build successful (debug)! 🐛"
 else
-    echo "❌ Production build failed"
+    echo "❌ Production build failed 😿"
     exit 1
 fi
 
 # Step 4: Test
 if [ -f "meowpass" ]; then
     echo ""
-    echo "📊 Build Statistics:"
-    echo "   Executable size: $(ls -lh meowpass | awk '{print $5}')"
-    echo "   Cat names count: 1000"
+    echo "📊 Build Statistics: 📈"
+    echo "   Executable size: $(ls -lh meowpass | awk '{print $5}') 📏"
+    echo "   Cat names count: 1000 🐱"
+    echo "🧤 Kitten Mittens stats: Purrfect! 🧤"
     echo ""
     
-    echo "🧪 Running quick meow test..."
+    echo "🧪 Running quick meow test... 🔬"
+    echo "🧤 Testing with Kitten Mittens approved methods! 🧤"
     timeout 20 ./meowpass --test | head -15
     
     echo ""
-    echo "🎉 MeowPassword Production Build Complete!"
+    echo "🎉 MeowPassword Production Build Complete! 🎊"
+    echo "🧤 Kitten Mittens approves this build! 🧤"
     echo ""
-    echo "📋 Usage:"
-    echo "   ./meowpass           - Generate secure password"
-    echo "   ./meowpass --test    - Run tests"
-    echo "   ./meowpass --copy    - Copy to clipboard (macOS)"
+    echo "📋 Usage: 📖"
+    echo "   ./meowpass           - Generate secure password 🔐"
+    echo "   ./meowpass --test    - Run tests 🧪"
+    echo "   ./meowpass --copy    - Copy to clipboard (macOS) 📋"
     echo ""
-    echo "📦 To install system-wide:"
-    echo "   sudo cp meowpass /usr/local/bin/"
-    echo "   sudo chmod +x /usr/local/bin/meowpass"
+    echo "📦 To install system-wide: 🌍"
+    echo "   sudo cp meowpass /usr/local/bin/ 📁"
+    echo "   sudo chmod +x /usr/local/bin/meowpass ⚡"
     echo ""
     echo "Then you can run 'meowpass' from anywhere! 🎊"
+    echo "🧤 Kitten Mittens guarantees system-wide satisfaction! 🧤"
     
 else
-    echo "❌ Build failed - executable not created"
+    echo "❌ Build failed - executable not created 😿"
+    echo "🧤 Even Kitten Mittens couldn't save this build! 🧤"
     exit 1
 fi
