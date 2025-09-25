@@ -69,50 +69,7 @@ meowpass --copy
 meowpass --help
 ```
 
-## Sample Output
 
-```
-                               __
-                         _,-;'''`'-,.
-                      _/',  `;  `;    `\
-      ,        _..,-''    '   `  `      `\
-     | ;._.,,-' .| |,_        ,,          `\
-     | `;'      ;' ;, `,   ; |    '  '  .   \
-     `; __`  ,'__  ` ,  ` ;  |      ;        \
-     ; (6_);  (6_) ; |   ,    \        '      |       /
-    ;;   _,' ,.    ` `,   '    `-._           |   __//_________
-     ,;.=..`_..=.,' -'          ,''        _,--''------''''
-_pb__\,`"=,,,=="',___,,,-----'''----'_'_'_''-;''
------------------------''''''\  \'''''   )   /'
-                              `\`,,,___/__/'_____,
-                                `--,,,--,-,'''\  
-                               __,,-' /'       `
-                             /'_,,--''
-                            | (
-                             `'
-
-MEOWPASSWORD - Lolcat Secure Password Generator
-===============================================
-Loaded 1000 cat names
-Generating 5 secure password candidates...
-Config: 3 numbers, 2 symbols, max length 25
-
-Candidate 1: aMstErd&3(!h-)u82016
-   Complexity Score: 1.71/10.0
-
-MOST SECURE PASSWORD SELECTED:
-Password: aMstErd&3(!h-)u82016
-Final Complexity Score: 1.71/10.0
-
-Kolmogorov Complexity Analysis:
-- Password: aMstErd&3(!h-)u82016
-- Length: 20 characters
-- Shannon Entropy: 4.322 bits
-- Compression Resistance: -5.0%
-- Pattern Uniqueness: 100.0%
-- Character Diversity: 100.0%
-- Overall Complexity Score: 1.71/10.0
-```
 
 ## Command-Line Options
 
