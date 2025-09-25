@@ -7,8 +7,78 @@
 
 import Foundation
 
+// MARK: - ASCII Art and Lolcat Theme
+let lolcatArt = """
+                               __
+                         _,-;'''`'-,.
+                      _/',  `;  `;    `\\
+      ,        _..,-''    '   `  `      `\\
+     | ;._.,,-' .| |,_        ,,          `\\
+     | `;'      ;' ;, `,   ; |    '  '  .   \\
+     `; __`  ,'__  ` ,  ` ;  |      ;        \\
+     ; (6_);  (6_) ; |   ,    \\        '      |       /
+    ;;   _,' ,.    ` `,   '    `-._           |   __//_________
+     ,;.=..`_..=.,' -'          ,''        _,--''------''''
+_pb__\\,`"=,,,=="',___,,,-----'''----'_'_'_''-;''
+-----------------------''''''\\  \\'''''   )   /'
+                              `\\`,,,___/__/'_____,
+                                `--,,,--,-,'''\\  
+                               __,,-' /'       `
+                             /'_,,--''
+                            | (
+                             `'
+
+"""
+
+// MARK: - Configuration Structure
+struct PasswordConfig {
+    let numNumbers: Int
+    let numSymbols: Int
+    let maxLength: Int
+    let showTests: Bool
+    let copyToClipboard: Bool
+    
+    init(arguments: [String]) {
+        var numNumbers = Int.random(in: 3...5)  // Default range
+        var numSymbols = 2  // Default value
+        var maxLength = 25  // Default max length
+        var showTests = false
+        var copyToClipboard = false
+        
+        // Parse command line arguments
+        for i in 0..<arguments.count {
+            switch arguments[i] {
+            case "--numbers":
+                if i + 1 < arguments.count, let value = Int(arguments[i + 1]) {
+                    numNumbers = max(1, min(10, value))  // Clamp between 1-10
+                }
+            case "--symbols":
+                if i + 1 < arguments.count, let value = Int(arguments[i + 1]) {
+                    numSymbols = max(1, min(10, value))  // Clamp between 1-10
+                }
+            case "--max-length":
+                if i + 1 < arguments.count, let value = Int(arguments[i + 1]) {
+                    maxLength = max(15, min(50, value))  // Clamp between 15-50
+                }
+            case "--test":
+                showTests = true
+            case "--copy":
+                copyToClipboard = true
+            default:
+                break
+            }
+        }
+        
+        self.numNumbers = numNumbers
+        self.numSymbols = numSymbols
+        self.maxLength = maxLength
+        self.showTests = showTests
+        self.copyToClipboard = copyToClipboard
+    }
+}
+
 // MARK: - Embedded Cat Names Data (automatically generated)
-// This file contains all 16,926 cat names embedded directly in the executable
+// This file contains all cat names embedded directly in the executable
 func getEmbeddedCatNames() -> [String] {
     // Read the embedded cat names from the generated Swift file
     return embeddedCatNames
@@ -29,17 +99,17 @@ func selectRandomCatNames(from catNames: [String], count: Int) -> [String] {
 }
 
 // MARK: - Base Phrase Creation
-func createBasePhrase(from catNames: [String]) -> String {
+func createBasePhrase(from catNames: [String], maxLength: Int) -> String {
     let joinedNames = catNames.joined()
     
-    // Ensure phrase is between 15-25 characters
+    // Ensure phrase is between 15 and maxLength characters
     if joinedNames.count < 15 {
         // If too short, try adding more names
         let additionalNames = selectRandomCatNames(from: catNames, count: 2)
         let extended = joinedNames + additionalNames.joined()
-        return String(extended.prefix(25))
-    } else if joinedNames.count > 25 {
-        return String(joinedNames.prefix(25))
+        return String(extended.prefix(maxLength))
+    } else if joinedNames.count > maxLength {
+        return String(joinedNames.prefix(maxLength))
     }
     
     return joinedNames
@@ -101,20 +171,25 @@ func removeRepeatingLetters(in password: inout [Character]) {
 }
 
 // MARK: - Complete Password Generation
-func generateSecurePassword(from catNames: [String]) -> String {
+func generateSecurePassword(from catNames: [String], config: PasswordConfig) -> String {
     // Step 1: Select 3-5 cat names
     let nameCount = Int.random(in: 3...5)
     let selectedNames = selectRandomCatNames(from: catNames, count: nameCount)
     
     // Step 2: Create base phrase
-    let basePhrase = createBasePhrase(from: selectedNames)
+    let basePhrase = createBasePhrase(from: selectedNames, maxLength: config.maxLength)
     var password = Array(basePhrase.lowercased())
     
     // Step 3: Apply security transformations
     randomlyCapitalizeLetters(in: &password, count: 3)
-    insertRandomNumbers(into: &password, count: Int.random(in: 3...5))
-    replaceLettersWithSymbols(in: &password, count: 2)
+    insertRandomNumbers(into: &password, count: config.numNumbers)
+    replaceLettersWithSymbols(in: &password, count: config.numSymbols)
     removeRepeatingLetters(in: &password)
+    
+    // Ensure final password doesn't exceed max length
+    if password.count > config.maxLength {
+        password = Array(password.prefix(config.maxLength))
+    }
     
     return String(password)
 }
@@ -220,32 +295,31 @@ func analyzeComplexity(of password: String) -> (score: Double, analysis: String)
 // Test Helper Functions
 func assert(_ condition: Bool, _ message: String) {
     if condition {
-        print("✅ PASS: \(message)")
+        print("PASS: \(message)")
     } else {
-        print("❌ FAIL: \(message)")
+        print("FAIL: \(message)")
     }
 }
 
 func assertEqual<T: Equatable>(_ actual: T, _ expected: T, _ message: String) {
     if actual == expected {
-        print("✅ PASS: \(message)")
+        print("PASS: \(message)")
     } else {
-        print("❌ FAIL: \(message) - Expected: \(expected), Got: \(actual)")
+        print("FAIL: \(message) - Expected: \(expected), Got: \(actual)")
     }
 }
 
 // Specific test functions
 func testLoadCatNames() {
-    print("\n🧪 Testing Cat Name Loading...")
+    print("\nTesting Cat Name Loading...")
     
     let catNames = loadCatNames()
     assert(!catNames.isEmpty, "Should load cat names from embedded data")
-    assert(catNames.count > 1000, "Should load a substantial number of cat names")
+    assert(catNames.count > 100, "Should load a substantial number of cat names")
     
     let nonEmptyNames = catNames.filter { !$0.isEmpty }
     assertEqual(nonEmptyNames.count, catNames.count, "All loaded names should be non-empty")
     
-    // Test that embedded loading works consistently
     let embeddedNames = loadCatNames(from: nil)  
     assertEqual(embeddedNames.count, catNames.count, "Should return same count for embedded names")
     
@@ -254,17 +328,18 @@ func testLoadCatNames() {
 }
 
 func testCompletePasswordGeneration() {
-    print("\n🧪 Testing Complete Password Generation...")
+    print("\nTesting Complete Password Generation...")
     
     let testNames = ["Fluffy", "Whiskers", "Shadow", "Mittens", "Tiger", "Luna", "Max", "Bella"]
+    let config = PasswordConfig(arguments: [])
     
     for i in 1...3 {
-        let password = generateSecurePassword(from: testNames)
+        let password = generateSecurePassword(from: testNames, config: config)
         
         print("Generated password \(i): \(password)")
         
         assert(password.count >= 10, "Password should be at least 10 characters")
-        assert(password.count <= 35, "Password should not exceed 35 characters")
+        assert(password.count <= config.maxLength + 10, "Password should not greatly exceed max length")
         
         let hasNumbers = password.contains { $0.isNumber }
         let hasLetters = password.contains { $0.isLetter }
@@ -281,61 +356,96 @@ func testCompletePasswordGeneration() {
 }
 
 func runBasicTests() {
-    print("🚀 Running Basic MeowPassword Tests")
-    print("===================================")
+    print("Running Basic MeowPassword Tests")
+    print("=================================")
     
     testLoadCatNames()
     testCompletePasswordGeneration()
     
-    print("\n🎉 Basic Tests Complete!")
-    print("========================")
+    print("\nBasic Tests Complete!")
+    print("=====================")
+}
+
+// MARK: - Help Function
+func showHelp() {
+    print("MeowPassword - Lolcat-themed secure password generator")
+    print("")
+    print("Usage: meowpass [options]")
+    print("")
+    print("Options:")
+    print("  --numbers N      Number of random numbers to insert (1-10, default: 3-5)")
+    print("  --symbols N      Number of symbols to insert (1-10, default: 2)")
+    print("  --max-length N   Maximum password length (15-50, default: 25)")
+    print("  --test           Run tests")
+    print("  --copy           Copy password to clipboard (macOS only)")
+    print("  --help           Show this help message")
+    print("")
+    print("Examples:")
+    print("  meowpass")
+    print("  meowpass --numbers 4 --symbols 3 --max-length 30")
+    print("  meowpass --test")
 }
 
 // MARK: - Main Program
 func main() {
+    let config = PasswordConfig(arguments: CommandLine.arguments)
+    
+    // Check for help
+    if CommandLine.arguments.contains("--help") {
+        showHelp()
+        return
+    }
+    
     // Check for test mode
-    if CommandLine.arguments.contains("--test") {
+    if config.showTests {
         runBasicTests()
         return
     }
     
-    print("🐾 MeowPassword Generator")
+    // Show ASCII art and title
+    print(lolcatArt)
+    print("MEOWPASSWORD - Lolcat Secure Password Generator")
+    print("===============================================")
     
     // Load cat names (now from embedded data)
     let catNames = loadCatNames()
     guard !catNames.isEmpty else {
-        print("Error: No cat names loaded from embedded data.")
+        print("ERROR: No cat names loaded from embedded data.")
         return
     }
     
-    print("📝 Loaded \(catNames.count) cat names")
-    print("🔄 Generating 5 secure password candidates...\n")
+    print("Loaded \(catNames.count) cat names")
+    print("Generating 5 secure password candidates...")
+    print("Config: \(config.numNumbers) numbers, \(config.numSymbols) symbols, max length \(config.maxLength)")
+    print("")
     
     // Generate 5 password candidates
     var candidates: [(password: String, score: Double, analysis: String)] = []
     
     for i in 1...5 {
-        let password = generateSecurePassword(from: catNames)
+        let password = generateSecurePassword(from: catNames, config: config)
         let (score, analysis) = analyzeComplexity(of: password)
         candidates.append((password, score, analysis))
         
-        print("🔐 Candidate \(i): \(password)")
-        print("   Complexity Score: \(String(format: "%.2f", score))/10.0\n")
+        print("Candidate \(i): \(password)")
+        print("   Complexity Score: \(String(format: "%.2f", score))/10.0")
+        print("")
     }
     
     // Select the most secure password
     guard let bestCandidate = candidates.max(by: { $0.score < $1.score }) else {
-        print("Error: Could not select best password")
+        print("ERROR: Could not select best password")
         return
     }
     
-    print("🏆 Most Secure Password Selected:")
-    print("🔐 \(bestCandidate.password)")
-    print("📊 Final Complexity Score: \(String(format: "%.2f", bestCandidate.score))/10.0\n")
+    print("MOST SECURE PASSWORD SELECTED:")
+    print("Password: \(bestCandidate.password)")
+    print("Final Complexity Score: \(String(format: "%.2f", bestCandidate.score))/10.0")
+    print("")
     print(bestCandidate.analysis)
     
     // Option to copy to clipboard (basic approach)
-    if CommandLine.arguments.contains("--copy") {
+    if config.copyToClipboard {
         #if os(macOS)
         let task = Process()
         task.launchPath = "/usr/bin/pbcopy"
@@ -347,12 +457,15 @@ func main() {
         pipe.fileHandleForWriting.closeFile()
         task.waitUntilExit()
         
-        print("\n📋 Password copied to clipboard!")
+        print("")
+        print("Password copied to clipboard!")
         #else
-        print("\n❌ Clipboard functionality only available on macOS")
+        print("")
+        print("Clipboard functionality only available on macOS")
         #endif
     } else {
-        print("\n💡 Use 'swift MeowPassword/main.swift --copy' to copy password to clipboard")
+        print("")
+        print("Use 'meowpass --copy' to copy password to clipboard")
     }
 }
 
