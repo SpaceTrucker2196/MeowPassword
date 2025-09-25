@@ -9,27 +9,22 @@ import Foundation
 
 // MARK: - ASCII Art and Lolcat Theme
 let lolcatArt = """
-                               __
-                         _,-;'''`'-,.
-                      _/',  `;  `;    `\\
+                         _,-;'''`' - .
+                      _/',  `;  `;    \\
       ,        _..,-''    '   `  `      `\\
-     | ;._.,,-' .| |,_        ,,          `\\
+     | ;._.,,-' .| |,_     '   '         `\\
      | `;'      ;' ;, `,   ; |    '  '  .   \\
      `; __`  ,'__  ` ,  ` ;  |      ;        \\
-     ; (6_);  (6_) ; |   ,    \\        '      |       /
-    ;;   _,' ,.    ` `,   '    `-._           |   __//_________
-     ,;.=..`_..=.,' -'          ,''        _,--''------''''
-_pb__\\,`"=,,,=="',___,,,-----'''----'_'_'_''-;''
------------------------''''''\\  \\'''''   )   /'
-                              `\\`,,,___/__/'_____,
-                                `--,,,--,-,'''\\  
-                               __,,-' /'       `
+     ; (6_);  (6_) ; |   ,    \\        '      |       
+    ;;   _,6 ,.    ` `,   '    `-._           //   
+     ,;.=..`_..=.,' -'          ,''        _,//
+_00_____`"=,,,=="',___,,,-----'''----'_'_'_''______00_
+	Meow Password Generators of Secure Relavant
+                               __,,-' /'       
                              /'_,,--''
                             | (
                              `'
-
 """
-
 // MARK: - Configuration Structure
 
 /**
@@ -48,7 +43,7 @@ struct PasswordConfig {
      * @param arguments: Array of command line arguments
      */
     init(arguments: [String]) {
-        var numNumbers = Int.random(in: 3...5)  // Default range as specified in requirements
+        var numNumbers = Int.random(in: 1...4)  // Default range as specified in requirements
         var numSymbols = 2  // Default value as specified in requirements
         var maxLength = 25  // Default max length as specified in requirements
         var showTests = false
@@ -137,13 +132,12 @@ func createBasePhrase(from catNames: [String], maxLength: Int) -> String {
     // Ensure phrase is between 15 and maxLength characters as per specifications
     if joinedNames.count < 15 {
         // If too short, try adding more names to meet minimum length requirement
-        let additionalNames = selectRandomCatNames(from: catNames, count: 2)
+        let additionalNames = selectRandomCatNames(from: catNames, count: 5)
         let extended = joinedNames + additionalNames.joined()
         return String(extended.prefix(maxLength))
     } else if joinedNames.count > maxLength {
         return String(joinedNames.prefix(maxLength))
     }
-    
     return joinedNames
 }
 
@@ -190,7 +184,7 @@ func insertRandomNumbers(into password: inout [Character], count: Int) {
  * @param count: Number of letters to replace with symbols (typically 2)
  */
 func replaceLettersWithSymbols(in password: inout [Character], count: Int) {
-    let symbols = "!@#$%^&*()-_=+[]{}|;:,.<>?"
+    let symbols = "!@#$%^&*()-_=+[]{;:.<>?"
     let letterIndices = password.enumerated().compactMap { index, char in
         char.isLetter ? index : nil
     }
@@ -224,18 +218,21 @@ func removeRepeatingLetters(in password: inout [Character]) {
 // MARK: - Complete Password Generation
 func generateSecurePassword(from catNames: [String], config: PasswordConfig) -> String {
     // Step 1: Select 3-5 cat names
-    let nameCount = Int.random(in: 3...5)
+    let nameCount = Int.random(in: 2...6)
     let selectedNames = selectRandomCatNames(from: catNames, count: nameCount)
     
     // Step 2: Create base phrase
     let basePhrase = createBasePhrase(from: selectedNames, maxLength: config.maxLength)
-    var password = Array(basePhrase.lowercased())
-    
+	var password = Array(
+    basePhrase
+        .lowercased()
+        .replacingOccurrences(of: " ", with: "")
+)    
     // Step 3: Apply security transformations
     randomlyCapitalizeLetters(in: &password, count: 3)
     insertRandomNumbers(into: &password, count: config.numNumbers)
     replaceLettersWithSymbols(in: &password, count: config.numSymbols)
-    removeRepeatingLetters(in: &password)
+ //   removeRepeatingLetters(in: &password)
     
     // Ensure final password doesn't exceed max length
     if password.count > config.maxLength {
@@ -330,11 +327,11 @@ func analyzeComplexity(of password: String) -> (score: Double, analysis: String)
    let analysis = """
     Meow Complexity Analysis:
     - Password: \(password)
-    - Tail Size: \(password.count) characters
+    - Tail Size: \(password.count) cm
     - Ball of Yarn Entropy: \(String(format: "%.3f", entropy)) bits
     - Mashing Resistance: \(String(format: "%.1f", compressionRatio * 100))%
     - Shiny Foil Ball Uniqueness: \(String(format: "%.1f", patternComplexity * 100))%
-    - Catnip Diversity: \(String(format: "%.1f", diversity * 100))%
+    - Percent of Organic NonGMO Catnip: \(String(format: "%.1f", diversity * 100))%
     - Overall Relavency: \(String(format: "%.2f", finalScore))/10.0
     """
     
@@ -415,7 +412,7 @@ func testCompletePasswordGeneration() {
         let hasSymbols = password.contains { !$0.isLetter && !$0.isNumber }
         
         assert(hasNumbers, "Password should contain meow numbers")
-        assert(hasLetters, "Password should contain letters")
+        assert(hasLetters, "Password meow should contain letters")
         assert(hasSymbols, "Password should contain meow symbols")
         
         let (score, analysis) = analyzeComplexity(of: password)
@@ -429,13 +426,13 @@ func testCompletePasswordGeneration() {
  * Executes comprehensive testing of all core functionality
  */
 func runBasicTests() {
-    print("Running Basic meow MeowPassword Tests")
+    print("Running Basic MeowPassword Tests")
     print("=================================")
     
     testLoadCatNames()
     testCompletePasswordGeneration()
     
-    print("\nBasic Tests meow Complete!")
+    print("\nMeow Basic Tests Complete!")
     print("=====================")
 }
 
@@ -446,7 +443,7 @@ func runBasicTests() {
  * Shows all available options and example usage
  */
 func showHelp() {
-    print("MeowPassword - Lolcat-themed secure password generator")
+    print("MeowPassword - Cat Dyanmic Secure Password Generator")
     print("")
     print("Usage: meowpass [options]")
     print("")
@@ -482,8 +479,8 @@ func main() {
     
     // Show ASCII art and title
     print(lolcatArt)
-    print("MEOWPASSWORD - Lolcat Secure Password Generator")
-    print("===============================================")
+    print("Meow Password - Cat Name Based Secure Password Generator")
+    print("========================================================")
     
     // Load cat names (now from embedded data)
     let catNames = loadCatNames()
@@ -506,7 +503,7 @@ func main() {
         candidates.append((password, score, analysis))
         
         print("Candidate \(i): \(password)")
-        print("   Complexity meow Score: \(String(format: "%.2f", score))/10.0")
+        print("   Meow Score: \(String(format: "%.2f", score))/10.0")
         print("")
     }
     
@@ -516,7 +513,7 @@ func main() {
         return
     }
     
-    print("MOST SECURE PASSWORD meow SELECTED:")
+    print("MOST SECURE PASSWORD MEOW SELECTED:")
     print("Password: \(bestCandidate.password)")
     print("Final Meow Score: \(String(format: "%.2f", bestCandidate.score))/10.0")
     print("")
