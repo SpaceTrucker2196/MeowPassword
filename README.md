@@ -1,9 +1,10 @@
 # MeowPassword
 
-A command-line utility that generates secure, phrase-based passwords using cat names and Kolmogorov complexity analysis with a lolcat theme.
+A command-line utility that generates secure, phrase-based passwords using cat names and Kolmogorov complexity analysis with a delightful cat theme.
 
 ## Features
 
+- **🎨 Random ASCII Art Cats** - Displays a different adorable cat on each run for a delightful experience
 - **1000+ Embedded Cat Names** - No external file dependencies
 - **Secure Password Generation** - Creates passwords from 3-5 cat names with configurable length (15-50 characters)
 - **Advanced Security Transformations**:
@@ -12,7 +13,7 @@ A command-line utility that generates secure, phrase-based passwords using cat n
   - Configurable symbols replacing letters (1-10, default: 2)
   - Removes repeating letters with random digits
 - **Kolmogorov Complexity Analysis** - Evaluates and selects the most secure password from 5 candidates
-- **Lolcat Theme** - ASCII art and professional interface without emojis
+- **Modern CLI Arguments** - Support for both long (`--option`) and short (`-o`) option formats
 - **Configurable Parameters** - Control numbers, symbols, and maximum length
 - **Clipboard Support** - Copy to clipboard (macOS only)
 - **Self-Contained Executable** - Single binary with embedded data
@@ -44,43 +45,123 @@ meowpass
 
 ## Usage
 
-### Generate Password
+### Generate Password (Default Settings)
 ```bash
 meowpass
 ```
 
+Each run displays a random ASCII art cat! The program will:
+1. Show a random cat ASCII art (6 different cats available)
+2. Generate 5 password candidates using cat names
+3. Analyze each candidate's security using Kolmogorov complexity
+4. Select and display the most secure password
+
 ### Generate with Custom Parameters
+
+Using long options:
 ```bash
 meowpass --numbers 4 --symbols 3 --max-length 30
+```
+
+Using short options:
+```bash
+meowpass -n 4 -s 3 -m 35
+```
+
+Mix and match:
+```bash
+meowpass -n 5 --symbols 4 -m 40
 ```
 
 ### Run Tests
 ```bash
 meowpass --test
+# or
+meowpass -t
 ```
 
 ### Copy to Clipboard (macOS)
 ```bash
 meowpass --copy
+# or
+meowpass -c
 ```
 
 ### Show Help
 ```bash
 meowpass --help
+# or
+meowpass -h
 ```
 
+## ASCII Art Feature
 
+MeowPassword includes 6 different ASCII art cats that are randomly displayed each time you run the program:
+- 🎨 Original detailed lolcat
+- 🐱 Sitting cat
+- 😸 Happy cat  
+- 😺 Stretching cat
+- 😻 Playful cat
+- 😴 Sleeping cat
+
+Each cat comes with its own personality and makes password generation more enjoyable!
 
 ## Command-Line Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--numbers N` | Number of random numbers to insert (1-10) | 3-5 |
-| `--symbols N` | Number of symbols to insert (1-10) | 2 |
-| `--max-length N` | Maximum password length (15-50) | 25 |
-| `--test` | Run comprehensive tests | - |
-| `--copy` | Copy password to clipboard (macOS only) | - |
-| `--help` | Show help message | - |
+MeowPassword supports both long and short option formats for convenience:
+
+| Long Option | Short | Description | Default |
+|-------------|-------|-------------|---------|
+| `--numbers N` | `-n N` | Number of random numbers to insert (1-10) | 3-5 (random) |
+| `--symbols N` | `-s N` | Number of symbols to insert (1-10) | 2 |
+| `--max-length N` | `-m N` | Maximum password length (15-50) | 25 |
+| `--test` | `-t` | Run comprehensive tests | - |
+| `--copy` | `-c` | Copy password to clipboard (macOS only) | - |
+| `--help` | `-h` | Show detailed help message | - |
+
+### Option Details
+
+**Numbers (`-n`, `--numbers`)**
+- Controls how many random digits (0-9) are inserted into the password
+- Range: 1-10
+- Default: Randomly chosen between 3-5 for variety
+- Example: `-n 4` inserts exactly 4 random digits
+
+**Symbols (`-s`, `--symbols`)**
+- Controls how many special characters replace letters
+- Range: 1-10
+- Default: 2
+- Available symbols: `!@#$%^&*()-_=+[]{;:.<>?`
+- Example: `-s 3` replaces 3 letters with random symbols
+
+**Max Length (`-m`, `--max-length`)**
+- Sets the maximum length of the generated password
+- Range: 15-50 characters
+- Default: 25
+- The password will not exceed this length
+- Example: `-m 30` limits password to 30 characters
+
+### Usage Examples
+
+Generate a short, simple password:
+```bash
+meowpass -n 2 -s 1 -m 20
+```
+
+Generate a long, complex password:
+```bash
+meowpass --numbers 8 --symbols 6 --max-length 45
+```
+
+Generate and immediately copy to clipboard (macOS):
+```bash
+meowpass -n 5 -s 4 -c
+```
+
+View help for all options:
+```bash
+meowpass -h
+```
 
 ## Build System
 
