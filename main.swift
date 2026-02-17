@@ -112,7 +112,7 @@ struct PasswordConfig {
      * @param arguments: Array of command line arguments
      */
     init(arguments: [String]) {
-        var numNumbers = Int.random(in: 3...5)  // Default range: 3-5 numbers
+        var numNumbers = Int.random(in: 1...4)  // Default range: 1-4 numbers (randomly chosen)
         var numSymbols = 2  // Default value: 2 symbols
         var maxLength = 25  // Default max length: 25 characters
         var showTests = false
@@ -131,10 +131,10 @@ struct PasswordConfig {
                         numNumbers = value
                         i += 1 // Skip next argument (the value)
                     } else {
-                        print("Warning: --numbers must be between 1-10. Using default.")
+                        print("Warning: --numbers must be between 1-10. Using default: random 1-4")
                     }
                 } else {
-                    print("Warning: --numbers requires a numeric value. Using default.")
+                    print("Warning: --numbers requires a numeric value. Using default: random 1-4")
                 }
                 
             case "--symbols", "-s":
@@ -143,10 +143,10 @@ struct PasswordConfig {
                         numSymbols = value
                         i += 1 // Skip next argument (the value)
                     } else {
-                        print("Warning: --symbols must be between 1-10. Using default.")
+                        print("Warning: --symbols must be between 1-10. Using default: 2")
                     }
                 } else {
-                    print("Warning: --symbols requires a numeric value. Using default.")
+                    print("Warning: --symbols requires a numeric value. Using default: 2")
                 }
                 
             case "--max-length", "-m":
@@ -155,10 +155,10 @@ struct PasswordConfig {
                         maxLength = value
                         i += 1 // Skip next argument (the value)
                     } else {
-                        print("Warning: --max-length must be between 15-50. Using default.")
+                        print("Warning: --max-length must be between 15-50. Using default: 25")
                     }
                 } else {
-                    print("Warning: --max-length requires a numeric value. Using default.")
+                    print("Warning: --max-length requires a numeric value. Using default: 25")
                 }
                 
             case "--test", "-t":
@@ -558,7 +558,7 @@ func showHelp() {
     
     OPTIONS:
         -n, --numbers N       Number of random numbers to insert (1-10)
-                              Default: 3-5 (randomly chosen)
+                              Default: 1-4 (randomly chosen)
         
         -s, --symbols N       Number of symbols to insert (1-10)
                               Default: 2

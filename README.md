@@ -112,7 +112,7 @@ MeowPassword supports both long and short option formats for convenience:
 
 | Long Option | Short | Description | Default |
 |-------------|-------|-------------|---------|
-| `--numbers N` | `-n N` | Number of random numbers to insert (1-10) | 3-5 (random) |
+| `--numbers N` | `-n N` | Number of random numbers to insert (1-10) | 1-4 (random) |
 | `--symbols N` | `-s N` | Number of symbols to insert (1-10) | 2 |
 | `--max-length N` | `-m N` | Maximum password length (15-50) | 25 |
 | `--test` | `-t` | Run comprehensive tests | - |
@@ -124,7 +124,7 @@ MeowPassword supports both long and short option formats for convenience:
 **Numbers (`-n`, `--numbers`)**
 - Controls how many random digits (0-9) are inserted into the password
 - Range: 1-10
-- Default: Randomly chosen between 3-5 for variety
+- Default: Randomly chosen between 1-4 for variety
 - Example: `-n 4` inserts exactly 4 random digits
 
 **Symbols (`-s`, `--symbols`)**
