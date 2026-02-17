@@ -131,10 +131,10 @@ struct PasswordConfig {
                         numNumbers = value
                         i += 1 // Skip next argument (the value)
                     } else {
-                        print("Warning: --numbers must be between 1-10. Using default: random 1-4")
+                        print("Warning: --numbers/-n must be between 1-10. Using default: random 1-4")
                     }
                 } else {
-                    print("Warning: --numbers requires a numeric value. Using default: random 1-4")
+                    print("Warning: --numbers/-n requires a numeric value. Using default: random 1-4")
                 }
                 
             case "--symbols", "-s":
@@ -143,10 +143,10 @@ struct PasswordConfig {
                         numSymbols = value
                         i += 1 // Skip next argument (the value)
                     } else {
-                        print("Warning: --symbols must be between 1-10. Using default: 2")
+                        print("Warning: --symbols/-s must be between 1-10. Using default: 2")
                     }
                 } else {
-                    print("Warning: --symbols requires a numeric value. Using default: 2")
+                    print("Warning: --symbols/-s requires a numeric value. Using default: 2")
                 }
                 
             case "--max-length", "-m":
@@ -155,10 +155,10 @@ struct PasswordConfig {
                         maxLength = value
                         i += 1 // Skip next argument (the value)
                     } else {
-                        print("Warning: --max-length must be between 15-50. Using default: 25")
+                        print("Warning: --max-length/-m must be between 15-50. Using default: 25")
                     }
                 } else {
-                    print("Warning: --max-length requires a numeric value. Using default: 25")
+                    print("Warning: --max-length/-m requires a numeric value. Using default: 25")
                 }
                 
             case "--test", "-t":
