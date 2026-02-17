@@ -26,7 +26,7 @@ let asciiCats = [
     ;;   _,6 ,.    ` `,   '    `-._           //   
      ,;.=..`_..=.,' -'          ,''        _,//
     _00_____`"=,,,=="',___,,,-----'''----'_'_'_''______00_
-    	Meow Password Generators of Secure Relavant
+    	Meow Password Generators of Secure Relevant
                                __,,-' /'       
                              /'_,,--''
                             | (
