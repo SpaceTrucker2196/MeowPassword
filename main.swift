@@ -8,7 +8,14 @@
 import Foundation
 
 // MARK: - ASCII Art and Lolcat Theme
-let lolcatArt = """
+
+/**
+ * Collection of ASCII art cats for randomized display
+ * Each run selects a random cat to display, adding variety to the user experience
+ */
+let asciiCats = [
+    // Original lolcat
+    """
                          _,-;'''`' - .
                       _/',  `;  `;    \\
       ,        _..,-''    '   `  `      `\\
@@ -18,13 +25,74 @@ let lolcatArt = """
      ; (6_);  (6_) ; |   ,    \\        '      |       
     ;;   _,6 ,.    ` `,   '    `-._           //   
      ,;.=..`_..=.,' -'          ,''        _,//
-_00_____`"=,,,=="',___,,,-----'''----'_'_'_''______00_
-	Meow Password Generators of Secure Relavant
+    _00_____`"=,,,=="',___,,,-----'''----'_'_'_''______00_
+    	Meow Password Generators of Secure Relevant
                                __,,-' /'       
                              /'_,,--''
                             | (
                              `'
-"""
+    """,
+    
+    // Sitting cat
+    """
+         /\\_/\\
+        ( o.o )
+         > ^ <
+        /|   |\\
+       (_|   |_)
+    
+    🐱 MeowPassword - Purrfectly Secure! 🐱
+    """,
+    
+    // Happy cat
+    """
+      |\\__/,|   (`\\
+      |_ _  |.--.) )
+      ( T   )     /
+     (((^_(((/(((_/
+    
+    😸 MeowPassword - Happy to Help! 😸
+    """,
+    
+    // Stretching cat
+    """
+       /\\_/\\  
+      ( ^.^ ) _
+        \\ " / ( )
+       ( | | )  
+      (__d b__)
+    
+    😺 MeowPassword - Stretching Your Security! 😺
+    """,
+    
+    // Playful cat
+    """
+      /\\_/\\           ___
+     = o_o =_______    \\ \\
+      __^      __(  \\.__) )
+      (@)<_____>__(_____)____/
+    
+    😻 MeowPassword - Playfully Secure! 😻
+    """,
+    
+    // Sleeping cat
+    """
+      |\\      _,,,---,,_
+      ZZZzz /,`.-'`'    -.  ;-;;,_
+       |,4-  ) )-,_. ,\\ (  `'-'
+      '---''(_/--'  `-'\\_)
+    
+    😴 MeowPassword - Quietly Securing... 😴
+    """
+]
+
+/**
+ * Get a random ASCII art cat from the collection
+ * @return A randomly selected ASCII art string
+ */
+func getRandomCatArt() -> String {
+    return asciiCats.randomElement() ?? asciiCats[0]
+}
 // MARK: - Configuration Structure
 
 /**
@@ -37,40 +105,78 @@ struct PasswordConfig {
     let maxLength: Int      // Maximum password length (15-50)
     let showTests: Bool     // Whether to run test mode
     let copyToClipboard: Bool // Whether to copy result to clipboard
+    let showHelp: Bool      // Whether to show help
     
     /**
      * Initialize configuration from command line arguments
      * @param arguments: Array of command line arguments
      */
     init(arguments: [String]) {
-        var numNumbers = Int.random(in: 1...4)  // Default range as specified in requirements
-        var numSymbols = 2  // Default value as specified in requirements
-        var maxLength = 25  // Default max length as specified in requirements
+        var numNumbers = Int.random(in: 1...4)  // Default range: 1-4 numbers (randomly chosen)
+        var numSymbols = 2  // Default value: 2 symbols
+        var maxLength = 25  // Default max length: 25 characters
         var showTests = false
         var copyToClipboard = false
+        var showHelp = false
         
         // Parse command line arguments with validation
-        for i in 0..<arguments.count {
-            switch arguments[i] {
-            case "--numbers":
+        var i = 1 // Skip program name at index 0
+        while i < arguments.count {
+            let arg = arguments[i]
+            
+            switch arg {
+            case "--numbers", "-n":
                 if i + 1 < arguments.count, let value = Int(arguments[i + 1]) {
-                    numNumbers = max(1, min(10, value))  // Clamp between 1-10
+                    if value >= 1 && value <= 10 {
+                        numNumbers = value
+                        i += 1 // Skip next argument (the value)
+                    } else {
+                        print("Warning: --numbers/-n must be between 1-10. Using default: random 1-4")
+                    }
+                } else {
+                    print("Warning: --numbers/-n requires a numeric value. Using default: random 1-4")
                 }
-            case "--symbols":
+                
+            case "--symbols", "-s":
                 if i + 1 < arguments.count, let value = Int(arguments[i + 1]) {
-                    numSymbols = max(1, min(10, value))  // Clamp between 1-10
+                    if value >= 1 && value <= 10 {
+                        numSymbols = value
+                        i += 1 // Skip next argument (the value)
+                    } else {
+                        print("Warning: --symbols/-s must be between 1-10. Using default: 2")
+                    }
+                } else {
+                    print("Warning: --symbols/-s requires a numeric value. Using default: 2")
                 }
-            case "--max-length":
+                
+            case "--max-length", "-m":
                 if i + 1 < arguments.count, let value = Int(arguments[i + 1]) {
-                    maxLength = max(15, min(50, value))  // Clamp between 15-50
+                    if value >= 15 && value <= 50 {
+                        maxLength = value
+                        i += 1 // Skip next argument (the value)
+                    } else {
+                        print("Warning: --max-length/-m must be between 15-50. Using default: 25")
+                    }
+                } else {
+                    print("Warning: --max-length/-m requires a numeric value. Using default: 25")
                 }
-            case "--test":
+                
+            case "--test", "-t":
                 showTests = true
-            case "--copy":
+                
+            case "--copy", "-c":
                 copyToClipboard = true
+                
+            case "--help", "-h":
+                showHelp = true
+                
             default:
-                break
+                if arg.hasPrefix("-") {
+                    print("Warning: Unknown option '\(arg)'. Use --help for usage information.")
+                }
             }
+            
+            i += 1
         }
         
         self.numNumbers = numNumbers
@@ -78,6 +184,7 @@ struct PasswordConfig {
         self.maxLength = maxLength
         self.showTests = showTests
         self.copyToClipboard = copyToClipboard
+        self.showHelp = showHelp
     }
 }
 
@@ -443,22 +550,58 @@ func runBasicTests() {
  * Shows all available options and example usage
  */
 func showHelp() {
-    print("MeowPassword - Cat Dyanmic Secure Password Generator")
-    print("")
-    print("Usage: meowpass [options]")
-    print("")
-    print("Options:")
-    print("  --numbers N      Number of random numbers to insert (1-10, default: 3-5)")
-    print("  --symbols N      Number of symbols to insert (1-10, default: 2)")
-    print("  --max-length N   Maximum password length (15-50, default: 25)")
-    print("  --test           Run tests")
-    print("  --copy           Copy password to clipboard (macOS only)")
-    print("  --help           Show this help message")
-    print("")
-    print("Examples:")
-    print("  meowpass")
-    print("  meowpass --numbers 4 --symbols 3 --max-length 30")
-    print("  meowpass --test")
+    print("""
+    MeowPassword - Cat-Based Secure Password Generator
+    
+    USAGE:
+        meowpass [OPTIONS]
+    
+    OPTIONS:
+        -n, --numbers N       Number of random numbers to insert (1-10)
+                              Default: 1-4 (randomly chosen)
+        
+        -s, --symbols N       Number of symbols to insert (1-10)
+                              Default: 2
+        
+        -m, --max-length N    Maximum password length (15-50)
+                              Default: 25
+        
+        -t, --test            Run comprehensive tests
+        
+        -c, --copy            Copy generated password to clipboard
+                              (macOS only)
+        
+        -h, --help            Show this help message
+    
+    DESCRIPTION:
+        MeowPassword generates secure, memorable passwords using cat names
+        combined with Kolmogorov complexity analysis. Each run displays a
+        random ASCII art cat for a delightful experience!
+        
+        Features:
+        • 1000+ embedded cat names (no external files needed)
+        • Random ASCII art cat on each run
+        • Configurable security parameters
+        • Kolmogorov complexity scoring
+        • Generates 5 candidates and selects the most secure
+    
+    EXAMPLES:
+        Generate a password with default settings:
+            meowpass
+        
+        Generate with custom parameters:
+            meowpass --numbers 4 --symbols 3 --max-length 30
+            meowpass -n 5 -s 4 -m 35
+        
+        Generate and copy to clipboard:
+            meowpass --copy
+            meowpass -c
+        
+        Run tests:
+            meowpass --test
+            meowpass -t
+    
+    """)
 }
 
 // MARK: - Main Program
@@ -466,7 +609,7 @@ func main() {
     let config = PasswordConfig(arguments: CommandLine.arguments)
     
     // Check for help
-    if CommandLine.arguments.contains("--help") {
+    if config.showHelp {
         showHelp()
         return
     }
@@ -477,10 +620,10 @@ func main() {
         return
     }
     
-    // Show ASCII art and title
-    print(lolcatArt)
-    print("Meow Password - Cat Name Based Secure Password Generator")
-    print("========================================================")
+    // Show random ASCII art and title
+    print(getRandomCatArt())
+    print("\nMeow Password - Cat Name Based Secure Password Generator")
+    print("==========================================================")
     
     // Load cat names (now from embedded data)
     let catNames = loadCatNames()

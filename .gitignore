@@ -1,0 +1,11 @@
+# Build artifacts
+meowpass
+meowpass_production.swift
+meowpass_combined.swift
+embedded_production.swift
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
