@@ -1,0 +1,17 @@
+.DS_Store
+/.build
+/Packages
+xcuserdata/
+DerivedData/
+.swiftpm/
+*.xcodeproj
+meowpass
+meowpass_combined.swift
+meowpass_production.swift
+meowpass_optimized.swift
+meowpass_final.swift
+embedded_cat_names.swift
+embedded_names_optimized.swift
+embedded_simple.swift
+test_embedded.swift
+test_meowpass_combined.swift
