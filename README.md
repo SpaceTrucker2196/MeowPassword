@@ -19,7 +19,32 @@ A command-line utility that generates secure, phrase-based passwords using cat n
 
 ## Quick Start
 
-### Build and Install (Recommended)
+### Install with Homebrew (Recommended)
+```bash
+# Tap the repository
+brew tap SpaceTrucker2196/meowpassword https://github.com/SpaceTrucker2196/MeowPassword.git
+
+# Install MeowPassword
+brew install meowpass
+
+# Now use from anywhere!
+meowpass
+```
+
+### Build with Swift Package Manager
+```bash
+# Clone the repository
+git clone https://github.com/SpaceTrucker2196/MeowPassword.git
+cd MeowPassword
+
+# Build using Swift Package Manager
+swift build -c release
+
+# Run the executable
+.build/release/meowpass
+```
+
+### Build and Install (Manual)
 ```bash
 # Clone the repository
 git clone https://github.com/SpaceTrucker2196/MeowPassword.git
@@ -86,16 +111,21 @@ meowpass --help
 
 The project includes multiple build options:
 
+- **`Package.swift`** - Swift Package Manager support (used by Homebrew)
 - **`build_production.sh`** - Recommended production build with 1000 embedded cat names
 - **`build.sh`** - Alternative build script with comprehensive testing
 - **`Makefile`** - Advanced build system with multiple targets
 - **`install.sh`** - System-wide installation script
+- **`Formula/meowpass.rb`** - Homebrew formula for `brew install`
 
 ### Build Validation
 
-Both build scripts work as documented:
+All build methods work as documented:
 
 ```bash
+# Test Swift Package Manager build
+swift build && .build/debug/meowpass --test
+
 # Test production build
 ./build_production.sh && ./meowpass --test
 
@@ -105,12 +135,14 @@ Both build scripts work as documented:
 
 ### Build Targets (Makefile)
 ```bash
-make build      # Build executable
-make test       # Build and test
-make install    # Install system-wide (requires sudo)
-make clean      # Clean build artifacts
-make demo       # Run demonstration
-make help       # Show help
+make build        # Build executable
+make test         # Build and test
+make install      # Install system-wide (requires sudo)
+make spm-build    # Build using Swift Package Manager
+make spm-install  # Install using SPM build (requires sudo)
+make clean        # Clean build artifacts
+make demo         # Run demonstration
+make help         # Show help
 ```
 
 ## Architecture
@@ -163,7 +195,11 @@ The installer automatically chooses the best location:
 
 ## Files
 
-- `main.swift` - Core implementation with comprehensive documentation
+- `Package.swift` - Swift Package Manager manifest
+- `Sources/MeowPassword/main.swift` - Core implementation with comprehensive documentation
+- `Sources/MeowPassword/EmbeddedCatNames.swift` - Embedded cat names for SPM builds
+- `Formula/meowpass.rb` - Homebrew formula
+- `main.swift` - Core implementation (root copy for shell-based builds)
 - `build_production.sh` - Production build script (recommended)
 - `build.sh` - Alternative build script
 - `install.sh` - Installation script

@@ -1,7 +1,7 @@
 # MeowPassword Makefile
 # Builds and deploys the MeowPassword utility
 
-.PHONY: all build install clean test help
+.PHONY: all build install clean test help spm-build spm-install
 
 # Default target
 all: build
@@ -79,6 +79,27 @@ clean:
 	@echo "🧹 Cleaning build artifacts..."
 	@rm -f $(EXECUTABLE_NAME) $(EMBEDDED_NAMES) $(COMBINED_SOURCE) test_* *.swift~ embedded_*.swift meowpass_*
 
+# Build using Swift Package Manager
+spm-build:
+	@echo "🐾 Building MeowPassword with Swift Package Manager..."
+	swift build -c release
+	@echo "✅ SPM build complete!"
+	@echo "📊 Executable at .build/release/$(EXECUTABLE_NAME)"
+
+# Install using Swift Package Manager build
+spm-install: spm-build
+	@echo "📦 Installing MeowPassword to $(INSTALL_DIR)..."
+	@if [ -w $(INSTALL_DIR) ] || [ "$$(id -u)" -eq 0 ]; then \
+		cp .build/release/$(EXECUTABLE_NAME) $(INSTALL_DIR)/$(EXECUTABLE_NAME); \
+		chmod +x $(INSTALL_DIR)/$(EXECUTABLE_NAME); \
+		echo "✅ MeowPassword installed successfully!"; \
+		echo "🎉 You can now run 'meowpass' from anywhere!"; \
+	else \
+		echo "⚠️  Installation requires root MeowMeow privileges."; \
+		echo "💡 Run: sudo make spm-install"; \
+		exit 1; \
+	fi
+
 # Show help
 help:
 	@echo "🐾 MeowPassword Meow Build System"
@@ -89,9 +110,13 @@ help:
 	@echo "  install    - Install system-wide (requires sudo)"
 	@echo "  demo       - Build and run a demo"
 	@echo "  clean      - Remove build Meow artifacts"
+	@echo "  spm-build  - Build using Swift Package Manager"
+	@echo "  spm-install- Install using SPM build (requires sudo)"
 	@echo "  help       - Show this Meow help message"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make build"
 	@echo "  make test"
 	@echo "  sudo make install"
+	@echo "  make spm-build"
+	@echo "  sudo make spm-install"
