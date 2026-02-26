@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MeowStego
 
 // MARK: - ASCII Art and Lolcat Theme
 let lolcatArt = """
@@ -438,16 +439,195 @@ func runBasicTests() {
 
 // MARK: - Help Function
 
+// MARK: - MeowStego CLI helpers
+
+/// Read a PGM (P5 binary) file.  Returns (pixels, width, height) or nil on error.
+func readPGM(path: String) -> (pixels: [UInt8], width: Int, height: Int)? {
+    guard let data = FileManager.default.contents(atPath: path) else { return nil }
+    let bytes = [UInt8](data)
+
+    // Parse ASCII header tokens separated by whitespace/newlines, skipping # comments.
+    var idx = 0
+    var tokens: [String] = []
+    while tokens.count < 4 && idx < bytes.count {
+        // Skip whitespace and comments.
+        while idx < bytes.count && (bytes[idx] == 32 || bytes[idx] == 10 ||
+              bytes[idx] == 13 || bytes[idx] == 9) { idx += 1 }
+        if idx < bytes.count && bytes[idx] == UInt8(ascii: "#") {
+            while idx < bytes.count && bytes[idx] != 10 { idx += 1 }
+            continue
+        }
+        var tok = ""
+        while idx < bytes.count && bytes[idx] != 32 && bytes[idx] != 10 &&
+              bytes[idx] != 13 && bytes[idx] != 9 {
+            tok.append(Character(UnicodeScalar(bytes[idx])))
+            idx += 1
+        }
+        if !tok.isEmpty { tokens.append(tok) }
+    }
+
+    guard tokens.count == 4,
+          tokens[0] == "P5",
+          let w = Int(tokens[1]), let h = Int(tokens[2]),
+          let maxVal = Int(tokens[3]), maxVal == 255 else { return nil }
+
+    // Skip the single whitespace byte that separates header from pixel data.
+    if idx < bytes.count { idx += 1 }
+
+    guard idx + w * h <= bytes.count else { return nil }
+    return (Array(bytes[idx..<idx + w * h]), w, h)
+}
+
+/// Write a PGM (P5 binary) file.  Returns false on error.
+@discardableResult
+func writePGM(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool {
+    let header = "P5\n\(width) \(height)\n255\n"
+    var data = Data(header.utf8)
+    data.append(contentsOf: pixels)
+    return FileManager.default.createFile(atPath: path, contents: data)
+}
+
+/// Convert an RGB PPM buffer to an 8-bit luma (Y) channel using BT.601.
+func rgbToLuma(rgb: [UInt8], width: Int, height: Int) -> [UInt8] {
+    var luma = [UInt8](repeating: 0, count: width * height)
+    for i in 0..<width * height {
+        let r = Float(rgb[i * 3 + 0])
+        let g = Float(rgb[i * 3 + 1])
+        let b = Float(rgb[i * 3 + 2])
+        luma[i] = UInt8(min(255, max(0, Int(0.299 * r + 0.587 * g + 0.114 * b))))
+    }
+    return luma
+}
+
+/// Resolve a watermark-key argument: supports `hex:AABBCC...` or a raw ASCII passphrase.
+func resolveWmKey(_ arg: String) -> [UInt8]? {
+    if arg.lowercased().hasPrefix("hex:") {
+        let hex = String(arg.dropFirst(4))
+        return MeowPRNG(hexKey: hex).map { _ in
+            var idx = hex.startIndex
+            var bytes = [UInt8]()
+            while idx < hex.endIndex {
+                let next = hex.index(idx, offsetBy: 2)
+                if let b = UInt8(hex[idx..<next], radix: 16) { bytes.append(b) }
+                idx = next
+            }
+            return bytes
+        }
+    }
+    return Array(arg.utf8)
+}
+
+/// `meowpass steg-embed` subcommand handler.
+func runStegoEmbed(args: [String]) {
+    var inPath: String?
+    var outPath: String?
+    var payloadPath: String?
+    var wmKeyArg: String?
+    var qimStep: Float = 32.0
+
+    var i = 0
+    while i < args.count {
+        switch args[i] {
+        case "--in":        i += 1; if i < args.count { inPath = args[i] }
+        case "--out":       i += 1; if i < args.count { outPath = args[i] }
+        case "--payload-file": i += 1; if i < args.count { payloadPath = args[i] }
+        case "--wm-key":    i += 1; if i < args.count { wmKeyArg = args[i] }
+        case "--qim-step":  i += 1; if i < args.count, let f = Float(args[i]) { qimStep = f }
+        default: break
+        }
+        i += 1
+    }
+
+    guard let ip = inPath, let op = outPath, let pp = payloadPath, let wkArg = wmKeyArg else {
+        print("Usage: meowpass steg-embed --in <image.pgm> --out <stego.pgm>")
+        print("                           --payload-file <file> --wm-key hex:<hex>|<passphrase>")
+        return
+    }
+
+    guard let wmKey = resolveWmKey(wkArg) else {
+        print("ERROR: Invalid --wm-key format"); return
+    }
+    guard let pgmResult = readPGM(path: ip) else {
+        print("ERROR: Cannot read PGM file '\(ip)'"); return
+    }
+    var pixels = pgmResult.pixels
+    let width  = pgmResult.width
+    let height = pgmResult.height
+    guard let payloadData = FileManager.default.contents(atPath: pp) else {
+        print("ERROR: Cannot read payload file '\(pp)'"); return
+    }
+
+    let payload = [UInt8](payloadData)
+    let encoder = StegoEncoder(wmKey: wmKey, qimStep: qimStep)
+    do {
+        try encoder.encode(payload: payload, into: &pixels, width: width, height: height)
+        if writePGM(pixels: pixels, width: width, height: height, path: op) {
+            print("✅ Payload embedded → '\(op)'  (\(payload.count) bytes in \(width)×\(height) image)")
+        } else {
+            print("ERROR: Cannot write output file '\(op)'")
+        }
+    } catch {
+        print("ERROR: \(error)")
+    }
+}
+
+/// `meowpass steg-extract` subcommand handler.
+func runStegoExtract(args: [String]) {
+    var inPath: String?
+    var wmKeyArg: String?
+    var rawOutput = false
+    var qimStep: Float = 32.0
+
+    var i = 0
+    while i < args.count {
+        switch args[i] {
+        case "--in":       i += 1; if i < args.count { inPath = args[i] }
+        case "--wm-key":   i += 1; if i < args.count { wmKeyArg = args[i] }
+        case "--raw":      rawOutput = true
+        case "--qim-step": i += 1; if i < args.count, let f = Float(args[i]) { qimStep = f }
+        default: break
+        }
+        i += 1
+    }
+
+    guard let ip = inPath, let wkArg = wmKeyArg else {
+        print("Usage: meowpass steg-extract --in <image.pgm> --wm-key hex:<hex>|<passphrase>")
+        print("                             [--raw]")
+        return
+    }
+
+    guard let wmKey = resolveWmKey(wkArg) else {
+        print("ERROR: Invalid --wm-key format"); return
+    }
+    guard let (pixels, width, height) = readPGM(path: ip) else {
+        print("ERROR: Cannot read PGM file '\(ip)'"); return
+    }
+
+    let decoder = StegoDecoder(wmKey: wmKey, qimStep: qimStep)
+    do {
+        let payload = try decoder.decode(from: pixels, width: width, height: height)
+        if rawOutput {
+            FileHandle.standardOutput.write(Data(payload))
+        } else {
+            let text = String(bytes: payload, encoding: .utf8)
+                    ?? "<binary \(payload.count) bytes>"
+            print("✅ Extracted \(payload.count) bytes: \(text)")
+        }
+    } catch {
+        print("ERROR: \(error)")
+    }
+}
+
 /**
  * Display help information for command-line usage
  * Shows all available options and example usage
  */
 func showHelp() {
-    print("MeowPassword - Cat Dyanmic Secure Password Generator")
+    print("MeowPassword - Cat Dynamic Secure Password Generator")
     print("")
-    print("Usage: meowpass [options]")
+    print("Usage: meowpass [subcommand] [options]")
     print("")
-    print("Options:")
+    print("Password generation options:")
     print("  --numbers N      Number of random numbers to insert (1-10, default: 3-5)")
     print("  --symbols N      Number of symbols to insert (1-10, default: 2)")
     print("  --max-length N   Maximum password length (15-50, default: 25)")
@@ -455,18 +635,39 @@ func showHelp() {
     print("  --copy           Copy password to clipboard (macOS only)")
     print("  --help           Show this help message")
     print("")
+    print("StegoMeow subcommands (cat-image passkeys):")
+    print("  steg-embed  --in <image.pgm> --out <stego.pgm>")
+    print("              --payload-file <file> --wm-key hex:<hex>|<passphrase>")
+    print("              [--qim-step <N>]")
+    print("  steg-extract --in <image.pgm> --wm-key hex:<hex>|<passphrase>")
+    print("               [--raw] [--qim-step <N>]")
+    print("")
     print("Examples:")
     print("  meowpass")
     print("  meowpass --numbers 4 --symbols 3 --max-length 30")
     print("  meowpass --test")
+    print("  meowpass steg-embed --in cat.pgm --out auth.pgm --payload-file token.jwt --wm-key hex:001122aabb")
+    print("  meowpass steg-extract --in auth.pgm --wm-key hex:001122aabb")
 }
 
 // MARK: - Main Program
 func main() {
-    let config = PasswordConfig(arguments: CommandLine.arguments)
+    let args = CommandLine.arguments
+
+    // Route steg subcommands before other option parsing.
+    if args.count >= 2 && args[1] == "steg-embed" {
+        runStegoEmbed(args: Array(args.dropFirst(2)))
+        return
+    }
+    if args.count >= 2 && args[1] == "steg-extract" {
+        runStegoExtract(args: Array(args.dropFirst(2)))
+        return
+    }
+
+    let config = PasswordConfig(arguments: args)
     
     // Check for help
-    if CommandLine.arguments.contains("--help") {
+    if args.contains("--help") {
         showHelp()
         return
     }
