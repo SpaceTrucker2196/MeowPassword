@@ -14,7 +14,10 @@ let package = Package(
         .executableTarget(
             name: "meowpass",
             dependencies: ["MeowStego"],
-            path: "Sources/MeowPassword"
+            path: "Sources/MeowPassword",
+            linkerSettings: [
+                .linkedFramework("Security", .when(platforms: [.macOS]))
+            ]
         ),
         .testTarget(
             name: "MeowStegoTests",
