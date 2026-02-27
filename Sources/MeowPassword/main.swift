@@ -7,6 +7,9 @@
 
 import Foundation
 import MeowStego
+#if os(macOS)
+import Security
+#endif
 
 // MARK: - ASCII Art and Lolcat Theme
 let lolcatArt = """
@@ -38,6 +41,9 @@ struct PasswordConfig {
     let maxLength: Int      // Maximum password length (15-50)
     let showTests: Bool     // Whether to run test mode
     let copyToClipboard: Bool // Whether to copy result to clipboard
+    let saveToKeychain: Bool  // Whether to save to Apple Keychain
+    let keychainService: String // Keychain service name
+    let keychainAccount: String // Keychain account name
     
     /**
      * Initialize configuration from command line arguments
@@ -49,6 +55,9 @@ struct PasswordConfig {
         var maxLength = 25  // Default max length as specified in requirements
         var showTests = false
         var copyToClipboard = false
+        var saveToKeychain = false
+        var keychainService = "MeowPassword"
+        var keychainAccount = "generated"
         
         // Parse command line arguments with validation
         for i in 0..<arguments.count {
@@ -69,6 +78,12 @@ struct PasswordConfig {
                 showTests = true
             case "--copy":
                 copyToClipboard = true
+            case "--save-to-keychain":
+                saveToKeychain = true
+            case "--service":
+                if i + 1 < arguments.count { keychainService = arguments[i + 1] }
+            case "--account":
+                if i + 1 < arguments.count { keychainAccount = arguments[i + 1] }
             default:
                 break
             }
@@ -79,6 +94,9 @@ struct PasswordConfig {
         self.maxLength = maxLength
         self.showTests = showTests
         self.copyToClipboard = copyToClipboard
+        self.saveToKeychain = saveToKeychain
+        self.keychainService = keychainService
+        self.keychainAccount = keychainAccount
     }
 }
 
@@ -439,7 +457,42 @@ func runBasicTests() {
 
 // MARK: - Help Function
 
-// MARK: - MeowStego CLI helpers
+// MARK: - Apple Keychain Integration
+
+#if os(macOS)
+/**
+ * Save a password to the macOS Keychain (iCloud Keychain if configured).
+ * Uses Apple's Security framework to store passwords securely via the
+ * kSecClassGenericPassword item class.
+ * @param password: The password string to save
+ * @param service: The service name for the keychain entry (e.g., "com.example.myapp")
+ * @param account: The account name associated with the password (e.g., username or email)
+ * @return True if the password was saved or updated successfully, false otherwise
+ */
+func savePasswordToKeychain(password: String, service: String, account: String) -> Bool {
+    guard let passwordData = password.data(using: .utf8) else { return false }
+
+    // Build the keychain query dictionary for a generic password item
+    let query: [String: Any] = [
+        kSecClass as String:       kSecClassGenericPassword,
+        kSecAttrService as String: service,
+        kSecAttrAccount as String: account
+    ]
+
+    // If an entry already exists for this service/account, update its value
+    if SecItemCopyMatching(query as CFDictionary, nil) == errSecSuccess {
+        let updateAttrs: [String: Any] = [kSecValueData as String: passwordData]
+        return SecItemUpdate(query as CFDictionary, updateAttrs as CFDictionary) == errSecSuccess
+    }
+
+    // Otherwise add a new item
+    var addQuery = query
+    addQuery[kSecValueData as String] = passwordData
+    return SecItemAdd(addQuery as CFDictionary, nil) == errSecSuccess
+}
+#endif
+
+
 
 /// Read a PGM (P5 binary) file.  Returns (pixels, width, height) or nil on error.
 func readPGM(path: String) -> (pixels: [UInt8], width: Int, height: Int)? {
@@ -628,12 +681,15 @@ func showHelp() {
     print("Usage: meowpass [subcommand] [options]")
     print("")
     print("Password generation options:")
-    print("  --numbers N      Number of random numbers to insert (1-10, default: 3-5)")
-    print("  --symbols N      Number of symbols to insert (1-10, default: 2)")
-    print("  --max-length N   Maximum password length (15-50, default: 25)")
-    print("  --test           Run tests")
-    print("  --copy           Copy password to clipboard (macOS only)")
-    print("  --help           Show this help message")
+    print("  --numbers N          Number of random numbers to insert (1-10, default: 3-5)")
+    print("  --symbols N          Number of symbols to insert (1-10, default: 2)")
+    print("  --max-length N       Maximum password length (15-50, default: 25)")
+    print("  --test               Run tests")
+    print("  --copy               Copy password to clipboard (macOS only)")
+    print("  --save-to-keychain   Save password to Apple Keychain (macOS only)")
+    print("  --service <name>     Keychain service name (default: MeowPassword)")
+    print("  --account <name>     Keychain account name (default: generated)")
+    print("  --help               Show this help message")
     print("")
     print("StegoMeow subcommands (cat-image passkeys):")
     print("  steg-embed  --in <image.pgm> --out <stego.pgm>")
@@ -646,6 +702,7 @@ func showHelp() {
     print("  meowpass")
     print("  meowpass --numbers 4 --symbols 3 --max-length 30")
     print("  meowpass --test")
+    print("  meowpass --save-to-keychain --service com.example.myapp --account alice")
     print("  meowpass steg-embed --in cat.pgm --out auth.pgm --payload-file token.jwt --wm-key hex:001122aabb")
     print("  meowpass steg-extract --in auth.pgm --wm-key hex:001122aabb")
 }
@@ -742,6 +799,24 @@ func main() {
     } else {
         print("")
         print("Use 'meowpass --copy' to copy password to clipboard")
+    }
+
+    // Option to save to Apple Keychain
+    if config.saveToKeychain {
+        #if os(macOS)
+        if savePasswordToKeychain(password: bestCandidate.password,
+                                  service: config.keychainService,
+                                  account: config.keychainAccount) {
+            print("")
+            print("Password saved to Apple Keychain (service: \(config.keychainService), account: \(config.keychainAccount))")
+        } else {
+            print("")
+            print("WARNING: Failed to save password to Apple Keychain")
+        }
+        #else
+        print("")
+        print("Apple Keychain integration is only available on macOS")
+        #endif
     }
 }
 

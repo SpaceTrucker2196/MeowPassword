@@ -15,6 +15,7 @@ A command-line utility that generates secure, phrase-based passwords using cat n
 - **Lolcat Theme** - ASCII art and professional interface without emojis
 - **Configurable Parameters** - Control numbers, symbols, and maximum length
 - **Clipboard Support** - Copy to clipboard (macOS only)
+- **Apple Keychain Integration** - Save passwords directly to macOS Keychain / iCloud Keychain (macOS only)
 - **Self-Contained Executable** - Single binary with embedded data
 - **MeowStego – Cat-Image Passkeys** - Embed authentication payloads invisibly in cat images using DCT steganography (a fun, branded alternative to QR codes)
 
@@ -90,6 +91,12 @@ meowpass --test
 meowpass --copy
 ```
 
+### Save to Apple Keychain (macOS)
+```bash
+meowpass --save-to-keychain
+meowpass --save-to-keychain --service com.example.myapp --account alice
+```
+
 ### Embed a Payload into a Cat Image (MeowStego)
 ```bash
 meowpass steg-embed --in cat.pgm --out auth.pgm \
@@ -118,9 +125,43 @@ meowpass --help
 | `--max-length N` | Maximum password length (15-50) | 25 |
 | `--test` | Run comprehensive tests | - |
 | `--copy` | Copy password to clipboard (macOS only) | - |
+| `--save-to-keychain` | Save password to Apple Keychain (macOS only) | - |
+| `--service <name>` | Keychain service name (used with `--save-to-keychain`) | MeowPassword |
+| `--account <name>` | Keychain account name (used with `--save-to-keychain`) | generated |
 | `--help` | Show help message | - |
 
-## MeowStego – Cat-Image Passkeys
+## Apple Keychain Integration
+
+MeowPassword can save generated passwords directly into the **macOS Keychain** (including iCloud Keychain when enabled) using Apple's Security framework.
+
+### How It Works
+1. The best-scoring password candidate is generated as usual.
+2. When `--save-to-keychain` is passed, `SecItemAdd` (or `SecItemUpdate` for existing entries) stores the password under the specified service and account labels.
+3. The entry is immediately accessible to any app that queries the Keychain for the same service/account pair, including **Safari** and **iCloud Keychain** sync.
+
+### Keychain CLI Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--save-to-keychain` | Save the best password to macOS Keychain | off |
+| `--service <name>` | Keychain service name (e.g., `com.example.myapp`) | `MeowPassword` |
+| `--account <name>` | Keychain account name (e.g., username or email) | `generated` |
+
+### Examples
+```bash
+# Save to Keychain with default service/account
+meowpass --save-to-keychain
+
+# Save to a named service and account
+meowpass --save-to-keychain --service com.example.myapp --account alice
+
+# Generate, save to Keychain, and copy to clipboard in one step
+meowpass --save-to-keychain --service com.example.myapp --account alice --copy
+```
+
+> **Note:** Keychain integration requires macOS. On Linux the flag is accepted, an informational message is printed, and no keychain operation occurs.
+
+
 
 MeowStego embeds short authentication payloads (e.g. JWT tokens) invisibly into grayscale cat images using DCT-domain steganography — a fun, branded replacement for QR codes in cross-device login flows.
 
