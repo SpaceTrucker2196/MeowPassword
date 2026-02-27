@@ -16,6 +16,7 @@ A command-line utility that generates secure, phrase-based passwords using cat n
 - **Configurable Parameters** - Control numbers, symbols, and maximum length
 - **Clipboard Support** - Copy to clipboard (macOS only)
 - **Self-Contained Executable** - Single binary with embedded data
+- **MeowStego – Cat-Image Passkeys** - Embed authentication payloads invisibly in cat images using DCT steganography (a fun, branded alternative to QR codes)
 
 ## Quick Start
 
@@ -89,6 +90,18 @@ meowpass --test
 meowpass --copy
 ```
 
+### Embed a Payload into a Cat Image (MeowStego)
+```bash
+meowpass steg-embed --in cat.pgm --out auth.pgm \
+                    --payload-file token.jwt \
+                    --wm-key hex:001122aabb
+```
+
+### Extract a Payload from a Cat Image (MeowStego)
+```bash
+meowpass steg-extract --in auth.pgm --wm-key hex:001122aabb
+```
+
 ### Show Help
 ```bash
 meowpass --help
@@ -106,6 +119,45 @@ meowpass --help
 | `--test` | Run comprehensive tests | - |
 | `--copy` | Copy password to clipboard (macOS only) | - |
 | `--help` | Show help message | - |
+
+## MeowStego – Cat-Image Passkeys
+
+MeowStego embeds short authentication payloads (e.g. JWT tokens) invisibly into grayscale cat images using DCT-domain steganography — a fun, branded replacement for QR codes in cross-device login flows.
+
+### How It Works
+1. The luma channel of a PGM image is tiled into 8×8 blocks and transformed via 2-D DCT.
+2. Mid-band coefficients are selected and permuted using a PRNG seeded with your watermark key.
+3. Bits are encoded using **dithered QIM** (Quantization Index Modulation), which is robust to mild image distortion.
+4. The payload is protected with **Reed-Solomon ECC** (RS(255, k)) and prefixed with a `0xCAFEBABE` sync preamble for reliable alignment on extraction.
+
+### MeowStego CLI Subcommands
+
+| Subcommand | Option | Description |
+|------------|--------|-------------|
+| `steg-embed` | `--in <image.pgm>` | Input PGM grayscale image |
+| | `--out <stego.pgm>` | Output PGM image with embedded payload |
+| | `--payload-file <file>` | File containing the payload to embed |
+| | `--wm-key hex:<hex> or <passphrase>` | Watermark key (hex bytes or ASCII passphrase) |
+| | `--qim-step <N>` | QIM quantization step (default: 32) |
+| `steg-extract` | `--in <image.pgm>` | Stego PGM image to extract from |
+| | `--wm-key hex:<hex> or <passphrase>` | Watermark key (must match embed key) |
+| | `--raw` | Stream raw binary payload to stdout |
+| | `--qim-step <N>` | QIM quantization step (default: 32) |
+
+### MeowStego Examples
+```bash
+# Embed a JWT into a cat image
+meowpass steg-embed --in cats/tabby.pgm --out cats/auth.pgm \
+                    --payload-file payload.jwt --wm-key hex:001122aabb
+
+# Extract and verify the payload
+meowpass steg-extract --in cats/auth.pgm --wm-key hex:001122aabb
+
+# Stream raw binary payload
+meowpass steg-extract --in cats/auth.pgm --wm-key hex:001122aabb --raw
+```
+
+> **Note:** Images must be in PGM (P5 binary) format. Payload confidentiality requires encrypting the payload before embedding — the watermark key provides steganographic hiding only, not encryption.
 
 ## Build System
 
@@ -160,6 +212,14 @@ make help         # Show help
 6. **Analyze Complexity** - Use Kolmogorov complexity metrics
 7. **Select Best** - Choose password with highest complexity score
 
+### MeowStego Architecture (`Sources/MeowStego/`)
+
+- **`PRNG.swift`** — xorshift64 PRNG seeded via FNV-1a hash; supports `hex:AABB…` strings or ASCII passphrases; Fisher-Yates permutation for deterministic coefficient scatter
+- **`ECC.swift`** — GF(2^8) field arithmetic with O(1) log/antilog table multiply; systematic RS(255, 255-nsym) codec with Berlekamp-Massey error locator and Forney error-magnitude correction
+- **`DCT8x8Provider.swift`** — forward/inverse 2-D DCT for 8×8 blocks (precomputed cosine table), JPEG zig-zag order, mid-band coefficient positions (indices 10–19)
+- **`StegoEncoder.swift`** — dithered QIM embed, RS-chunked payload (≤ 223 B/chunk), `0xCAFEBABE` sync preamble
+- **`StegoDecoder.swift`** — reverses the encoder pipeline: sync detection → QIM extract → RS decode → payload recovery
+
 ### Kolmogorov Complexity Analysis
 Evaluates passwords using multiple metrics:
 - **Shannon Entropy** - Character distribution randomness
@@ -198,6 +258,12 @@ The installer automatically chooses the best location:
 - `Package.swift` - Swift Package Manager manifest
 - `Sources/MeowPassword/main.swift` - Core implementation with comprehensive documentation
 - `Sources/MeowPassword/EmbeddedCatNames.swift` - Embedded cat names for SPM builds
+- `Sources/MeowStego/PRNG.swift` - xorshift64 PRNG with FNV-1a key seeding
+- `Sources/MeowStego/ECC.swift` - Reed-Solomon GF(2^8) codec
+- `Sources/MeowStego/DCT8x8Provider.swift` - 8×8 DCT block transform
+- `Sources/MeowStego/StegoEncoder.swift` - QIM steganographic payload encoder
+- `Sources/MeowStego/StegoDecoder.swift` - QIM steganographic payload decoder
+- `Tests/MeowStegoTests/` - 26 XCTest cases for MeowStego (PRNG, ECC, DCT, end-to-end)
 - `Formula/meowpass.rb` - Homebrew formula
 - `main.swift` - Core implementation (root copy for shell-based builds)
 - `build_production.sh` - Production build script (recommended)
@@ -217,6 +283,9 @@ Run comprehensive tests to verify all functionality:
 # Test Kolmogorov complexity analysis
 # Test configuration parameter handling
 ./meowpass --test
+
+# Run MeowStego unit tests (26 XCTest cases via Swift Package Manager)
+swift test --filter MeowStegoTests
 ```
 
 ## Contributing
