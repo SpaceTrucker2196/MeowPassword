@@ -9,6 +9,8 @@ import Foundation
 import MeowStego
 #if os(macOS)
 import Security
+import CoreGraphics
+import ImageIO
 #endif
 
 // MARK: - ASCII Art and Lolcat Theme
@@ -540,6 +542,119 @@ func writePGM(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool {
     return FileManager.default.createFile(atPath: path, contents: data)
 }
 
+#if os(macOS)
+/// Read a PNG or GIF file and return its first frame as an 8-bit grayscale luma buffer.
+/// Returns (pixels, width, height) or nil on error.
+func readGrayImage(path: String) -> (pixels: [UInt8], width: Int, height: Int)? {
+    let url = URL(fileURLWithPath: path) as CFURL
+    guard let source = CGImageSourceCreateWithURL(url, nil),
+          let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else { return nil }
+    let width  = cgImage.width
+    let height = cgImage.height
+    let colorSpace = CGColorSpaceCreateDeviceGray()
+    var pixels = [UInt8](repeating: 0, count: width * height)
+    guard let ctx = CGContext(
+        data: &pixels,
+        width: width, height: height,
+        bitsPerComponent: 8, bytesPerRow: width,
+        space: colorSpace,
+        bitmapInfo: CGImageAlphaInfo.none.rawValue
+    ) else { return nil }
+    // CoreGraphics uses bottom-left origin; flip so row 0 is the top of the image.
+    ctx.translateBy(x: 0, y: CGFloat(height))
+    ctx.scaleBy(x: 1.0, y: -1.0)
+    ctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height)))
+    return (pixels, width, height)
+}
+
+/// Write an 8-bit grayscale luma buffer to a PNG file.
+@discardableResult
+func writePNG(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool {
+    let colorSpace = CGColorSpaceCreateDeviceGray()
+    guard let provider = CGDataProvider(data: Data(pixels) as CFData),
+          let cgImage = CGImage(
+              width: width, height: height,
+              bitsPerComponent: 8, bitsPerPixel: 8,
+              bytesPerRow: width, space: colorSpace,
+              bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
+              provider: provider, decode: nil, shouldInterpolate: false,
+              intent: .defaultIntent
+          ) else { return false }
+    let url = URL(fileURLWithPath: path) as CFURL
+    guard let dest = CGImageDestinationCreateWithURL(url, "public.png" as CFString, 1, nil)
+    else { return false }
+    CGImageDestinationAddImage(dest, cgImage, nil)
+    return CGImageDestinationFinalize(dest)
+}
+
+/// Write an 8-bit grayscale luma buffer to a GIF file.
+/// Note: GIF is limited to a 256-color palette; a full grayscale palette is used.
+@discardableResult
+func writeGIF(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool {
+    let colorSpace = CGColorSpaceCreateDeviceGray()
+    guard let provider = CGDataProvider(data: Data(pixels) as CFData),
+          let cgImage = CGImage(
+              width: width, height: height,
+              bitsPerComponent: 8, bitsPerPixel: 8,
+              bytesPerRow: width, space: colorSpace,
+              bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
+              provider: provider, decode: nil, shouldInterpolate: false,
+              intent: .defaultIntent
+          ) else { return false }
+    let url = URL(fileURLWithPath: path) as CFURL
+    guard let dest = CGImageDestinationCreateWithURL(url, "com.compuserve.gif" as CFString, 1, nil)
+    else { return false }
+    CGImageDestinationAddImage(dest, cgImage, nil)
+    return CGImageDestinationFinalize(dest)
+}
+#endif
+
+/// Read any supported image (PGM, PNG, GIF) as an 8-bit grayscale luma buffer.
+/// The format is detected from the file-path extension.
+func readImage(path: String) -> (pixels: [UInt8], width: Int, height: Int)? {
+    switch URL(fileURLWithPath: path).pathExtension.lowercased() {
+    case "png", "gif":
+        #if os(macOS)
+        return readGrayImage(path: path)
+        #else
+        print("ERROR: PNG/GIF support is only available on macOS")
+        return nil
+        #endif
+    default:          // "pgm" and unknown extensions fall through to PGM parser
+        if URL(fileURLWithPath: path).pathExtension.lowercased() != "pgm" {
+            print("WARNING: Unknown extension '\(URL(fileURLWithPath: path).pathExtension)', attempting PGM format")
+        }
+        return readPGM(path: path)
+    }
+}
+
+/// Write an 8-bit grayscale luma buffer to a file.
+/// The output format is determined by the file-path extension (.pgm / .png / .gif).
+@discardableResult
+func writeImage(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool {
+    switch URL(fileURLWithPath: path).pathExtension.lowercased() {
+    case "png":
+        #if os(macOS)
+        return writePNG(pixels: pixels, width: width, height: height, path: path)
+        #else
+        print("ERROR: PNG support is only available on macOS")
+        return false
+        #endif
+    case "gif":
+        #if os(macOS)
+        return writeGIF(pixels: pixels, width: width, height: height, path: path)
+        #else
+        print("ERROR: GIF support is only available on macOS")
+        return false
+        #endif
+    default:          // "pgm" and unknown extensions fall through to PGM writer
+        if URL(fileURLWithPath: path).pathExtension.lowercased() != "pgm" {
+            print("WARNING: Unknown extension '\(URL(fileURLWithPath: path).pathExtension)', writing as PGM format")
+        }
+        return writePGM(pixels: pixels, width: width, height: height, path: path)
+    }
+}
+
 /// Convert an RGB PPM buffer to an 8-bit luma (Y) channel using BT.601.
 func rgbToLuma(rgb: [UInt8], width: Int, height: Int) -> [UInt8] {
     var luma = [UInt8](repeating: 0, count: width * height)
@@ -592,7 +707,7 @@ func runStegoEmbed(args: [String]) {
     }
 
     guard let ip = inPath, let op = outPath, let pp = payloadPath, let wkArg = wmKeyArg else {
-        print("Usage: meowpass steg-embed --in <image.pgm> --out <stego.pgm>")
+        print("Usage: meowpass steg-embed --in <image.pgm|png|gif> --out <stego.pgm|png|gif>")
         print("                           --payload-file <file> --wm-key hex:<hex>|<passphrase>")
         return
     }
@@ -600,8 +715,8 @@ func runStegoEmbed(args: [String]) {
     guard let wmKey = resolveWmKey(wkArg) else {
         print("ERROR: Invalid --wm-key format"); return
     }
-    guard let pgmResult = readPGM(path: ip) else {
-        print("ERROR: Cannot read PGM file '\(ip)'"); return
+    guard let pgmResult = readImage(path: ip) else {
+        print("ERROR: Cannot read image file '\(ip)'"); return
     }
     var pixels = pgmResult.pixels
     let width  = pgmResult.width
@@ -614,7 +729,7 @@ func runStegoEmbed(args: [String]) {
     let encoder = StegoEncoder(wmKey: wmKey, qimStep: qimStep)
     do {
         try encoder.encode(payload: payload, into: &pixels, width: width, height: height)
-        if writePGM(pixels: pixels, width: width, height: height, path: op) {
+        if writeImage(pixels: pixels, width: width, height: height, path: op) {
             print("✅ Payload embedded → '\(op)'  (\(payload.count) bytes in \(width)×\(height) image)")
         } else {
             print("ERROR: Cannot write output file '\(op)'")
@@ -644,7 +759,7 @@ func runStegoExtract(args: [String]) {
     }
 
     guard let ip = inPath, let wkArg = wmKeyArg else {
-        print("Usage: meowpass steg-extract --in <image.pgm> --wm-key hex:<hex>|<passphrase>")
+        print("Usage: meowpass steg-extract --in <image.pgm|png|gif> --wm-key hex:<hex>|<passphrase>")
         print("                             [--raw]")
         return
     }
@@ -652,8 +767,8 @@ func runStegoExtract(args: [String]) {
     guard let wmKey = resolveWmKey(wkArg) else {
         print("ERROR: Invalid --wm-key format"); return
     }
-    guard let (pixels, width, height) = readPGM(path: ip) else {
-        print("ERROR: Cannot read PGM file '\(ip)'"); return
+    guard let (pixels, width, height) = readImage(path: ip) else {
+        print("ERROR: Cannot read image file '\(ip)'"); return
     }
 
     let decoder = StegoDecoder(wmKey: wmKey, qimStep: qimStep)
@@ -692,10 +807,10 @@ func showHelp() {
     print("  --help               Show this help message")
     print("")
     print("StegoMeow subcommands (cat-image passkeys):")
-    print("  steg-embed  --in <image.pgm> --out <stego.pgm>")
+    print("  steg-embed  --in <image.pgm|png|gif> --out <stego.pgm|png|gif>")
     print("              --payload-file <file> --wm-key hex:<hex>|<passphrase>")
     print("              [--qim-step <N>]")
-    print("  steg-extract --in <image.pgm> --wm-key hex:<hex>|<passphrase>")
+    print("  steg-extract --in <image.pgm|png|gif> --wm-key hex:<hex>|<passphrase>")
     print("               [--raw] [--qim-step <N>]")
     print("")
     print("Examples:")
@@ -704,7 +819,10 @@ func showHelp() {
     print("  meowpass --test")
     print("  meowpass --save-to-keychain --service com.example.myapp --account alice")
     print("  meowpass steg-embed --in cat.pgm --out auth.pgm --payload-file token.jwt --wm-key hex:001122aabb")
+    print("  meowpass steg-embed --in cat.png --out auth.png --payload-file token.jwt --wm-key hex:001122aabb")
+    print("  meowpass steg-embed --in cat.gif --out auth.gif --payload-file token.jwt --wm-key hex:001122aabb")
     print("  meowpass steg-extract --in auth.pgm --wm-key hex:001122aabb")
+    print("  meowpass steg-extract --in auth.png --wm-key hex:001122aabb")
 }
 
 // MARK: - Main Program
