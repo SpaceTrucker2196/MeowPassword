@@ -15,3 +15,9 @@ embedded_names_optimized.swift
 embedded_simple.swift
 test_embedded.swift
 test_meowpass_combined.swift
+
+# Built artifacts — CI produces these, don't commit local copies.
+/MeowPassword.app
+/*.dmg
+/*.pkg
+/AppIcon.icns

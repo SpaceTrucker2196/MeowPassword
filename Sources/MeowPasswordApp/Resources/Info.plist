@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>MeowPassword</string>
+    <key>CFBundleDisplayName</key>
+    <string>MeowPassword</string>
+    <key>CFBundleIdentifier</key>
+    <string>io.river.MeowPassword</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>© 2026 Jeffrey Kunzelman. MIT License.</string>
+    <key>NSSupportsAutomaticTermination</key>
+    <true/>
+    <key>NSSupportsSuddenTermination</key>
+    <true/>
+
+    <!-- URL scheme: meowpass://generate | meowpass://copy -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>io.river.MeowPassword</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>meowpass</string>
+            </array>
+        </dict>
+    </array>
+
+    <!-- Services menu: right-click any text → Services → MeowPassword -->
+    <key>NSServices</key>
+    <array>
+        <dict>
+            <key>NSMenuItem</key>
+            <dict>
+                <key>default</key>
+                <string>Insert MeowPassword</string>
+            </dict>
+            <key>NSMessage</key>
+            <string>insertMeowPassword</string>
+            <key>NSPortName</key>
+            <string>MeowPassword</string>
+            <key>NSReturnTypes</key>
+            <array>
+                <string>public.utf8-plain-text</string>
+            </array>
+            <key>NSSendTypes</key>
+            <array>
+                <string>public.utf8-plain-text</string>
+            </array>
+        </dict>
+        <dict>
+            <key>NSMenuItem</key>
+            <dict>
+                <key>default</key>
+                <string>Analyze with MeowPassword</string>
+            </dict>
+            <key>NSMessage</key>
+            <string>analyzeWithMeowPassword</string>
+            <key>NSPortName</key>
+            <string>MeowPassword</string>
+            <key>NSReturnTypes</key>
+            <array>
+                <string>public.utf8-plain-text</string>
+            </array>
+            <key>NSSendTypes</key>
+            <array>
+                <string>public.utf8-plain-text</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>
