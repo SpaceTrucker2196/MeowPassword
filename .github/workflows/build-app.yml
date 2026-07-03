@@ -41,6 +41,9 @@ jobs:
       - name: Run CLI tests
         run: .build/release/meowpass --test
 
+      - name: Run Swift package tests (UI + parser + model)
+        run: swift test
+
       - name: Package .app bundle (ad-hoc)
         env:
           CONFIG: release

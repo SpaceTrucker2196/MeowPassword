@@ -36,6 +36,11 @@ let package = Package(
             name: "MeowStegoTests",
             dependencies: ["MeowStego"],
             path: "Tests/MeowStegoTests"
+        ),
+        .testTarget(
+            name: "MeowPasswordAppTests",
+            dependencies: ["MeowPasswordApp"],
+            path: "Tests/MeowPasswordAppTests"
         )
     ]
 )
