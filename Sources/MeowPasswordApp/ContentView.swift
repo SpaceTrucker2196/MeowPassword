@@ -217,9 +217,9 @@ struct ContentView: View {
                             .transition(.opacity)
                     }
 
-                    controlsPanel
-
                     analyzePanel
+
+                    controlsPanel
 
                     if let err = model.lastError {
                         errorBanner(err)
