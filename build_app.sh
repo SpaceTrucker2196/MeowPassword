@@ -11,6 +11,10 @@
 #   ./build_app.sh
 #   open MeowPassword.app
 #
+# Also wraps the app in a drag-to-Applications installer DMG via
+# ./make_dmg.sh. Set SKIP_DMG=1 to skip that step (CI does — it builds
+# its DMG separately, after Developer ID signing and notarization).
+#
 # The Services menu registers the first time the app runs.
 # Grant it clipboard/automation access via System Settings → Privacy on first run.
 
@@ -82,3 +86,8 @@ echo
 echo "Built $APP_DIR"
 echo "Open with: open $APP_DIR"
 echo "Register Services immediately: /System/Library/CoreServices/pbs -update"
+
+if [[ "${SKIP_DMG:-0}" != "1" ]]; then
+    echo
+    ./make_dmg.sh
+fi

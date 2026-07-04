@@ -47,6 +47,10 @@ jobs:
       - name: Package .app bundle (ad-hoc)
         env:
           CONFIG: release
+          # CI builds its DMG later, after Developer ID signing/notarization;
+          # an ad-hoc DMG here would also match the MeowPassword-*.dmg
+          # release wildcard.
+          SKIP_DMG: "1"
         run: ./build_app.sh
 
       # -------- Developer ID signing (only on push / manual, when secrets set) --------
