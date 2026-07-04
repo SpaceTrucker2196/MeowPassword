@@ -32,33 +32,14 @@ enum GameShow {
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+
+    static let meter = LinearGradient(
+        colors: [neonCyan, neonLime, neonYellow, hotPink],
+        startPoint: .leading, endPoint: .trailing
+    )
 }
 
 // MARK: - Reusable decorations
-
-private struct StarBurst: View {
-    var color: Color = GameShow.neonYellow
-    var points: Int = 16
-    var body: some View {
-        Canvas { ctx, size in
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            let outer = min(size.width, size.height) / 2
-            let inner = outer * 0.55
-            var path = Path()
-            for i in 0..<(points * 2) {
-                let angle = (Double(i) / Double(points * 2)) * .pi * 2 - .pi / 2
-                let radius = i.isMultiple(of: 2) ? outer : inner
-                let pt = CGPoint(
-                    x: center.x + CGFloat(cos(angle)) * radius,
-                    y: center.y + CGFloat(sin(angle)) * radius
-                )
-                if i == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
-            }
-            path.closeSubpath()
-            ctx.fill(path, with: .color(color))
-        }
-    }
-}
 
 private struct SparkleField: View {
     let count: Int
@@ -79,29 +60,15 @@ private struct SparkleField: View {
     }
 }
 
-/// Bold "game show" text — flat, no shadow.
-private struct GameShowText: View {
-    let text: String
-    var size: CGFloat = 44
-    var fill: Color = .white
-    var stroke: Color = GameShow.inkBlack
-    var strokeWidth: CGFloat = 3
-
-    var body: some View {
-        Text(text)
-            .font(.system(size: size, weight: .black, design: .rounded))
-            .foregroundStyle(fill)
-    }
-}
-
-/// Chunky rounded panel with thick colored border and drop shadow.
+/// Chunky rounded panel with thick colored border and a hard offset
+/// "sticker" shadow, matching the flat black-outline banner art.
 private struct GamePanel<Content: View>: View {
     var tint: Color = GameShow.neonCyan
     let content: () -> Content
 
     var body: some View {
         content()
-            .padding(10)
+            .padding(12)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(GameShow.paperWhite)
@@ -116,31 +83,93 @@ private struct GamePanel<Content: View>: View {
                     .padding(2)
                     .opacity(0.15)
             )
+            .compositingGroup()
+            .shadow(color: GameShow.inkBlack.opacity(0.45), radius: 0, x: 4, y: 5)
     }
 }
 
-/// Big glowing action button.
+/// Big arcade action button: hard sticker shadow that the button
+/// physically presses down into.
 private struct NeonButton: ButtonStyle {
     var fill: Color
     var text: Color = GameShow.inkBlack
 
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
+        let pressed = configuration.isPressed
+        return configuration.label
             .font(.system(size: 14, weight: .black, design: .rounded))
             .foregroundStyle(text)
-            .padding(.vertical, 9)
+            .padding(.vertical, 10)
             .padding(.horizontal, 14)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(fill)
+                    .overlay(
+                        // Top sheen for a little arcade-plastic depth.
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [.white.opacity(0.35), .clear],
+                                    startPoint: .top, endPoint: .center
+                                )
+                            )
+                    )
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .stroke(GameShow.inkBlack, lineWidth: 2.5)
             )
-            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
+            .compositingGroup()
+            .shadow(color: GameShow.inkBlack.opacity(0.55), radius: 0, x: 0, y: pressed ? 1 : 4)
+            .offset(y: pressed ? 3 : 0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: pressed)
+    }
+}
+
+/// Theme-styled slider: capsule track, tinted fill, black-outlined thumb.
+/// Replaces the stock macOS slider, which fought the flat art style.
+private struct ChunkySlider: View {
+    @Binding var value: Int
+    let range: ClosedRange<Int>
+    var tint: Color
+
+    private let thumbSize: CGFloat = 20
+
+    var body: some View {
+        GeometryReader { geo in
+            let travel = max(geo.size.width - thumbSize, 1)
+            let span = CGFloat(range.upperBound - range.lowerBound)
+            let pct = CGFloat(value - range.lowerBound) / span
+
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(GameShow.inkBlack.opacity(0.10))
+                    .overlay(Capsule().stroke(GameShow.inkBlack.opacity(0.30), lineWidth: 1.5))
+                    .frame(height: 8)
+                Capsule()
+                    .fill(tint)
+                    .overlay(Capsule().stroke(GameShow.inkBlack.opacity(0.30), lineWidth: 1.5))
+                    .frame(width: thumbSize / 2 + travel * pct, height: 8)
+                Circle()
+                    .fill(.white)
+                    .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                    .frame(width: thumbSize, height: thumbSize)
+                    .shadow(color: GameShow.inkBlack.opacity(0.3), radius: 0, x: 0, y: 2)
+                    .offset(x: travel * pct)
+            }
+            .frame(maxHeight: .infinity, alignment: .center)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { g in
+                        let p = min(max((g.location.x - thumbSize / 2) / travel, 0), 1)
+                        value = range.lowerBound + Int((p * span).rounded())
+                    }
+            )
+            .animation(.spring(response: 0.2, dampingFraction: 0.8), value: value)
+        }
+        .frame(height: 22)
     }
 }
 
@@ -148,6 +177,7 @@ private struct NeonButton: ButtonStyle {
 
 struct ContentView: View {
     @EnvironmentObject var model: GenerationModel
+    @Namespace private var reveal
 
     var body: some View {
         ZStack {
@@ -155,10 +185,10 @@ struct ContentView: View {
             SparkleField(count: 60).ignoresSafeArea()
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 12) {
                     header
 
-                    HStack(spacing: 10) {
+                    HStack(spacing: 12) {
                         Button {
                             model.generate()
                         } label: {
@@ -176,29 +206,31 @@ struct ContentView: View {
                         .buttonStyle(NeonButton(fill: GameShow.neonLime))
                     }
                     .disabled(model.isBusy)
+                    .opacity(model.isBusy ? 0.6 : 1)
 
-                    if !model.bestPassword.isEmpty { bestSection }
-                    if !model.candidates.isEmpty  { candidatesSection }
-
-                    analyzePanel
+                    if !model.bestPassword.isEmpty {
+                        bestSection
+                            .transition(.scale(scale: 0.92).combined(with: .opacity))
+                    }
+                    if !model.candidates.isEmpty {
+                        candidatesSection
+                            .transition(.opacity)
+                    }
 
                     controlsPanel
 
+                    analyzePanel
+
                     if let err = model.lastError {
-                        Text(err)
-                            .font(.system(.footnote, design: .rounded).weight(.bold))
-                            .foregroundStyle(.white)
-                            .padding(8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.red)
-                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 2))
-                            )
+                        errorBanner(err)
                     }
                 }
-                .padding(.horizontal, 14)
+                .padding(.horizontal, 16)
                 .padding(.top, 0)
-                .padding(.bottom, 14)
+                .padding(.bottom, 18)
+                .frame(maxWidth: 640)
+                .frame(maxWidth: .infinity)
+                .animation(.spring(response: 0.35, dampingFraction: 0.75), value: model.bestPassword)
             }
         }
         .frame(minWidth: 500, minHeight: 640)
@@ -217,7 +249,9 @@ struct ContentView: View {
                     Rectangle().fill(GameShow.hotPink)
                 }
             }
-            .frame(maxWidth: .infinity)
+            // Cap the banner so the action buttons and winner stay above
+            // the fold at the default window size.
+            .frame(maxWidth: .infinity, maxHeight: 340)
 
             if model.isBusy {
                 HStack(spacing: 6) {
@@ -239,7 +273,7 @@ struct ContentView: View {
 
     private var controlsPanel: some View {
         GamePanel(tint: GameShow.neonCyan) {
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 sectionLabel("RULES", jp: "ルール", tint: GameShow.hotPink)
                 stepperRow(title: "NUMBERS",     jp: "すうじ",  value: $model.numbers, range: 1...10, tint: GameShow.hotPink)
                 stepperRow(title: "SYMBOLS",     jp: "きごう",  value: $model.symbols, range: 1...10, tint: GameShow.neonCyan)
@@ -249,7 +283,7 @@ struct ContentView: View {
     }
 
     private func stepperRow(title: String, jp: String, value: Binding<Int>, range: ClosedRange<Int>, tint: Color) -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
                     .font(.system(size: 11, weight: .black, design: .rounded))
@@ -260,16 +294,7 @@ struct ContentView: View {
             }
             .frame(width: 86, alignment: .leading)
 
-            Slider(
-                value: Binding(
-                    get: { Double(value.wrappedValue) },
-                    set: { value.wrappedValue = Int($0) }
-                ),
-                in: Double(range.lowerBound)...Double(range.upperBound),
-                step: 1
-            )
-            .tint(tint)
-            .controlSize(.small)
+            ChunkySlider(value: value, range: range, tint: tint)
 
             Text("\(value.wrappedValue)")
                 .font(.system(size: 15, weight: .black, design: .rounded))
@@ -306,7 +331,13 @@ struct ContentView: View {
     private var bestSection: some View {
         GamePanel(tint: GameShow.neonYellow) {
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("WINNER!", jp: "ゆうしょう", tint: GameShow.hotPink)
+                HStack(spacing: 6) {
+                    sectionLabel("WINNER!", jp: "ゆうしょう", tint: GameShow.hotPink)
+                    Image(systemName: "crown.fill")
+                        .font(.system(size: 14, weight: .black))
+                        .foregroundStyle(GameShow.neonYellow)
+                        .shadow(color: GameShow.inkBlack, radius: 0, x: 1, y: 1)
+                }
 
                 ZStack(alignment: .topLeading) {
                     RoundedRectangle(cornerRadius: 10)
@@ -362,14 +393,18 @@ struct ContentView: View {
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(GameShow.inkBlack.opacity(0.1))
+                    // Full-width gradient masked to the fill, so the leading
+                    // edge color always reflects the score's position.
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(
-                            LinearGradient(
-                                colors: [GameShow.neonCyan, GameShow.neonLime, GameShow.neonYellow, GameShow.hotPink],
-                                startPoint: .leading, endPoint: .trailing
-                            )
+                        .fill(GameShow.meter)
+                        .mask(
+                            HStack {
+                                RoundedRectangle(cornerRadius: 6)
+                                    .frame(width: geo.size.width * pct)
+                                Spacer(minLength: 0)
+                            }
                         )
-                        .frame(width: geo.size.width * pct)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: pct)
                     RoundedRectangle(cornerRadius: 6)
                         .stroke(GameShow.inkBlack, lineWidth: 1.5)
                 }
@@ -381,52 +416,90 @@ struct ContentView: View {
     // MARK: candidates
 
     private var candidatesSection: some View {
-        GamePanel(tint: GameShow.hotPink) {
-            VStack(alignment: .leading, spacing: 5) {
+        let topScore = model.candidates.map(\.score).max()
+        return GamePanel(tint: GameShow.hotPink) {
+            VStack(alignment: .leading, spacing: 2) {
                 sectionLabel("CANDIDATES", jp: "こうほ", tint: GameShow.neonCyan)
+                    .padding(.bottom, 4)
                 ForEach(Array(model.candidates.enumerated()), id: \.element.id) { idx, c in
-                    HStack(spacing: 6) {
-                        Text("\(idx + 1)")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundStyle(.white)
-                            .frame(width: 18, height: 18)
-                            .background(Circle().fill(GameShow.hotPink))
-                            .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
-
-                        Text(c.password)
-                            .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(GameShow.inkBlack)
-                            .textSelection(.enabled)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-
-                        Spacer()
-
-                        Text(String(format: "%.2f", c.score))
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .monospacedDigit()
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 1)
-                            .background(
-                                Capsule().fill(GameShow.magenta)
-                                    .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
-                            )
-
-                        Button {
-                            Clipboard.copy(c.password)
-                        } label: {
-                            Image(systemName: "doc.on.clipboard")
-                                .font(.system(size: 10, weight: .black))
-                                .foregroundStyle(GameShow.inkBlack)
-                                .padding(4)
-                                .background(Circle().fill(GameShow.neonYellow))
-                                .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
-                        }
-                        .buttonStyle(.plain)
-                    }
+                    CandidateRow(
+                        index: idx + 1,
+                        candidate: c,
+                        isChampion: c.score == topScore
+                    )
                 }
             }
+        }
+    }
+
+    private struct CandidateRow: View {
+        let index: Int
+        let candidate: GenerationModel.Candidate
+        let isChampion: Bool
+        @State private var hovering = false
+
+        var body: some View {
+            HStack(spacing: 8) {
+                Text("\(index)")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .foregroundStyle(isChampion ? GameShow.inkBlack : .white)
+                    .frame(width: 18, height: 18)
+                    .background(Circle().fill(isChampion ? GameShow.neonYellow : GameShow.hotPink))
+                    .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+
+                Text(candidate.password)
+                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                    .foregroundStyle(GameShow.inkBlack)
+                    .textSelection(.enabled)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+
+                if isChampion {
+                    Image(systemName: "crown.fill")
+                        .font(.system(size: 10, weight: .black))
+                        .foregroundStyle(GameShow.neonYellow)
+                        .shadow(color: GameShow.inkBlack, radius: 0, x: 1, y: 1)
+                }
+
+                Spacer()
+
+                Text(String(format: "%.2f", candidate.score))
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 1)
+                    .background(
+                        Capsule().fill(GameShow.magenta)
+                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                    )
+
+                Button {
+                    Clipboard.copy(candidate.password)
+                } label: {
+                    Image(systemName: "doc.on.clipboard")
+                        .font(.system(size: 10, weight: .black))
+                        .foregroundStyle(GameShow.inkBlack)
+                        .padding(4)
+                        .background(Circle().fill(GameShow.neonYellow))
+                        .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                }
+                .buttonStyle(.plain)
+                .opacity(hovering ? 1 : 0.55)
+                .help("Copy")
+            }
+            .padding(.horizontal, 6)
+            .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(
+                        hovering
+                            ? GameShow.neonCyan.opacity(0.20)
+                            : (isChampion ? GameShow.neonYellow.opacity(0.18) : .clear)
+                    )
+            )
+            .onHover { hovering = $0 }
+            .animation(.easeOut(duration: 0.12), value: hovering)
         }
     }
 
@@ -434,15 +507,27 @@ struct ContentView: View {
 
     private var analyzePanel: some View {
         GamePanel(tint: GameShow.neonLime) {
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 sectionLabel("JUDGE!", jp: "しんさ", tint: GameShow.magenta)
 
-                HStack(spacing: 6) {
-                    TextField("PASTE STRING…", text: $model.analyzeInput)
+                HStack(spacing: 8) {
+                    TextField("", text: $model.analyzeInput)
                         .textFieldStyle(.plain)
                         .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                        .padding(6)
+                        .foregroundStyle(GameShow.inkBlack)
+                        .padding(8)
                         .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .overlay(alignment: .leading) {
+                            // The .plain field style drops TextField's prompt,
+                            // so draw the placeholder ourselves.
+                            if model.analyzeInput.isEmpty {
+                                Text("PASTE A PASSWORD…")
+                                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                    .foregroundStyle(GameShow.inkBlack.opacity(0.35))
+                                    .padding(.leading, 8)
+                                    .allowsHitTesting(false)
+                            }
+                        }
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
                         .onSubmit { model.analyze() }
 
@@ -454,6 +539,7 @@ struct ContentView: View {
                     .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
                     .fixedSize()
                     .disabled(model.analyzeInput.isEmpty || model.isBusy)
+                    .opacity(model.analyzeInput.isEmpty || model.isBusy ? 0.6 : 1)
                 }
 
                 if !model.analyzeResult.isEmpty {
@@ -471,5 +557,27 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    // MARK: error
+
+    private func errorBanner(_ message: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 13, weight: .black))
+                .foregroundStyle(GameShow.neonYellow)
+            Text(message)
+                .font(.system(.footnote, design: .rounded).weight(.bold))
+                .foregroundStyle(.white)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.red)
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 2))
+        )
+        .compositingGroup()
+        .shadow(color: GameShow.inkBlack.opacity(0.45), radius: 0, x: 4, y: 5)
     }
 }
