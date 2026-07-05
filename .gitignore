@@ -21,3 +21,6 @@ test_meowpass_combined.swift
 /*.dmg
 /*.pkg
 /AppIcon.icns
+
+# git-crypt symmetric key — never commit
+*.key
