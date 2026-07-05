@@ -14,9 +14,16 @@ let package = Package(
             name: "MeowStego",
             path: "Sources/MeowStego"
         ),
+        // MeowGramKit: color image I/O + high-level MeowGram embed/decode,
+        // shared by the CLI and the app. macOS-only (CoreGraphics/CryptoKit).
+        .target(
+            name: "MeowGramKit",
+            dependencies: ["MeowStego"],
+            path: "Sources/MeowGramKit"
+        ),
         .executableTarget(
             name: "meowpass",
-            dependencies: ["MeowStego"],
+            dependencies: ["MeowStego", "MeowGramKit"],
             path: "Sources/MeowPassword",
             linkerSettings: [
                 .linkedFramework("Security", .when(platforms: [.macOS]))
@@ -24,13 +31,17 @@ let package = Package(
         ),
         .executableTarget(
             name: "MeowPasswordApp",
+            dependencies: ["MeowStego", "MeowGramKit"],
             path: "Sources/MeowPasswordApp",
             exclude: [
                 "Resources",
                 "Assets/AppIcon.icns",
                 "Assets/icon_1024.png"
             ],
-            resources: [.process("Assets")]
+            resources: [
+                .process("Assets"),
+                .copy("Meowgrams")
+            ]
         ),
         .testTarget(
             name: "MeowStegoTests",

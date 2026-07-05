@@ -24,3 +24,6 @@ test_meowpass_combined.swift
 
 # git-crypt symmetric key — never commit
 *.key
+
+# MeowGram source images — only the keyed PNG masters ship with the app
+meowgrams/*.jpg

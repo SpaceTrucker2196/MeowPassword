@@ -4,6 +4,7 @@ import AppKit
 @main
 struct MeowPasswordApp: App {
     @StateObject private var model = GenerationModel()
+    @StateObject private var meowGramModel = MeowGramModel()
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
@@ -28,6 +29,8 @@ struct MeowPasswordApp: App {
 
                 Button("Generate + Copy") { model.generateAndCopy() }
                     .keyboardShortcut("c", modifiers: [.command, .shift])
+
+                MeowGramMenuItem()
 
                 Divider()
 
@@ -67,6 +70,14 @@ struct MeowPasswordApp: App {
         }
         .defaultSize(width: 620, height: 700)
 
+        // MeowGram window: compose steganographic cat-mail and decode drops.
+        Window("MeowGram", id: "meowgram") {
+            MeowGramView()
+                .environmentObject(meowGramModel)
+        }
+        .defaultSize(width: 820, height: 700)
+        .windowResizability(.contentMinSize)
+
         MenuBarExtra {
             MenuBarView().environmentObject(model)
         } label: {
@@ -84,6 +95,19 @@ struct MeowPasswordApp: App {
         default:
             break
         }
+    }
+}
+
+// MARK: - MeowGram menu item (needs @Environment for openWindow)
+
+private struct MeowGramMenuItem: View {
+    @Environment(\.openWindow) private var openWindow
+    var body: some View {
+        Button("New MeowGram…") {
+            openWindow(id: "meowgram")
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        .keyboardShortcut("m", modifiers: [.command, .shift])
     }
 }
 

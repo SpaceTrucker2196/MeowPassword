@@ -8,9 +8,11 @@
 import Foundation
 import MeowStego
 #if os(macOS)
+import MeowGramKit
 import Security
 import CoreGraphics
 import ImageIO
+import CryptoKit
 #endif
 
 // MARK: - ASCII Art and Lolcat Theme
@@ -655,15 +657,21 @@ func writeGIF(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool {
 }
 #endif
 
-/// Read any supported image (PGM, PNG, GIF) as an 8-bit grayscale luma buffer.
-/// The format is detected from the file-path extension.
+/// Read any supported image (PGM, PNG, GIF, JPEG) as an 8-bit grayscale
+/// luma buffer. The format is detected from the file-path extension.
+///
+/// Note: JPEG input is decoded through ImageIO like any other raster. That
+/// works fine as a *source* for embedding (the raster is what we run DCT
+/// on). Extracting a payload from a JPEG only succeeds if that JPEG has
+/// never been JPEG-re-encoded since the stego was written — see
+/// `writeImage` for the reasoning.
 func readImage(path: String) -> (pixels: [UInt8], width: Int, height: Int)? {
     switch URL(fileURLWithPath: path).pathExtension.lowercased() {
-    case "png", "gif":
+    case "png", "gif", "jpg", "jpeg":
         #if os(macOS)
         return readGrayImage(path: path)
         #else
-        print("ERROR: PNG/GIF support is only available on macOS")
+        print("ERROR: PNG/GIF/JPEG support is only available on macOS")
         return nil
         #endif
     default:          // "pgm" and unknown extensions fall through to PGM parser
@@ -675,7 +683,8 @@ func readImage(path: String) -> (pixels: [UInt8], width: Int, height: Int)? {
 }
 
 /// Write an 8-bit grayscale luma buffer to a file.
-/// The output format is determined by the file-path extension (.pgm / .png / .gif).
+/// Supported output formats: PGM, PNG, GIF. JPEG output is refused —
+/// see below.
 @discardableResult
 func writeImage(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool {
     switch URL(fileURLWithPath: path).pathExtension.lowercased() {
@@ -693,6 +702,17 @@ func writeImage(pixels: [UInt8], width: Int, height: Int, path: String) -> Bool 
         print("ERROR: GIF support is only available on macOS")
         return false
         #endif
+    case "jpg", "jpeg":
+        // JPEG can't be a stego *output*. The embedder writes a payload
+        // into DCT coefficients; re-encoding those coefficients through
+        // JPEG's own quantization and Huffman coding shifts the values
+        // and destroys the payload. Save to PNG or GIF (both lossless)
+        // and JPEG-convert later if needed for size, accepting that the
+        // payload won't survive that step.
+        print("ERROR: JPEG is not supported as a stego output — its lossy re-encoding")
+        print("       would destroy the embedded DCT payload. Write to .png or .gif")
+        print("       instead.")
+        return false
     default:          // "pgm" and unknown extensions fall through to PGM writer
         if URL(fileURLWithPath: path).pathExtension.lowercased() != "pgm" {
             print("WARNING: Unknown extension '\(URL(fileURLWithPath: path).pathExtension)', writing as PGM format")
@@ -753,8 +773,10 @@ func runStegoEmbed(args: [String]) {
     }
 
     guard let ip = inPath, let op = outPath, let pp = payloadPath, let wkArg = wmKeyArg else {
-        print("Usage: meowpass steg-embed --in <image.pgm|png|gif> --out <stego.pgm|png|gif>")
+        print("Usage: meowpass steg-embed --in <image.pgm|png|gif|jpg|jpeg> --out <stego.pgm|png|gif>")
         print("                           --payload-file <file> --wm-key hex:<hex>|<passphrase>")
+        print("       (JPEG is accepted as input but not as output — its re-quantization")
+        print("        would destroy the embedded payload.)")
         return
     }
 
@@ -805,7 +827,7 @@ func runStegoExtract(args: [String]) {
     }
 
     guard let ip = inPath, let wkArg = wmKeyArg else {
-        print("Usage: meowpass steg-extract --in <image.pgm|png|gif> --wm-key hex:<hex>|<passphrase>")
+        print("Usage: meowpass steg-extract --in <image.pgm|png|gif|jpg|jpeg> --wm-key hex:<hex>|<passphrase>")
         print("                             [--raw]")
         return
     }
@@ -830,6 +852,221 @@ func runStegoExtract(args: [String]) {
     } catch {
         print("ERROR: \(error)")
     }
+}
+
+#if os(macOS)
+// MARK: - MeowGram subcommands
+
+/// Parse a "WxH" size string into (width, height), both required multiples of 8.
+private func parseSize(_ s: String) -> (Int, Int)? {
+    let parts = s.lowercased().split(separator: "x")
+    guard parts.count == 2, let w = Int(parts[0]), let h = Int(parts[1]),
+          w > 0, h > 0, w % 8 == 0, h % 8 == 0 else { return nil }
+    return (w, h)
+}
+
+private func sha256Hex(ofFile path: String) -> String? {
+    guard let data = FileManager.default.contents(atPath: path) else { return nil }
+    return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+}
+
+/// `meowpass meowgram-prep` — bake a provenance GUID into each source image and
+/// record the mapping in a manifest.
+func runMeowgramPrep(args: [String]) {
+    var inDir = "meowgrams"
+    var outDir = "Sources/MeowPasswordApp/Meowgrams"
+    var manifestPath = "meowgrams/manifest.json"
+    var sizeArg = "544x680"
+    var doVerify = true
+    var force = false
+
+    var i = 0
+    while i < args.count {
+        switch args[i] {
+        case "--in-dir":   i += 1; if i < args.count { inDir = args[i] }
+        case "--out-dir":  i += 1; if i < args.count { outDir = args[i] }
+        case "--manifest": i += 1; if i < args.count { manifestPath = args[i] }
+        case "--size":     i += 1; if i < args.count { sizeArg = args[i] }
+        case "--verify":    doVerify = true
+        case "--no-verify": doVerify = false
+        case "--force":     force = true
+        default: break
+        }
+        i += 1
+    }
+
+    guard let (targetW, targetH) = parseSize(sizeArg) else {
+        print("ERROR: --size must be WxH with both dimensions multiples of 8 (e.g. 544x680)")
+        return
+    }
+    let fm = FileManager.default
+    if fm.fileExists(atPath: manifestPath) && !force {
+        print("ERROR: \(manifestPath) already exists. Re-running mints new GUIDs and orphans")
+        print("       already-shipped images. Pass --force only if you really mean to.")
+        return
+    }
+    guard let entries = try? fm.contentsOfDirectory(atPath: inDir) else {
+        print("ERROR: Cannot list --in-dir '\(inDir)'"); return
+    }
+    let jpgs = entries
+        .filter { ["jpg", "jpeg"].contains(($0 as NSString).pathExtension.lowercased()) }
+        .sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+    guard !jpgs.isEmpty else {
+        print("ERROR: No .jpg files in '\(inDir)'"); return
+    }
+    try? fm.createDirectory(atPath: outDir, withIntermediateDirectories: true)
+
+    var manifestImages: [MeowGramManifest.Entry] = []
+    let bigMsg = String(repeating: "M", count: MeowGram.maxMessageBytes)
+
+    print("Prepping \(jpgs.count) images → \(targetW)×\(targetH) keyed PNGs in \(outDir)")
+    for name in jpgs {
+        let srcPath = (inDir as NSString).appendingPathComponent(name)
+        let baseName = (name as NSString).deletingPathExtension
+        let outName = baseName + ".png"
+        let outPath = (outDir as NSString).appendingPathComponent(outName)
+
+        do {
+            let src = try ColorImageIO.readRGBImage(path: srcPath)
+            let scaled = try ColorImageIO.cropAndScale(src, targetW: targetW, targetH: targetH)
+
+            var (y, cb, cr) = YCbCr.fromRGB(rgb: scaled.rgb, pixelCount: scaled.pixelCount)
+            let uuid = UUID()
+            let guid = MeowGram.guidBytes(from: uuid)
+            try MeowGram.embedGUID(guid, intoY: &y, width: targetW, height: targetH)
+
+            let keyed = ColorImageIO.RGBImage(
+                rgb: YCbCr.toRGB(y: y, cb: cb, cr: cr), width: targetW, height: targetH)
+
+            if doVerify {
+                // Simulate a worst-case user message embed and confirm both the
+                // GUID and the message survive the color + disjoint-band round-trip.
+                let stego = try MeowGram.embedMessage(bigMsg, passphrase: nil, into: keyed)
+                let decoded = try MeowGram.readMessage(from: stego, passphrase: nil)
+                guard decoded.guid == uuid.uuidString, decoded.message == bigMsg else {
+                    print("❌ VERIFY FAILED for \(name): provenance key did not survive a message embed.")
+                    print("   Aborting prep — do not ship these masters.")
+                    return
+                }
+            }
+
+            try ColorImageIO.writePNG(keyed, to: outPath)
+            let hash = sha256Hex(ofFile: outPath) ?? ""
+            manifestImages.append(.init(file: outName, source: name,
+                                        guid: uuid.uuidString, sha256: hash))
+            print("  ✓ \(name) → \(outName)  guid \(uuid.uuidString)")
+        } catch {
+            print("❌ \(name): \(error)")
+            return
+        }
+    }
+
+    let iso = ISO8601DateFormatter()
+    iso.timeZone = TimeZone(identifier: "UTC")
+    let manifest = MeowGramManifest(
+        version: 1,
+        created: iso.string(from: Date()),
+        keyBand: .init(zigZag: [10, 14], qimStep: Double(MeowGramKeys.keyBandQimStep)),
+        geometry: .init(width: targetW, height: targetH),
+        images: manifestImages
+    )
+    do {
+        try manifest.write(path: manifestPath)
+        print("✅ Wrote \(manifestImages.count) keyed masters + manifest → \(manifestPath)")
+        print("   Remember: git-crypt the manifest before committing (see plan §2b).")
+    } catch {
+        print("ERROR: Could not write manifest: \(error)")
+    }
+}
+
+/// `meowpass meowgram-embed` — embed a message into a keyed image.
+func runMeowgramEmbed(args: [String]) {
+    var inPath: String?, outPath: String?, msgFile: String?, passphrase: String?
+    var i = 0
+    while i < args.count {
+        switch args[i] {
+        case "--in":           i += 1; if i < args.count { inPath = args[i] }
+        case "--out":          i += 1; if i < args.count { outPath = args[i] }
+        case "--message-file": i += 1; if i < args.count { msgFile = args[i] }
+        case "--passphrase":   i += 1; if i < args.count { passphrase = args[i] }
+        default: break
+        }
+        i += 1
+    }
+    guard let ip = inPath, let op = outPath, let mf = msgFile else {
+        print("Usage: meowpass meowgram-embed --in <keyed.png> --out <mail.png>")
+        print("                               --message-file <file> [--passphrase <p>]")
+        return
+    }
+    guard let msgData = FileManager.default.contents(atPath: mf),
+          let message = String(data: msgData, encoding: .utf8) else {
+        print("ERROR: Cannot read --message-file '\(mf)' as UTF-8"); return
+    }
+    do {
+        try MeowGram.embedMessage(inPath: ip, outPath: op,
+                                  message: message.trimmingCharacters(in: .newlines),
+                                  passphrase: passphrase)
+        print("✅ MeowGram written → '\(op)' (keep it PNG — lossy re-encoding destroys it)")
+    } catch {
+        print("ERROR: \(error)")
+    }
+}
+
+/// `meowpass meowgram-read` — read GUID + message from a MeowGram.
+func runMeowgramRead(args: [String]) {
+    var inPath: String?, passphrase: String?
+    var i = 0
+    while i < args.count {
+        switch args[i] {
+        case "--in":         i += 1; if i < args.count { inPath = args[i] }
+        case "--passphrase": i += 1; if i < args.count { passphrase = args[i] }
+        default: break
+        }
+        i += 1
+    }
+    guard let ip = inPath else {
+        print("Usage: meowpass meowgram-read --in <mail.png> [--passphrase <p>]"); return
+    }
+    do {
+        let decoded = try MeowGram.readMessage(inPath: ip, passphrase: passphrase)
+        print("GUID: \(decoded.guid ?? "<none>")")
+        print("Message: \(decoded.message)")
+    } catch {
+        print("ERROR: \(error)")
+    }
+}
+#endif
+
+/// `meowpass meow-key` — build a voice-friendly `catname-catname-catname`
+/// passphrase from short single-word names in the embedded database.
+func runMeowKey(args: [String]) {
+    var words = 3
+    var maxLen = 5
+
+    var i = 0
+    while i < args.count {
+        switch args[i] {
+        case "--words":   i += 1; if i < args.count, let v = Int(args[i]) { words = max(2, min(6, v)) }
+        case "--max-len": i += 1; if i < args.count, let v = Int(args[i]) { maxLen = max(3, min(8, v)) }
+        default: break
+        }
+        i += 1
+    }
+
+    // Keep only short, purely-alphabetic ASCII names — the ones that are easy
+    // to say and spell over the phone.
+    let pool = Set(getEmbeddedCatNames().compactMap { name -> String? in
+        let lower = name.lowercased()
+        guard lower.count >= 2, lower.count <= maxLen,
+              lower.allSatisfy({ $0.isLetter && $0.isASCII }) else { return nil }
+        return lower
+    })
+    guard pool.count >= words else {
+        print("tom-max-luna")   // safe fallback if the DB is unexpectedly thin
+        return
+    }
+    let key = Array(pool).shuffled().prefix(words).joined(separator: "-")
+    print(key)
 }
 
 /**
@@ -857,11 +1094,21 @@ func showHelp() {
     print("  --help, -h           Show this help message")
     print("")
     print("StegoMeow subcommands (cat-image passkeys):")
-    print("  steg-embed  --in <image.pgm|png|gif> --out <stego.pgm|png|gif>")
+    print("  steg-embed  --in <image.pgm|png|gif|jpg|jpeg> --out <stego.pgm|png|gif>")
     print("              --payload-file <file> --wm-key hex:<hex>|<passphrase>")
     print("              [--qim-step <N>]")
-    print("  steg-extract --in <image.pgm|png|gif> --wm-key hex:<hex>|<passphrase>")
+    print("  steg-extract --in <image.pgm|png|gif|jpg|jpeg> --wm-key hex:<hex>|<passphrase>")
     print("               [--raw] [--qim-step <N>]")
+    print("")
+    print("MeowGram subcommands (color cat-mail with a hidden provenance key):")
+    print("  meowgram-prep  [--in-dir <dir>] [--out-dir <dir>] [--manifest <path>]")
+    print("                 [--size <WxH>] [--verify|--no-verify] [--force]")
+    print("                 Bakes a provenance GUID into each source image.")
+    print("  meowgram-embed --in <keyed.png> --out <mail.png> --message-file <f>")
+    print("                 [--passphrase <p>]   Embeds a message (PNG output only).")
+    print("  meowgram-read  --in <mail.png> [--passphrase <p>]   Reads GUID + message.")
+    print("  meow-key       [--words N] [--max-len L]   Voice-friendly cat passphrase")
+    print("                 (e.g. tom-max-luna) from short embedded cat names.")
     print("")
     print("Examples:")
     print("  meowpass")
@@ -1120,6 +1367,24 @@ func main() -> Int32 {
         runStegoExtract(args: Array(args.dropFirst(2)))
         return 0
     }
+    if args.count >= 2 && args[1] == "meow-key" {
+        runMeowKey(args: Array(args.dropFirst(2)))
+        return 0
+    }
+    #if os(macOS)
+    if args.count >= 2 && args[1] == "meowgram-prep" {
+        runMeowgramPrep(args: Array(args.dropFirst(2)))
+        return 0
+    }
+    if args.count >= 2 && args[1] == "meowgram-embed" {
+        runMeowgramEmbed(args: Array(args.dropFirst(2)))
+        return 0
+    }
+    if args.count >= 2 && args[1] == "meowgram-read" {
+        runMeowgramRead(args: Array(args.dropFirst(2)))
+        return 0
+    }
+    #endif
 
     let config = PasswordConfig(arguments: args)
 

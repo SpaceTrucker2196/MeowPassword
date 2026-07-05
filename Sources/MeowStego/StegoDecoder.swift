@@ -16,11 +16,16 @@ public struct StegoDecoder {
     /// QIM step size (must match the encoder's step).
     public let qimStep: Float
 
+    /// The mid-band coefficient slice to read from (must match the encoder's
+    /// band). Default `.full` preserves historical behavior.
+    public let band: StegoBand
+
     private let rs = ReedSolomon(nsym: 32)
 
-    public init(wmKey: [UInt8], qimStep: Float = 32.0) {
+    public init(wmKey: [UInt8], qimStep: Float = 32.0, band: StegoBand = .full) {
         self.wmKey = wmKey
         self.qimStep = qimStep
+        self.band = band
     }
 
     // MARK: – Public API
@@ -41,7 +46,8 @@ public struct StegoDecoder {
         let blocksX = width / 8
         let blocksY = height / 8
         let totalBlocks = blocksX * blocksY
-        let posPerBlock = DCT8x8Provider.midBandPositions.count
+        let bandPositions = band.positions
+        let posPerBlock = bandPositions.count
         let totalPositions = totalBlocks * posPerBlock
 
         // 1. Reconstruct the same permutation the encoder used.
@@ -63,7 +69,7 @@ public struct StegoDecoder {
                 continue
             }
 
-            let (cr, cc) = DCT8x8Provider.midBandPositions[midIdx]
+            let (cr, cc) = bandPositions[midIdx]
             let coefIdx  = cr * 8 + cc
 
             let block  = extractBlock(from: pixels, width: width,

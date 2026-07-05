@@ -89,12 +89,18 @@ public struct StegoEncoder {
     /// increased visible distortion.  Default: 32.0.
     public let qimStep: Float
 
+    /// The mid-band coefficient slice this encoder writes into. Bands with
+    /// disjoint ranges never touch the same coefficient, so payloads in
+    /// different bands coexist. Default `.full` preserves historical behavior.
+    public let band: StegoBand
+
     /// Reed-Solomon codec: RS(255, 223) with 32 parity symbols.
     private let rs = ReedSolomon(nsym: 32)
 
-    public init(wmKey: [UInt8], qimStep: Float = 32.0) {
+    public init(wmKey: [UInt8], qimStep: Float = 32.0, band: StegoBand = .full) {
         self.wmKey = wmKey
         self.qimStep = qimStep
+        self.band = band
     }
 
     // MARK: – Public API
@@ -141,7 +147,8 @@ public struct StegoEncoder {
         let blocksX = width / 8
         let blocksY = height / 8
         let totalBlocks = blocksX * blocksY
-        let posPerBlock = DCT8x8Provider.midBandPositions.count
+        let bandPositions = band.positions
+        let posPerBlock = bandPositions.count
         let totalPositions = totalBlocks * posPerBlock
         guard bits.count <= totalPositions else {
             throw StegoError.insufficientCapacity(needed: bits.count,
@@ -152,25 +159,34 @@ public struct StegoEncoder {
         var prng = MeowPRNG(key: wmKey)
         let permutation = prng.shuffled(totalPositions)
 
-        // 5. Embed each bit into the corresponding mid-band DCT coefficient.
+        // 5. Group the bits by 8×8 block, then embed each touched block in a
+        //    single DCT → set-all-bits → IDCT → write round-trip. Doing one
+        //    round-trip per block (instead of one per bit) both speeds things
+        //    up and minimizes the pixel-rounding drift that a later, disjoint
+        //    band relies on staying inside its QIM margin.
+        var bitsByBlock: [Int: [(coefIdx: Int, bit: Int)]] = [:]
         for bitIdx in 0..<bits.count {
             let globalPos = permutation[bitIdx]
             let blockIndex = globalPos / posPerBlock
-            let midIdx    = globalPos % posPerBlock
+            let midIdx     = globalPos % posPerBlock
 
             let blockRow = blockIndex / blocksX
-            let blockCol = blockIndex % blocksX
             guard blockRow < blocksY else { continue }
 
-            let (cr, cc) = DCT8x8Provider.midBandPositions[midIdx]
-            let coefIdx  = cr * 8 + cc
+            let (cr, cc) = bandPositions[midIdx]
+            bitsByBlock[blockIndex, default: []].append((cr * 8 + cc, bits[bitIdx]))
+        }
 
-            // Extract block, DCT, embed, IDCT, write back.
+        for (blockIndex, edits) in bitsByBlock {
+            let blockRow = blockIndex / blocksX
+            let blockCol = blockIndex % blocksX
+
             var block = extractBlock(from: pixels, width: width,
                                      blockRow: blockRow, blockCol: blockCol)
             var coeffs = DCT8x8Provider.dct(block)
-            coeffs[coefIdx] = qimEmbed(coeffs[coefIdx], bit: bits[bitIdx],
-                                       step: qimStep)
+            for (coefIdx, bit) in edits {
+                coeffs[coefIdx] = qimEmbed(coeffs[coefIdx], bit: bit, step: qimStep)
+            }
             block = DCT8x8Provider.idct(coeffs)
             writeBlock(block, into: &pixels, width: width,
                        blockRow: blockRow, blockCol: blockCol)

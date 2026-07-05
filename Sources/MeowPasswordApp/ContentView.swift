@@ -4,7 +4,7 @@ import AppKit
 /// Resolve a bundled image by looking in `Bundle.main` first (the .app's
 /// `Contents/Resources/`), then falling back to SwiftPM's module bundle for
 /// `swift run` builds.
-private func loadBundledImage(_ name: String, ext: String) -> NSImage? {
+func loadBundledImage(_ name: String, ext: String) -> NSImage? {
     if let url = Bundle.main.url(forResource: name, withExtension: ext),
        let img = NSImage(contentsOf: url) {
         return img
@@ -41,7 +41,7 @@ enum GameShow {
 
 // MARK: - Reusable decorations
 
-private struct SparkleField: View {
+struct SparkleField: View {
     let count: Int
     var body: some View {
         Canvas { ctx, size in
@@ -62,7 +62,7 @@ private struct SparkleField: View {
 
 /// Chunky rounded panel with thick colored border and a hard offset
 /// "sticker" shadow, matching the flat black-outline banner art.
-private struct GamePanel<Content: View>: View {
+struct GamePanel<Content: View>: View {
     var tint: Color = GameShow.neonCyan
     let content: () -> Content
 
@@ -90,7 +90,7 @@ private struct GamePanel<Content: View>: View {
 
 /// Big arcade action button: hard sticker shadow that the button
 /// physically presses down into.
-private struct NeonButton: ButtonStyle {
+struct NeonButton: ButtonStyle {
     var fill: Color
     var text: Color = GameShow.inkBlack
 
@@ -177,6 +177,7 @@ private struct ChunkySlider: View {
 
 struct ContentView: View {
     @EnvironmentObject var model: GenerationModel
+    @Environment(\.openWindow) private var openWindow
     @Namespace private var reveal
 
     var body: some View {
@@ -196,17 +197,18 @@ struct ContentView: View {
                         }
                         .keyboardShortcut("g", modifiers: [.command])
                         .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.6 : 1)
 
                         Button {
-                            model.generateAndCopy()
+                            openWindow(id: "meowgram")
+                            NSApp.activate(ignoringOtherApps: true)
                         } label: {
-                            Label("COPY!", systemImage: "doc.on.clipboard.fill")
+                            Label("MEOWGRAM!", systemImage: "envelope.badge.fill")
                         }
-                        .keyboardShortcut("c", modifiers: [.command, .shift])
+                        .keyboardShortcut("m", modifiers: [.command, .shift])
                         .buttonStyle(NeonButton(fill: GameShow.neonLime))
                     }
-                    .disabled(model.isBusy)
-                    .opacity(model.isBusy ? 0.6 : 1)
 
                     if !model.bestPassword.isEmpty {
                         bestSection

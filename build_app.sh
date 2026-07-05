@@ -24,11 +24,23 @@ CONFIG="${CONFIG:-release}"
 APP_NAME="MeowPassword"
 APP_DIR="${APP_NAME}.app"
 
-echo "Building ($CONFIG)..."
-swift build -c "$CONFIG" --product meowpass
-swift build -c "$CONFIG" --product MeowPasswordApp
+# Universal (Apple Silicon + Intel) by default. Set ARCHS=native for a faster,
+# host-only build during development.
+ARCHS="${ARCHS:-universal}"
+if [[ "$ARCHS" == "universal" ]]; then
+    ARCH_FLAGS="--arch arm64 --arch x86_64"
+    # Universal builds land under .build/apple/Products/<Config>.
+    CONFIG_CAP="$(tr '[:lower:]' '[:upper:]' <<< "${CONFIG:0:1}")${CONFIG:1}"
+    BIN_DIR=".build/apple/Products/$CONFIG_CAP"
+else
+    ARCH_FLAGS=""
+    BIN_DIR=".build/$CONFIG"
+fi
 
-BIN_DIR=".build/$CONFIG"
+echo "Building ($CONFIG, arch: $ARCHS)..."
+swift build -c "$CONFIG" $ARCH_FLAGS --product meowpass
+swift build -c "$CONFIG" $ARCH_FLAGS --product MeowPasswordApp
+
 APP_BINARY="$BIN_DIR/MeowPasswordApp"
 CLI_BINARY="$BIN_DIR/meowpass"
 
@@ -63,6 +75,19 @@ if [[ -d Sources/MeowPasswordApp/Assets ]]; then
     cp Sources/MeowPasswordApp/Assets/*.png "$APP_DIR/Contents/Resources/" 2>/dev/null || true
     cp Sources/MeowPasswordApp/Assets/*.jpg "$APP_DIR/Contents/Resources/" 2>/dev/null || true
     cp Sources/MeowPasswordApp/Assets/AppIcon.icns "$APP_DIR/Contents/Resources/" 2>/dev/null || true
+fi
+
+# Keyed MeowGram masters — copied as a directory so Bundle.main subdirectory
+# lookups ("Meowgrams") resolve in the assembled app.
+if [[ -d Sources/MeowPasswordApp/Meowgrams ]]; then
+    rm -rf "$APP_DIR/Contents/Resources/Meowgrams"
+    mkdir -p "$APP_DIR/Contents/Resources/Meowgrams"
+    cp Sources/MeowPasswordApp/Meowgrams/*.png "$APP_DIR/Contents/Resources/Meowgrams/" 2>/dev/null || true
+    # SwiftPM's .copy rule also ships them inside the resource bundle; drop that
+    # duplicate (~45 MB) since Bundle.main finds the loose copy above first.
+    for b in "$APP_DIR"/Contents/Resources/*_MeowPasswordApp.bundle; do
+        rm -rf "$b/Meowgrams"
+    done
 fi
 
 # Point CFBundleExecutable at our renamed binary.
