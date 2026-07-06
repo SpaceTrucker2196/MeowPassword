@@ -1,5 +1,6 @@
 import AppIntents
 import AppKit
+import MeowPassCore
 
 /// "Generate a MeowPassword" — available in Shortcuts, Spotlight, and via Siri.
 struct GenerateMeowPasswordIntent: AppIntent {
@@ -21,17 +22,18 @@ struct GenerateMeowPasswordIntent: AppIntent {
     var copyToClipboard: Bool
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
-        let result = try MeowRunner.generate(
-            numbers: numbers, symbols: symbols, maxLength: maxLength
+        let best = MeowPass.best(
+            config: PasswordConfig(numNumbers: numbers, numSymbols: symbols, maxLength: maxLength),
+            count: 5
         )
         if copyToClipboard {
             let pb = NSPasteboard.general
             pb.clearContents()
-            pb.setString(result.best, forType: .string)
+            pb.setString(best.password, forType: .string)
         }
         return .result(
-            value: result.best,
-            dialog: IntentDialog("Purrfect. Score \(String(format: "%.2f", result.bestScore))/10.")
+            value: best.password,
+            dialog: IntentDialog("Purrfect. Score \(String(format: "%.2f", best.score))/10.")
         )
     }
 }
@@ -47,8 +49,8 @@ struct AnalyzePasswordIntent: AppIntent {
     var input: String
 
     func perform() async throws -> some IntentResult & ReturnsValue<String> {
-        let output = try MeowRunner.analyze(input)
-        return .result(value: output)
+        let result = MeowPass.analyze(input)
+        return .result(value: result.analysis + "\n\n" + result.verdict)
     }
 }
 
@@ -61,10 +63,10 @@ struct GenerateAndCopyIntent: AppIntent {
     static var openAppWhenRun: Bool = false
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let result = try MeowRunner.generate(numbers: 3, symbols: 2, maxLength: 25)
+        let best = MeowPass.best(config: PasswordConfig(numNumbers: 3, numSymbols: 2, maxLength: 25), count: 5)
         let pb = NSPasteboard.general
         pb.clearContents()
-        pb.setString(result.best, forType: .string)
+        pb.setString(best.password, forType: .string)
         return .result(dialog: IntentDialog("Copied. Meow."))
     }
 }

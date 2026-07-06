@@ -1,0 +1,227 @@
+import SwiftUI
+import UIKit
+import MeowUI
+import MeowPassCore
+
+@MainActor
+final class GenerateModel: ObservableObject {
+    @Published var numbers = 3
+    @Published var symbols = 2
+    @Published var maxLength = 25
+    @Published var candidates: [Candidate] = []
+    @Published var best: Candidate?
+    @Published var analyzeInput = ""
+    @Published var analyzeResult = ""
+    @Published var isBusy = false
+
+    private func config() -> PasswordConfig {
+        PasswordConfig(numNumbers: numbers, numSymbols: symbols, maxLength: maxLength)
+    }
+
+    func generate(copy: Bool = false) {
+        isBusy = true
+        let cfg = config()
+        Task {
+            let cands = await Task.detached { MeowPass.generate(config: cfg, count: 5) }.value
+            self.candidates = cands
+            self.best = cands.max(by: { $0.score < $1.score })
+            if copy, let b = self.best { UIPasteboard.general.string = b.password }
+            self.isBusy = false
+        }
+    }
+
+    func analyze() {
+        guard !analyzeInput.isEmpty else { return }
+        let input = analyzeInput
+        Task {
+            let r = await Task.detached { MeowPass.analyze(input) }.value
+            self.analyzeResult = r.analysis + "\n\n" + r.verdict
+        }
+    }
+}
+
+struct GenerateView: View {
+    @StateObject private var model = GenerateModel()
+    var onMeowGram: () -> Void = {}
+
+    var body: some View {
+        ZStack {
+            GameShow.bg.ignoresSafeArea()
+            SparkleField(count: 50).ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    hero
+
+                    HStack(spacing: 12) {
+                        Button { model.generate() } label: {
+                            Label("GENERATE!", systemImage: "sparkles")
+                        }
+                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.6 : 1)
+
+                        Button { onMeowGram() } label: {
+                            Label("MEOWGRAM!", systemImage: "envelope.badge.fill")
+                        }
+                        .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                    }
+
+                    if let best = model.best { winner(best) }
+                    if !model.candidates.isEmpty { candidatesPanel }
+                    analyzePanel
+                    rulesPanel
+                }
+                .padding(16)
+            }
+        }
+    }
+
+    private var hero: some View {
+        Image("banner")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(maxWidth: .infinity, maxHeight: 260)
+    }
+
+    private func winner(_ best: Candidate) -> some View {
+        GamePanel(tint: GameShow.neonYellow) {
+            VStack(alignment: .leading, spacing: 8) {
+                label("WINNER!", tint: GameShow.hotPink)
+                HStack {
+                    Text(best.password)
+                        .font(.system(size: 15, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(GameShow.neonYellow)
+                        .textSelection(.enabled)
+                        .lineLimit(1).truncationMode(.middle)
+                        .padding(10)
+                    Spacer()
+                    Button { UIPasteboard.general.string = best.password } label: {
+                        Image(systemName: "doc.on.clipboard.fill")
+                            .font(.system(size: 14, weight: .black))
+                            .foregroundStyle(GameShow.inkBlack)
+                            .padding(7)
+                            .background(Circle().fill(GameShow.neonYellow))
+                            .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                    }
+                    .padding(.trailing, 6)
+                }
+                .background(RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack))
+                scoreMeter(best.score)
+            }
+        }
+    }
+
+    private func scoreMeter(_ score: Double) -> some View {
+        let pct = min(max(score / 10.0, 0), 1)
+        return VStack(alignment: .leading, spacing: 3) {
+            HStack {
+                Text("SCORE").font(.system(size: 11, weight: .black, design: .rounded))
+                    .foregroundStyle(GameShow.inkBlack)
+                Spacer()
+                Text(String(format: "%.2f / 10.00", score))
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .monospacedDigit().foregroundStyle(GameShow.inkBlack)
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 6).fill(GameShow.inkBlack.opacity(0.1))
+                    RoundedRectangle(cornerRadius: 6).fill(GameShow.meter)
+                        .mask(HStack { RoundedRectangle(cornerRadius: 6)
+                            .frame(width: geo.size.width * pct); Spacer(minLength: 0) })
+                    RoundedRectangle(cornerRadius: 6).stroke(GameShow.inkBlack, lineWidth: 1.5)
+                }
+            }
+            .frame(height: 12)
+        }
+    }
+
+    private var candidatesPanel: some View {
+        GamePanel(tint: GameShow.hotPink) {
+            VStack(alignment: .leading, spacing: 4) {
+                label("CANDIDATES", tint: GameShow.neonCyan)
+                ForEach(model.candidates) { c in
+                    HStack {
+                        Text(c.password)
+                            .font(.system(size: 12, weight: .heavy, design: .monospaced))
+                            .foregroundStyle(GameShow.inkBlack)
+                            .lineLimit(1).truncationMode(.middle)
+                        Spacer()
+                        Text(String(format: "%.2f", c.score))
+                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .monospacedDigit().foregroundStyle(.white)
+                            .padding(.horizontal, 6).padding(.vertical, 1)
+                            .background(Capsule().fill(GameShow.magenta))
+                        Button { UIPasteboard.general.string = c.password } label: {
+                            Image(systemName: "doc.on.clipboard")
+                                .font(.system(size: 11, weight: .black))
+                                .foregroundStyle(GameShow.inkBlack)
+                        }
+                    }
+                    .padding(.vertical, 3)
+                }
+            }
+        }
+    }
+
+    private var analyzePanel: some View {
+        GamePanel(tint: GameShow.neonLime) {
+            VStack(alignment: .leading, spacing: 8) {
+                label("JUDGE!", tint: GameShow.magenta)
+                HStack {
+                    TextField("Paste a password…", text: $model.analyzeInput)
+                        .font(.system(size: 12, weight: .heavy, design: .monospaced))
+                        .padding(8)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                    Button { model.analyze() } label: { Label("GO", systemImage: "magnifyingglass") }
+                        .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                        .fixedSize()
+                        .disabled(model.analyzeInput.isEmpty)
+                }
+                if !model.analyzeResult.isEmpty {
+                    Text(model.analyzeResult)
+                        .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(GameShow.neonLime)
+                        .padding(8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(GameShow.inkBlack))
+                        .textSelection(.enabled)
+                }
+            }
+        }
+    }
+
+    private var rulesPanel: some View {
+        GamePanel(tint: GameShow.neonCyan) {
+            VStack(alignment: .leading, spacing: 8) {
+                label("RULES", tint: GameShow.hotPink)
+                rule("NUMBERS", value: $model.numbers, range: 1...10, tint: GameShow.hotPink)
+                rule("SYMBOLS", value: $model.symbols, range: 1...10, tint: GameShow.neonCyan)
+                rule("MAX LENGTH", value: $model.maxLength, range: 15...50, tint: GameShow.neonLime)
+            }
+        }
+    }
+
+    private func rule(_ title: String, value: Binding<Int>, range: ClosedRange<Int>, tint: Color) -> some View {
+        HStack(spacing: 10) {
+            Text(title).font(.system(size: 11, weight: .black, design: .rounded))
+                .foregroundStyle(GameShow.inkBlack).frame(width: 96, alignment: .leading)
+            ChunkySlider(value: value, range: range, tint: tint)
+            Text("\(value.wrappedValue)")
+                .font(.system(size: 14, weight: .black, design: .rounded)).monospacedDigit()
+                .foregroundStyle(.white).frame(width: 34, height: 24)
+                .background(RoundedRectangle(cornerRadius: 6).fill(tint))
+        }
+    }
+
+    private func label(_ text: String, tint: Color) -> some View {
+        HStack {
+            Text(text).font(.system(size: 13, weight: .black, design: .rounded))
+                .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
+                .background(Capsule().fill(tint).overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5)))
+            Spacer()
+        }
+    }
+}

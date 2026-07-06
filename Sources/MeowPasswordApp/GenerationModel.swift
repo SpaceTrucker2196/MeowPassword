@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import AppKit
+import MeowPassCore
 
 /// Observable state for the main window and menu bar UI.
 @MainActor
@@ -25,24 +26,26 @@ final class GenerationModel: ObservableObject {
         let score: Double
     }
 
+    private func config() -> PasswordConfig {
+        PasswordConfig(numNumbers: numbers, numSymbols: symbols, maxLength: maxLength)
+    }
+
     func generate() {
-        let n = numbers, s = symbols, m = maxLength
+        let cfg = config()
         runOffMain(
-            work: { try MeowRunner.generate(numbers: n, symbols: s, maxLength: m) },
-            apply: { result in
-                self.applyResult(result)
-            }
+            work: { MeowPass.generate(config: cfg, count: 5) },
+            apply: { candidates in self.applyResult(candidates) }
         )
     }
 
     /// One-shot: generate + copy best to clipboard.
     func generateAndCopy() {
-        let n = numbers, s = symbols, m = maxLength
+        let cfg = config()
         runOffMain(
-            work: { try MeowRunner.generate(numbers: n, symbols: s, maxLength: m) },
-            apply: { result in
-                self.applyResult(result)
-                Clipboard.copy(result.best)
+            work: { MeowPass.generate(config: cfg, count: 5) },
+            apply: { candidates in
+                self.applyResult(candidates)
+                Clipboard.copy(self.bestPassword)
             }
         )
     }
@@ -51,9 +54,9 @@ final class GenerationModel: ObservableObject {
         let input = analyzeInput
         guard !input.isEmpty else { return }
         runOffMain(
-            work: { try MeowRunner.analyze(input) },
-            apply: { output in
-                self.analyzeResult = output
+            work: { MeowPass.analyze(input) },
+            apply: { result in
+                self.analyzeResult = result.analysis + "\n\n" + result.verdict
             }
         )
     }
@@ -65,11 +68,12 @@ final class GenerationModel: ObservableObject {
 
     // MARK: - Internals
 
-    private func applyResult(_ result: MeowResult) {
-        self.candidates = result.candidates.map { Candidate(password: $0.password, score: $0.score) }
-        self.bestPassword = result.best
-        self.bestScore = result.bestScore
-        self.analysisText = result.analysis
+    private func applyResult(_ coreCandidates: [MeowPassCore.Candidate]) {
+        self.candidates = coreCandidates.map { Candidate(password: $0.password, score: $0.score) }
+        let best = coreCandidates.max(by: { $0.score < $1.score })
+        self.bestPassword = best?.password ?? ""
+        self.bestScore = best?.score ?? 0
+        self.analysisText = best?.analysis ?? ""
     }
 
     /// Run `work` on a background queue, then invoke `apply` on the main

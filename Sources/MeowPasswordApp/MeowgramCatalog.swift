@@ -1,27 +1,14 @@
 import Foundation
 import AppKit
 import ImageIO
+import MeowGramKit
 
-/// The set of keyed meowgram images bundled with the app, plus a lazy
-/// thumbnail cache for the picker grid.
+/// The bundled keyed meowgrams now live in the shared `MeowGramKit` resource,
+/// so the app just re-exports the shared catalog. Thumbnail rendering
+/// (`NSImage`) stays app-side.
 enum MeowgramCatalog {
-
-    struct Entry: Identifiable, Hashable {
-        let id: String     // e.g. "meowgram-42"
-        let url: URL       // bundled keyed PNG
-    }
-
-    /// Enumerate the bundled `Meowgrams/*.png`, natural-sorted. Checks
-    /// `Bundle.main` (assembled .app) first, then `Bundle.module` (`swift run`).
-    static func load() -> [Entry] {
-        let urls =
-            Bundle.main.urls(forResourcesWithExtension: "png", subdirectory: "Meowgrams")
-            ?? Bundle.module.urls(forResourcesWithExtension: "png", subdirectory: "Meowgrams")
-            ?? []
-        return urls
-            .map { Entry(id: $0.deletingPathExtension().lastPathComponent, url: $0) }
-            .sorted { $0.id.localizedStandardCompare($1.id) == .orderedAscending }
-    }
+    typealias Entry = MeowGramCatalog.Entry
+    static func load() -> [Entry] { MeowGramCatalog.load() }
 }
 
 /// Downscaled thumbnails generated on demand and cached, so a 100-cell grid

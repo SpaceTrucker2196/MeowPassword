@@ -62,8 +62,9 @@ cp "$APP_BINARY" "$APP_DIR/Contents/MacOS/$APP_NAME"
 cp "$CLI_BINARY" "$APP_DIR/Contents/MacOS/meowpass"
 cp Sources/MeowPasswordApp/Resources/Info.plist "$APP_DIR/Contents/Info.plist"
 
-# Copy SwiftPM-generated resource bundle (contains hero_cat.png etc).
-for bundle in "$BIN_DIR"/*_MeowPasswordApp.bundle; do
+# Copy SwiftPM-generated resource bundles (app assets + the MeowGramKit
+# bundle that carries the 100 keyed meowgram PNGs, loaded via Bundle.module).
+for bundle in "$BIN_DIR"/*.bundle; do
     if [[ -e "$bundle" ]]; then
         cp -R "$bundle" "$APP_DIR/Contents/Resources/"
     fi
@@ -77,18 +78,8 @@ if [[ -d Sources/MeowPasswordApp/Assets ]]; then
     cp Sources/MeowPasswordApp/Assets/AppIcon.icns "$APP_DIR/Contents/Resources/" 2>/dev/null || true
 fi
 
-# Keyed MeowGram masters — copied as a directory so Bundle.main subdirectory
-# lookups ("Meowgrams") resolve in the assembled app.
-if [[ -d Sources/MeowPasswordApp/Meowgrams ]]; then
-    rm -rf "$APP_DIR/Contents/Resources/Meowgrams"
-    mkdir -p "$APP_DIR/Contents/Resources/Meowgrams"
-    cp Sources/MeowPasswordApp/Meowgrams/*.png "$APP_DIR/Contents/Resources/Meowgrams/" 2>/dev/null || true
-    # SwiftPM's .copy rule also ships them inside the resource bundle; drop that
-    # duplicate (~45 MB) since Bundle.main finds the loose copy above first.
-    for b in "$APP_DIR"/Contents/Resources/*_MeowPasswordApp.bundle; do
-        rm -rf "$b/Meowgrams"
-    done
-fi
+# (Keyed MeowGram masters now ship inside the MeowGramKit resource bundle
+# copied above, loaded at runtime via Bundle.module — no loose copy needed.)
 
 # Point CFBundleExecutable at our renamed binary.
 /usr/libexec/PlistBuddy -c "Set :CFBundleExecutable $APP_NAME" "$APP_DIR/Contents/Info.plist" 2>/dev/null || \

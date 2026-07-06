@@ -1,6 +1,6 @@
 // Sources/MeowGramKit/ColorImageIO.swift
 
-#if os(macOS)
+#if canImport(CoreGraphics)
 import Foundation
 import CoreGraphics
 import ImageIO
@@ -43,6 +43,18 @@ public enum ColorImageIO {
         }
         guard let cg = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
             throw IOError.cannotDecode(path)
+        }
+        return try rgb(from: cg)
+    }
+
+    /// Load in-memory image bytes (e.g. from a Photos/Files picker or the
+    /// pasteboard) as packed 24-bit RGB.
+    public static func readRGBImage(data: Data) throws -> RGBImage {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
+            throw IOError.cannotRead("<data>")
+        }
+        guard let cg = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            throw IOError.cannotDecode("<data>")
         }
         return try rgb(from: cg)
     }

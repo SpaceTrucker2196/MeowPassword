@@ -6,24 +6,44 @@ import PackageDescription
 let package = Package(
     name: "MeowPassword",
     platforms: [
-        .macOS(.v13)
+        .macOS(.v13),
+        .iOS(.v17)
+    ],
+    products: [
+        .library(name: "MeowStego", targets: ["MeowStego"]),
+        .library(name: "MeowGramKit", targets: ["MeowGramKit"]),
+        .library(name: "MeowPassCore", targets: ["MeowPassCore"]),
+        .library(name: "MeowUI", targets: ["MeowUI"])
     ],
     targets: [
         // MeowStego: DCT-domain steganography library for cat-image passkeys.
+        // Pure Swift/Foundation — cross-platform.
         .target(
             name: "MeowStego",
             path: "Sources/MeowStego"
         ),
-        // MeowGramKit: color image I/O + high-level MeowGram embed/decode,
-        // shared by the CLI and the app. macOS-only (CoreGraphics/CryptoKit).
+        // MeowPassCore: platform-independent password generation, complexity
+        // analysis, cat names, and the voice-friendly meow-key.
+        .target(
+            name: "MeowPassCore",
+            path: "Sources/MeowPassCore"
+        ),
+        // MeowGramKit: color image I/O + high-level MeowGram embed/decode +
+        // the bundled keyed-image catalog. macOS + iOS (CoreGraphics/CryptoKit).
         .target(
             name: "MeowGramKit",
             dependencies: ["MeowStego"],
-            path: "Sources/MeowGramKit"
+            path: "Sources/MeowGramKit",
+            resources: [.copy("Meowgrams")]
+        ),
+        // MeowUI: portable SwiftUI design system shared by both apps.
+        .target(
+            name: "MeowUI",
+            path: "Sources/MeowUI"
         ),
         .executableTarget(
             name: "meowpass",
-            dependencies: ["MeowStego", "MeowGramKit"],
+            dependencies: ["MeowStego", "MeowGramKit", "MeowPassCore"],
             path: "Sources/MeowPassword",
             linkerSettings: [
                 .linkedFramework("Security", .when(platforms: [.macOS]))
@@ -31,7 +51,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "MeowPasswordApp",
-            dependencies: ["MeowStego", "MeowGramKit"],
+            dependencies: ["MeowStego", "MeowGramKit", "MeowPassCore", "MeowUI"],
             path: "Sources/MeowPasswordApp",
             exclude: [
                 "Resources",
@@ -39,14 +59,18 @@ let package = Package(
                 "Assets/icon_1024.png"
             ],
             resources: [
-                .process("Assets"),
-                .copy("Meowgrams")
+                .process("Assets")
             ]
         ),
         .testTarget(
             name: "MeowStegoTests",
             dependencies: ["MeowStego"],
             path: "Tests/MeowStegoTests"
+        ),
+        .testTarget(
+            name: "MeowPassCoreTests",
+            dependencies: ["MeowPassCore"],
+            path: "Tests/MeowPassCoreTests"
         ),
         .testTarget(
             name: "MeowPasswordAppTests",

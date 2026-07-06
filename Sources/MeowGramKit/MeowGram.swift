@@ -1,6 +1,6 @@
 // Sources/MeowGramKit/MeowGram.swift
 
-#if os(macOS)
+#if canImport(CoreGraphics)
 import Foundation
 import CryptoKit
 import MeowStego

@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
+import MeowUI
 
 struct MeowGramView: View {
     @EnvironmentObject var model: MeowGramModel
@@ -143,20 +144,28 @@ struct MeowGramView: View {
                         }
                         .frame(maxHeight: 240)
 
-                        HStack(spacing: 10) {
-                            Button { model.sendViaMail() } label: {
-                                Label("SEND!", systemImage: "paperplane.fill")
+                        VStack(spacing: 8) {
+                            HStack(spacing: 10) {
+                                Button { model.sendViaMessages() } label: {
+                                    Label("MESSAGE", systemImage: "message.fill")
+                                }
+                                .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                                Button { model.sendViaMail() } label: {
+                                    Label("EMAIL", systemImage: "envelope.fill")
+                                }
+                                .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
                             }
-                            .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
-                            Button { model.copyToPasteboard() } label: {
-                                Label("COPY", systemImage: "doc.on.doc.fill")
+                            HStack(spacing: 10) {
+                                Button { model.copyToPasteboard() } label: {
+                                    Label("COPY", systemImage: "doc.on.doc.fill")
+                                }
+                                .keyboardShortcut("c", modifiers: [.command])
+                                .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                                Button { model.savePNG() } label: {
+                                    Label("SAVE", systemImage: "square.and.arrow.down")
+                                }
+                                .buttonStyle(NeonButton(fill: GameShow.neonYellow))
                             }
-                            .keyboardShortcut("c", modifiers: [.command])
-                            .buttonStyle(NeonButton(fill: GameShow.neonLime))
-                            Button { model.savePNG() } label: {
-                                Label("SAVE", systemImage: "square.and.arrow.down")
-                            }
-                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
                         }
                         .disabled(model.encodedPNG == nil)
                         .opacity(model.encodedPNG == nil ? 0.6 : 1)
@@ -201,7 +210,7 @@ struct MeowGramView: View {
                 .buttonStyle(NeonButton(fill: GameShow.neonCyan))
             }
 
-            passphraseField(placeholder: "PASSPHRASE (IF LOCKED)")
+            passphraseField(placeholder: "PASSPHRASE (IF LOCKED)", secure: false)
 
             if let img = model.decodedImage {
                 Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
@@ -254,7 +263,7 @@ struct MeowGramView: View {
     private func passphraseField(
         placeholder: String, secure: Bool = true, onGenerate: (() -> Void)? = nil
     ) -> some View {
-        let trailing: CGFloat = onGenerate != nil ? 40 : 8
+        let trailing: CGFloat = onGenerate != nil ? 96 : 8
         return ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: 8).fill(.white)
             Group {
@@ -284,12 +293,13 @@ struct MeowGramView: View {
                 HStack {
                     Spacer()
                     Button(action: onGenerate) {
-                        Image(systemName: "dice.fill")
-                            .font(.system(size: 12, weight: .black))
+                        Text("GENERATE")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
                             .foregroundStyle(GameShow.inkBlack)
-                            .padding(5)
-                            .background(Circle().fill(GameShow.neonYellow))
-                            .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                            .padding(.horizontal, 9)
+                            .padding(.vertical, 5)
+                            .background(Capsule().fill(GameShow.neonYellow))
+                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
                     }
                     .buttonStyle(.plain)
                     .padding(.trailing, 5)

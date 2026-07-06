@@ -3,6 +3,7 @@ import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
 import MeowGramKit
+import MeowPassCore
 
 /// State for the MeowGram window: compose (pick cat → message → embed → send)
 /// and decode (drop an image → reveal message).
@@ -56,18 +57,9 @@ final class MeowGramModel: ObservableObject {
     /// Fill the passphrase with a voice-friendly `catname-catname-catname` key
     /// from the embedded cat-name database (via the bundled `meowpass` CLI).
     func generatePassphrase() {
-        Task.detached(priority: .userInitiated) {
-            let key = (try? MeowRunner.run(arguments: ["meow-key"]))?
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            await MainActor.run {
-                if let key, !key.isEmpty {
-                    self.passphrase = key
-                    self.statusText = "Key: \(key) — read it aloud to your recipient."
-                } else {
-                    self.lastError = "Couldn't generate a meow key."
-                }
-            }
-        }
+        let key = MeowPass.meowKey()
+        passphrase = key
+        statusText = "Key: \(key) — read it aloud to your recipient."
     }
 
     func embed() {
@@ -110,21 +102,33 @@ final class MeowGramModel: ObservableObject {
         }
     }
 
-    func sendViaMail() {
-        guard let png = encodedPNG, let id = selectedID else { return }
+    /// Message body shared with both the Mail and Messages compose paths.
+    private var shareBody: String {
+        "I sent you a MeowGram! 🐱 Drop this PNG into MeowPassword to decode the hidden "
+      + "message. Keep it a PNG — don't screenshot or convert it, or the message is lost."
+    }
+
+    /// Write the embedded PNG to a temp file (verbatim — never re-encode) for
+    /// attaching to Mail / Messages.
+    private func stageTempPNG() -> URL? {
+        guard let png = encodedPNG, let id = selectedID else { return nil }
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("MeowGrams", isDirectory: true)
         let stamp = Int(Date().timeIntervalSince1970)
         let fileURL = dir.appendingPathComponent("MeowGram-\(id)-\(stamp).png")
         do {
             try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-            try png.write(to: fileURL)   // verbatim PNG — never re-encode
+            try png.write(to: fileURL)
+            return fileURL
         } catch {
-            lastError = "Couldn't stage the attachment: \(error.localizedDescription)"; return
+            lastError = "Couldn't stage the attachment: \(error.localizedDescription)"
+            return nil
         }
-        let body = "I sent you a MeowGram! 🐱 Drop this PNG into MeowPassword to decode the hidden "
-                 + "message. Keep it a PNG — don't screenshot or convert it, or the message is lost."
-        let items: [Any] = [body, fileURL as NSURL]
+    }
+
+    func sendViaMail() {
+        guard let fileURL = stageTempPNG() else { return }
+        let items: [Any] = [shareBody, fileURL as NSURL]
         guard let service = NSSharingService(named: .composeEmail),
               service.canPerform(withItems: items) else {
             statusText = "No Mail account is set up — saving the PNG instead."
@@ -134,6 +138,20 @@ final class MeowGramModel: ObservableObject {
         service.subject = "A MeowGram for you 🐱"
         service.perform(withItems: items)
         statusText = "Handed off to Mail — hit send!"
+    }
+
+    /// Send the MeowGram via the Messages app (iMessage) with the PNG attached.
+    func sendViaMessages() {
+        guard let fileURL = stageTempPNG() else { return }
+        let items: [Any] = [shareBody, fileURL as NSURL]
+        guard let service = NSSharingService(named: .composeMessage),
+              service.canPerform(withItems: items) else {
+            statusText = "Messages isn't available — saving the PNG instead."
+            savePNG()
+            return
+        }
+        service.perform(withItems: items)
+        statusText = "Handed off to Messages — hit send!"
     }
 
     /// Copy the embedded MeowGram to the clipboard — as a real PNG file (so
