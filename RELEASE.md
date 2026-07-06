@@ -34,6 +34,37 @@ Without these secrets the workflow still runs — it just falls back to
 ad-hoc signing (fine for local testing, not distributable). PR builds
 never receive secrets, so they always produce ad-hoc artifacts.
 
+> **Prerequisite the account still needs:** the signing above requires a
+> **Developer ID Application** certificate (and, for the CLI `.pkg`, a
+> **Developer ID Installer** cert). The team currently has *Apple
+> Distribution* (App Store) and *Apple Development* only. Create the missing
+> cert once at
+> [developer.apple.com/account/resources/certificates](https://developer.apple.com/account/resources/certificates)
+> → **+** → *Developer ID Application*, install it, then export it for the
+> secrets above (CI) and/or use it locally (below).
+
+## Building a signed build locally (your Developer ID)
+
+`./release_signed.sh` is the local counterpart to CI: it builds the universal
+app, signs it with your **Developer ID Application** cert (hardened runtime +
+timestamp), notarizes and staples the `.app` and the DMG, and prints a
+Gatekeeper assessment — no tag push required.
+
+```bash
+# one-time: store notary credentials in the keychain
+xcrun notarytool store-credentials meowpass-notary \
+  --apple-id "jeff@river.io" --team-id U3Z59VXPUB --password <app-specific-pw>
+
+./release_signed.sh                 # auto-detects the Developer ID cert + profile
+SKIP_NOTARIZE=1 ./release_signed.sh # sign only (skip notarization)
+```
+
+It auto-detects the Developer ID Application identity (override with
+`CODESIGN_IDENTITY=…`) and the `meowpass-notary` profile (override with
+`NOTARY_PROFILE=…`, or pass `APPLE_ID`/`APP_PW` directly). If the cert or notary
+credentials are missing it explains exactly what to create and, for missing
+notary creds, still produces a signed-but-un-notarized build.
+
 ## Cutting a release
 
 ```bash
