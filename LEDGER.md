@@ -6,3 +6,4 @@
 | 51edda0 | 2026-07-05T03:29:32Z | claude-fable-5 | 20 | 4533 | 1329645 | 128022 | 4.1169 | Version bump to 1.0.1 for tagged release |
 | 7ca34cc | 2026-07-05T23:47:21Z | claude-fable-5,claude-opus-4-8 | 144936 | 423398 | 74083428 | 2700149 | 76.8953 | Add MeowGram steganographic cat-mail feature (bands, color, prep, app UI, copy/p |
 | 9759fd9 | 2026-07-06T00:35:57Z | claude-opus-4-8 | 1388 | 28035 | 16209008 | 27374 | 9.0861 | Bump version to 1.1.0 for MeowGram release |
+| f5f7c0b | 2026-07-06T01:01:24Z | claude-opus-4-8 | 2291 | 69589 | 17243972 | 87223 | 11.2454 | Add local Developer ID build scheme (release_signed.sh) + RELEASE.md docs |
