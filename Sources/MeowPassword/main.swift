@@ -35,7 +35,7 @@ _00_____`"=,,,=="',___,,,-----'''----'_'_'_''______00_
 """
 // MARK: - Version / Update Metadata
 
-let meowpassVersion = "1.0.0"
+let meowpassVersion = "1.1.0"
 let meowpassGithubOwner = "SpaceTrucker2196"
 let meowpassGithubRepo = "MeowPassword"
 
