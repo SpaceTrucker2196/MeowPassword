@@ -3,6 +3,7 @@ import UIKit
 import ImageIO
 import MeowUI
 import MeowGramKit
+import MeowGramAssets
 import MeowPassCore
 
 /// The compose UI shown inside Messages: pick a cat, type a secret message

@@ -12,6 +12,7 @@ let package = Package(
     products: [
         .library(name: "MeowStego", targets: ["MeowStego"]),
         .library(name: "MeowGramKit", targets: ["MeowGramKit"]),
+        .library(name: "MeowGramAssets", targets: ["MeowGramAssets"]),
         .library(name: "MeowPassCore", targets: ["MeowPassCore"]),
         .library(name: "MeowUI", targets: ["MeowUI"])
     ],
@@ -28,12 +29,20 @@ let package = Package(
             name: "MeowPassCore",
             path: "Sources/MeowPassCore"
         ),
-        // MeowGramKit: color image I/O + high-level MeowGram embed/decode +
-        // the bundled keyed-image catalog. macOS + iOS (CoreGraphics/CryptoKit).
+        // MeowGramKit: color image I/O + high-level MeowGram embed/decode.
+        // Code-only (no bundled images) so decode-only clients (the share
+        // extension) stay small. macOS + iOS (CoreGraphics/CryptoKit).
         .target(
             name: "MeowGramKit",
             dependencies: ["MeowStego"],
-            path: "Sources/MeowGramKit",
+            path: "Sources/MeowGramKit"
+        ),
+        // MeowGramAssets: the 100 keyed cat PNGs + their catalog. Only clients
+        // that show the picker (the apps, the iMessage extension) link this —
+        // the decode share extension does not, keeping it lean.
+        .target(
+            name: "MeowGramAssets",
+            path: "Sources/MeowGramAssets",
             resources: [.copy("Meowgrams")]
         ),
         // MeowUI: portable SwiftUI design system shared by both apps.
@@ -51,7 +60,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "MeowPasswordApp",
-            dependencies: ["MeowStego", "MeowGramKit", "MeowPassCore", "MeowUI"],
+            dependencies: ["MeowStego", "MeowGramKit", "MeowGramAssets", "MeowPassCore", "MeowUI"],
             path: "Sources/MeowPasswordApp",
             exclude: [
                 "Resources",

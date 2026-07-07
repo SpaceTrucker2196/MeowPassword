@@ -6,6 +6,7 @@ import Photos
 import UniformTypeIdentifiers
 import MeowUI
 import MeowGramKit
+import MeowGramAssets
 import MeowPassCore
 
 @MainActor

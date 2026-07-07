@@ -33,10 +33,13 @@ targets:
       - path: iOSApp
     dependencies:
       - target: MeowGramMessages   # embed the iMessage app extension
+      - target: MeowGramDecode     # embed the decode share extension
       - package: MeowLocal
         product: MeowStego
       - package: MeowLocal
         product: MeowGramKit
+      - package: MeowLocal
+        product: MeowGramAssets
       - package: MeowLocal
         product: MeowPassCore
       - package: MeowLocal
@@ -65,6 +68,8 @@ targets:
       - package: MeowLocal
         product: MeowGramKit
       - package: MeowLocal
+        product: MeowGramAssets
+      - package: MeowLocal
         product: MeowPassCore
       - package: MeowLocal
         product: MeowUI
@@ -72,6 +77,30 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.Messages
         INFOPLIST_FILE: MessagesExtension/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+
+  # ── Decode share extension (Share sheet → "Decode MeowGram") ────────────
+  # Links only the decode code — no cat assets — so it stays small.
+  MeowGramDecode:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: ShareExtension
+    dependencies:
+      - package: MeowLocal
+        product: MeowStego
+      - package: MeowLocal
+        product: MeowGramKit
+      - package: MeowLocal
+        product: MeowPassCore
+      - package: MeowLocal
+        product: MeowUI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.Share
+        INFOPLIST_FILE: ShareExtension/Info.plist
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         TARGETED_DEVICE_FAMILY: "1,2"
 
@@ -120,6 +149,8 @@ targets:
         product: MeowStego
       - package: MeowLocal
         product: MeowGramKit
+      - package: MeowLocal
+        product: MeowGramAssets
       - package: MeowLocal
         product: MeowPassCore
       - package: MeowLocal

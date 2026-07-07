@@ -1,7 +1,7 @@
 import Foundation
 import AppKit
 import ImageIO
-import MeowGramKit
+import MeowGramAssets
 
 /// The bundled keyed meowgrams now live in the shared `MeowGramKit` resource,
 /// so the app just re-exports the shared catalog. Thumbnail rendering

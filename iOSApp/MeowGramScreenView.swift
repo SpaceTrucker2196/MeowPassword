@@ -4,6 +4,7 @@ import PhotosUI
 import UniformTypeIdentifiers
 import MeowUI
 import MeowGramKit
+import MeowGramAssets
 
 struct MeowGramScreen: View {
     @StateObject private var model = MeowGramModeliOS()
