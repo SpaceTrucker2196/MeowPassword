@@ -60,6 +60,26 @@ def asc_api_key
   app_store_connect_api_key(key_id: key_id, issuer_id: issuer_id, key_filepath: key_path, in_house: false)
 end
 
+# One-time App Store Connect setup: create the app record for BOTH platforms
+# (one multiplatform record, shared bundle id io.river.MeowPassword). Run once:
+#   fastlane setup
+# Requires the App Store Connect API key env vars (see asc_api_key). The
+# extension App IDs (…​.Messages, …​.Share) register automatically at first
+# build via -allowProvisioningUpdates.
+lane :setup do
+  api_key = asc_api_key
+  produce(
+    api_key: api_key,
+    app_identifier: APP_ID,
+    app_name: ENV.fetch("APP_NAME", "MeowPassword"),
+    language: "English",
+    sku: ENV.fetch("APP_SKU", "meowpassword"),
+    platforms: ["ios", "osx"]
+  )
+  UI.success("App Store Connect record ready for #{APP_ID} (iOS + macOS). " \
+             "Next: fastlane ios beta  and  fastlane mac beta")
+end
+
 platform :ios do
   desc "Run the iOS unit tests (compose/decode round-trip) on a simulator."
   lane :tests do
@@ -136,5 +156,21 @@ platform :mac do
     )
     upload_to_testflight(api_key: api_key, app_identifier: APP_ID,
                          skip_waiting_for_build_processing: true)
+  end
+
+  desc "Build + upload the macOS app to App Store review (no auto-submit)."
+  lane :release do
+    ensure_project
+    api_key = asc_api_key
+    build_mac_app(
+      project: PROJECT,
+      scheme: MAC_SCHEME,
+      export_method: "app-store",
+      xcargs: "-allowProvisioningUpdates DEVELOPMENT_TEAM=#{DEV_TEAM}"
+    )
+    upload_to_app_store(api_key: api_key, app_identifier: APP_ID, platform: "osx",
+                        skip_metadata: true, skip_screenshots: true,
+                        precheck_include_in_app_purchases: false,
+                        force: true, submit_for_review: false)
   end
 end

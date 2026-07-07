@@ -163,3 +163,6 @@ targets:
         INFOPLIST_FILE: Sources/MeowPasswordApp/Resources/Info.plist
         MACOSX_DEPLOYMENT_TARGET: "13.0"
         ENABLE_HARDENED_RUNTIME: YES
+        # Mac App Store build: App Sandbox on (the Developer ID / DMG path via
+        # build_app.sh uses the non-sandbox MeowPassword.entitlements instead).
+        CODE_SIGN_ENTITLEMENTS: Sources/MeowPasswordApp/Resources/MeowPassword-AppStore.entitlements
