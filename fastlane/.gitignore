@@ -1,0 +1,8 @@
+README.md
+report.xml
+Preview.html
+screenshots/**/*.png
+screenshots/screenshots.html
+test_output/
+*.ipa
+*.dSYM.zip

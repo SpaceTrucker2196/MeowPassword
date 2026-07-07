@@ -1,0 +1,5 @@
+app_identifier "io.river.MeowPassword"
+
+# iOS and macOS ship under this one App Store Connect record (multiplatform app).
+# team_id / itc_team_id are inferred from the App Store Connect API key, so they
+# are not hard-coded here (see the Fastfile's asc_api_key helper).

@@ -1,0 +1,72 @@
+name: iOS CI (fastlane)
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: fastlane ios tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Pick an available iPhone simulator
+        run: |
+          DEVICE=$(xcrun simctl list devices available \
+            | grep -oE 'iPhone [0-9]+( Pro Max| Pro| Plus)?' | sort -Vr | head -1)
+          echo "Using simulator: $DEVICE"
+          echo "TEST_DEVICE=$DEVICE" >> "$GITHUB_ENV"
+
+      - name: Run iOS tests
+        run: fastlane ios tests
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: fastlane/test_output
+          if-no-files-found: ignore
+
+  package-tests:
+    name: fastlane mac tests (SwiftPM)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run package tests
+        run: fastlane mac tests
+
+  # TestFlight on tag pushes, only when signing secrets are present.
+  beta:
+    name: fastlane ios beta (TestFlight)
+    runs-on: macos-15
+    needs: [test, package-tests]
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: appstore
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Upload to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.ASC_KEY_P8 }}
+          DEVELOPMENT_TEAM: ${{ secrets.DEVELOPMENT_TEAM }}
+        run: |
+          if [ -z "$APP_STORE_CONNECT_API_KEY_KEY_ID" ]; then
+            echo "No App Store Connect secrets configured — skipping TestFlight upload."
+            exit 0
+          fi
+          fastlane ios beta

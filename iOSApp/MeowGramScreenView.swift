@@ -9,12 +9,7 @@ struct MeowGramScreen: View {
     @StateObject private var model = MeowGramModeliOS()
     @State private var pickerItem: PhotosPickerItem?
     @State private var showFileImporter = false
-    @State private var showMessage = false
-    @State private var messageURL: URL?
     var onClose: () -> Void = {}
-
-    private let shareBody = "I sent you a MeowGram! 🐱 Open it in MeowPassword to decode the hidden "
-        + "message. Keep it a PNG — don't screenshot or convert it, or the message is lost."
 
     var body: some View {
         ZStack {
@@ -54,13 +49,6 @@ struct MeowGramScreen: View {
                 if let data = try? Data(contentsOf: url) {
                     model.decode(data: data, display: UIImage(data: data))
                 }
-            }
-        }
-        .sheet(isPresented: $showMessage) {
-            if let url = messageURL {
-                MessageComposeView(attachmentURL: url, body: shareBody,
-                                   onFinish: { showMessage = false })
-                    .ignoresSafeArea()
             }
         }
     }
@@ -172,11 +160,6 @@ struct MeowGramScreen: View {
                         .disabled(model.selectedID == nil || model.message.isEmpty || model.isOverBudget || model.isEmbedding)
                     }
                     HStack(spacing: 8) {
-                        Button { presentMessage() } label: {
-                            Label("MESSAGE", systemImage: "message.fill")
-                        }
-                        .buttonStyle(NeonButton(fill: GameShow.neonLime))
-                        .disabled(model.encodedPNG == nil)
                         if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
                             ShareLink(item: url) { Label("SHARE", systemImage: "paperplane.fill") }
                                 .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
@@ -190,15 +173,6 @@ struct MeowGramScreen: View {
                 }
             }
         }
-    }
-
-    private func presentMessage() {
-        guard MessageComposeView.canSend, let url = model.shareFileURL() else {
-            model.errorText = "Messages isn't set up on this device."
-            return
-        }
-        messageURL = url
-        showMessage = true
     }
 
     // MARK: Decode

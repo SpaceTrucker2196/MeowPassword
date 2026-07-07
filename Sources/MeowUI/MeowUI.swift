@@ -210,6 +210,9 @@ public struct NeonButton: ButtonStyle {
         return configuration.label
             .font(.system(size: 14, weight: .black, design: .rounded))
             .foregroundStyle(text)
+            .lineLimit(1)                    // never wrap button text
+            .minimumScaleFactor(0.7)         // shrink slightly to fit instead
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.vertical, 10)
             .padding(.horizontal, 14)
             .frame(maxWidth: .infinity)
