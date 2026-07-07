@@ -79,6 +79,7 @@ targets:
         INFOPLIST_FILE: MessagesExtension/Info.plist
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: "iMessage App Icon"
 
   # ── Decode share extension (Share sheet → "Decode MeowGram") ────────────
   # Links only the decode code — no cat assets — so it stays small.
