@@ -9,3 +9,4 @@
 | f5f7c0b | 2026-07-06T01:01:24Z | claude-opus-4-8 | 2291 | 69589 | 17243972 | 87223 | 11.2454 | Add local Developer ID build scheme (release_signed.sh) + RELEASE.md docs |
 | 2d16651 | 2026-07-06T21:56:48Z | claude-opus-4-8 | 73440 | 486827 | 200266659 | 4083892 | 153.5101 | iOS iPhone/iPad app + shared-core extraction + macOS migration + Messages integr |
 | 56665c1 | 2026-07-07T02:54:18Z | claude-opus-4-8 | 9645 | 160985 | 59992530 | 1420111 | 48.2702 | iMessage app extension + fastlane CI + Shōwa Broadcast design doc + button no-wr |
+| e50808d | 2026-07-07T05:30:30Z | claude-opus-4-8 | 3864 | 109476 | 50373836 | 114411 | 29.0872 | Dark-mode readability fix, iMessage composer fix, embed animation, light/dark UI |
