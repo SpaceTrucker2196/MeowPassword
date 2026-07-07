@@ -12,3 +12,4 @@
 | e50808d | 2026-07-07T05:30:30Z | claude-opus-4-8 | 3864 | 109476 | 50373836 | 114411 | 29.0872 | Dark-mode readability fix, iMessage composer fix, embed animation, light/dark UI |
 | 28946bb | 2026-07-07T06:25:47Z | claude-opus-4-8 | 29579 | 55808 | 34064298 | 68484 | 19.2601 | Decode share extension + split cats into MeowGramAssets target |
 | 0910bd5 | 2026-07-07T07:04:14Z | claude-opus-4-8 | 4666 | 81460 | 46647826 | 79067 | 26.1744 | Add MeowGram courier-cat app icon (iOS, macOS, iMessage drawer) |
+| 6aeeaff | 2026-07-07T07:47:29Z | claude-opus-4-8 | 177 | 45774 | 20770954 | 50975 | 12.0405 | App Store Connect setup: fastlane setup/release lanes, MAS entitlements, runbook |
