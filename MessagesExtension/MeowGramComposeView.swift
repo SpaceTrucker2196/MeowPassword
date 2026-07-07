@@ -8,7 +8,7 @@ import MeowPassCore
 /// The compose UI shown inside Messages: pick a cat, type a secret message
 /// (optionally locked with a passphrase), and drop the MeowGram into the chat.
 struct MeowGramComposeView: View {
-    var isCompact: () -> Bool
+    @ObservedObject var state: ExtensionState
     var expand: () -> Void
     var insert: (URL) -> Void
 
@@ -26,16 +26,17 @@ struct MeowGramComposeView: View {
         ZStack {
             GameShow.bg.ignoresSafeArea()
             SparkleField(count: 30).ignoresSafeArea()
-            if isCompact() {
+            if state.isExpanded {
+                composer
+            } else {
                 Button(action: expand) {
                     Label("TAP TO MAKE A MEOWGRAM", systemImage: "cat.fill")
                 }
                 .buttonStyle(NeonButton(fill: GameShow.neonYellow))
                 .padding()
-            } else {
-                composer
             }
         }
+        .preferredColorScheme(.light)
         .task { if catalog.isEmpty { catalog = MeowGramCatalog.load() } }
     }
 

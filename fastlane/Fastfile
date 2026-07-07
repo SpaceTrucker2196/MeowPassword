@@ -73,6 +73,20 @@ platform :ios do
     )
   end
 
+  desc "Run the UI tests. Run once per simulator appearance for light/dark:\n" \
+       "  xcrun simctl ui booted appearance light && fastlane ios ui_tests\n" \
+       "  xcrun simctl ui booted appearance dark  && fastlane ios ui_tests"
+  lane :ui_tests do
+    ensure_project
+    run_tests(
+      project: PROJECT,
+      scheme: IOS_SCHEME,
+      devices: [ENV.fetch("TEST_DEVICE", "iPhone 17")],
+      only_testing: ["MeowPasswordUITests"],
+      result_bundle: true
+    )
+  end
+
   desc "Build + upload the iOS app to TestFlight."
   lane :beta do
     ensure_project

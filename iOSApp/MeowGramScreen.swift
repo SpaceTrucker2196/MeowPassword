@@ -54,11 +54,13 @@ final class MeowGramModeliOS: ObservableObject {
         let pass = passphrase.isEmpty ? nil : passphrase
         Task {
             do {
+                async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
                 let data: Data = try await Task.detached {
                     let image = try ColorImageIO.readRGBImage(path: path)
                     let stego = try MeowGram.embedMessage(msg, passphrase: pass, into: image)
                     return try ColorImageIO.pngData(stego)
                 }.value
+                try? await minShow
                 self.encodedPNG = data
                 self.previewImage = UIImage(data: data)
                 self.status = "Embedded! Ready to share."

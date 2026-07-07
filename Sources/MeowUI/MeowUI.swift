@@ -236,6 +236,94 @@ public struct NeonButton: ButtonStyle {
     }
 }
 
+/// Full-frame "generating" animation shown while a MeowGram is being embedded:
+/// a spinning sunburst pinwheel, a pulsing ink medallion with a cat, orbiting
+/// sparkles, and a broadcast-style chyron. Fills whatever frame it's given.
+public struct EmbedGeneratingView: View {
+    var label: String
+    public init(label: String = "EMBEDDING…") { self.label = label }
+
+    private static let wheel: AngularGradient = {
+        let colors = [GameShow.neonYellow, GameShow.hotPink, GameShow.neonCyan, GameShow.magenta]
+        let segments = 16
+        var stops: [Gradient.Stop] = []
+        for i in 0..<segments {
+            let c = colors[i % colors.count]
+            stops.append(.init(color: c, location: Double(i) / Double(segments)))
+            stops.append(.init(color: c, location: Double(i + 1) / Double(segments) - 0.0001))
+        }
+        return AngularGradient(gradient: Gradient(stops: stops), center: .center)
+    }()
+
+    public var body: some View {
+        TimelineView(.animation) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+            let pulse = 1.0 + 0.08 * sin(t * 3.2)
+            GeometryReader { geo in
+                let side = max(geo.size.width, geo.size.height) * 1.6
+                let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
+                let orbit = min(geo.size.width, geo.size.height) * 0.32
+                ZStack {
+                    GameShow.inkBlack.opacity(0.06)
+
+                    // Spinning sunburst pinwheel.
+                    Circle()
+                        .fill(Self.wheel)
+                        .frame(width: side, height: side)
+                        .rotationEffect(.degrees(t * 45))
+                        .opacity(0.9)
+                        .position(center)
+                        .mask(Circle().frame(width: side, height: side).position(center))
+
+                    // Soft ink vignette so the medallion pops.
+                    RadialGradient(colors: [.clear, GameShow.inkBlack.opacity(0.35)],
+                                   center: .center, startRadius: orbit * 0.6, endRadius: side * 0.5)
+                        .position(center)
+
+                    // Orbiting sparkles.
+                    ForEach(0..<7, id: \.self) { i in
+                        let a = t * 1.6 + Double(i) * (.pi * 2 / 7)
+                        Image(systemName: "sparkle")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundStyle(.white)
+                            .shadow(color: GameShow.inkBlack, radius: 0, x: 1, y: 1)
+                            .opacity(0.55 + 0.45 * sin(t * 4 + Double(i)))
+                            .position(x: center.x + CGFloat(cos(a)) * orbit,
+                                      y: center.y + CGFloat(sin(a)) * orbit)
+                    }
+
+                    // Pulsing medallion.
+                    ZStack {
+                        Circle().fill(GameShow.inkBlack)
+                        Circle().stroke(GameShow.neonYellow, lineWidth: 4)
+                            .padding(5)
+                        Image(systemName: "cat.fill")
+                            .font(.system(size: 34, weight: .black))
+                            .foregroundStyle(GameShow.neonYellow)
+                            .rotationEffect(.degrees(sin(t * 2) * 12))
+                    }
+                    .frame(width: orbit * 1.15, height: orbit * 1.15)
+                    .scaleEffect(pulse)
+                    .position(center)
+
+                    // Chyron.
+                    VStack {
+                        Spacer()
+                        Text(label)
+                            .font(.system(size: 13, weight: .black, design: .rounded))
+                            .foregroundStyle(GameShow.inkBlack)
+                            .padding(.horizontal, 12).padding(.vertical, 5)
+                            .background(Capsule().fill(GameShow.neonYellow)
+                                .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 2)))
+                            .padding(.bottom, 10)
+                    }
+                }
+            }
+        }
+        .clipped()
+    }
+}
+
 /// Theme-styled slider: capsule track, tinted fill, black-outlined thumb.
 public struct ChunkySlider: View {
     @Binding var value: Int

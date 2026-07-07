@@ -75,10 +75,12 @@ final class MeowGramModel: ObservableObject {
 
         Task.detached(priority: .userInitiated) {
             do {
+                async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
                 let image = try ColorImageIO.readRGBImage(path: path)
                 let stego = try MeowGram.embedMessage(msg, passphrase: pass, into: image)
                 let data = try ColorImageIO.pngData(stego)
                 let nsImage = NSImage(data: data)
+                try? await minShow
                 await MainActor.run {
                     self.encodedPNG = data
                     self.previewImage = nsImage

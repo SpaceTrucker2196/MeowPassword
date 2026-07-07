@@ -11,6 +11,7 @@ struct MeowPasswordApp: App {
         WindowGroup("MeowPassword", id: "main") {
             ContentView()
                 .environmentObject(model)
+                .preferredColorScheme(.light)   // fixed game-show palette; never adapt to dark
                 .onAppear { appDelegate.model = model }
                 .onOpenURL { url in handleURL(url) }
         }
@@ -74,6 +75,7 @@ struct MeowPasswordApp: App {
         Window("MeowGram", id: "meowgram") {
             MeowGramView()
                 .environmentObject(meowGramModel)
+                .preferredColorScheme(.light)
         }
         .defaultSize(width: 820, height: 700)
         .windowResizability(.contentMinSize)

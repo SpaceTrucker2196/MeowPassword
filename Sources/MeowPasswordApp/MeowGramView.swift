@@ -129,7 +129,10 @@ struct MeowGramView: View {
                         sectionLabel("PREVIEW", tint: GameShow.neonCyan)
                         ZStack {
                             RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack.opacity(0.1))
-                            if let img = model.previewImage {
+                            if model.isEmbedding {
+                                EmbedGeneratingView()
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            } else if let img = model.previewImage {
                                 Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             } else {
@@ -142,7 +145,7 @@ struct MeowGramView: View {
                                 .foregroundStyle(GameShow.inkBlack.opacity(0.4))
                             }
                         }
-                        .frame(maxHeight: 240)
+                        .frame(minHeight: 200, maxHeight: 240)
 
                         VStack(spacing: 8) {
                             HStack(spacing: 10) {

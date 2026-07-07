@@ -32,6 +32,7 @@ struct MeowGramScreen: View {
             }
             .padding(12)
         }
+        .preferredColorScheme(.light)
         .task { model.load() }
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
@@ -140,35 +141,43 @@ struct MeowGramScreen: View {
             }
             .frame(maxHeight: .infinity)
 
-            // Preview + actions — compact.
+            // Preview + actions — compact. While embedding, the whole panel
+            // becomes the generating animation.
             GamePanel(tint: GameShow.neonYellow) {
-                VStack(spacing: 8) {
-                    HStack(spacing: 10) {
-                        if let img = model.previewImage {
-                            Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: 90, maxHeight: 112)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        } else {
-                            RoundedRectangle(cornerRadius: 8).fill(GameShow.inkBlack.opacity(0.1))
-                                .frame(width: 90, height: 112)
-                                .overlay(Image(systemName: "photo").foregroundStyle(GameShow.inkBlack.opacity(0.3)))
+                if model.isEmbedding {
+                    EmbedGeneratingView()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    VStack(spacing: 8) {
+                        HStack(spacing: 10) {
+                            if let img = model.previewImage {
+                                Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: 90, maxHeight: 112)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            } else {
+                                RoundedRectangle(cornerRadius: 8).fill(GameShow.inkBlack.opacity(0.1))
+                                    .frame(width: 90, height: 112)
+                                    .overlay(Image(systemName: "photo").foregroundStyle(GameShow.inkBlack.opacity(0.3)))
+                            }
+                            Button { model.embed() } label: {
+                                Label("EMBED!", systemImage: "wand.and.stars")
+                            }
+                            .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                            .disabled(model.selectedID == nil || model.message.isEmpty || model.isOverBudget)
                         }
-                        Button { model.embed() } label: {
-                            Label(model.isEmbedding ? "EMBEDDING…" : "EMBED!", systemImage: "wand.and.stars")
+                        HStack(spacing: 8) {
+                            if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
+                                ShareLink(item: url) { Label("SHARE", systemImage: "paperplane.fill") }
+                                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                            }
+                            Button { model.saveToPhotos() } label: {
+                                Label("SAVE", systemImage: "square.and.arrow.down")
+                            }
+                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                            .disabled(model.encodedPNG == nil)
                         }
-                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
-                        .disabled(model.selectedID == nil || model.message.isEmpty || model.isOverBudget || model.isEmbedding)
-                    }
-                    HStack(spacing: 8) {
-                        if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
-                            ShareLink(item: url) { Label("SHARE", systemImage: "paperplane.fill") }
-                                .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
-                        }
-                        Button { model.saveToPhotos() } label: {
-                            Label("SAVE", systemImage: "square.and.arrow.down")
-                        }
-                        .buttonStyle(NeonButton(fill: GameShow.neonCyan))
-                        .disabled(model.encodedPNG == nil)
                     }
                 }
             }

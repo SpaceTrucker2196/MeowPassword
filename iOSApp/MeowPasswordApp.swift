@@ -6,6 +6,10 @@ struct MeowPasswordApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                // The game-show palette is a fixed print aesthetic — it must
+                // render identically regardless of the device's light/dark
+                // setting, so text never lands white-on-white.
+                .preferredColorScheme(.light)
         }
     }
 }

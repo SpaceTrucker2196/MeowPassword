@@ -89,6 +89,20 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.tests
         GENERATE_INFOPLIST_FILE: YES
 
+  # ── iOS UI tests (readability in light + dark appearance) ──────────────
+  MeowPasswordUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: iOSUITests
+    dependencies:
+      - target: MeowPassword
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.uitests
+        GENERATE_INFOPLIST_FILE: YES
+
   # ── macOS (same App Store Connect record) ──────────────────────────────
   # Reuses the existing SwiftUI app sources. The SwiftPM + build_app.sh +
   # Developer ID DMG path remains for direct distribution of the same code.
