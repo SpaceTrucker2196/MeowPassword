@@ -37,11 +37,20 @@ by hand.
    The issuer defaults to the river.io account if unset; team id is inferred
    from the key.
 
-3. **Create the app record for both platforms:**
+3. **Create the app record once (web UI).** Apple does **not** allow creating
+   an app record through the App Store Connect API (the `apps` resource is
+   GET/UPDATE only), so this one step is manual:
+   [appstoreconnect.apple.com](https://appstoreconnect.apple.com) → Apps → **+**
+   → New App → tick **iOS** *and* **macOS**, Name **MeowPassword**, Bundle ID
+   **`io.river.MeowPassword`** (already registered), SKU **meowpassword**.
+
+   `fastlane setup` prints these exact values and confirms once the record
+   exists — run it to check status:
    ```bash
-   fastlane setup           # runs `produce` for io.river.MeowPassword (ios + osx)
+   fastlane setup
    ```
-   Override name/SKU if needed: `APP_NAME="MeowPassword" APP_SKU="meowpassword" fastlane setup`.
+   Everything after this (builds, TestFlight, metadata) is fully automated with
+   the API key.
 
 ## Ship builds
 
