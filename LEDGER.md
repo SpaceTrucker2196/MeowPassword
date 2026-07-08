@@ -15,3 +15,4 @@
 | 6aeeaff | 2026-07-07T07:47:29Z | claude-opus-4-8 | 177 | 45774 | 20770954 | 50975 | 12.0405 | App Store Connect setup: fastlane setup/release lanes, MAS entitlements, runbook |
 | f1a7234 | 2026-07-07T07:53:41Z | claude-opus-4-8 | 286 | 27073 | 12349668 | 20633 | 7.0594 | Reuse shared river.io ASC API key (H3U2MJCD77) + validate_key lane |
 | 30314ee | 2026-07-07T08:21:37Z | claude-opus-4-8 | 1823 | 83774 | 66613940 | 99221 | 36.4026 | App Store setup: bundle ID registered, web-UI app-record guidance, key validated |
+| 2327ed1 | 2026-07-08T21:55:02Z | claude-opus-4-8 | 2147 | 56197 | 51245051 | 2792856 | 54.9667 | Generating animation in judge/decode/send flows; force light in extensions; Deco |
