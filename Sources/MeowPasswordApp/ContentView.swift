@@ -389,7 +389,12 @@ struct ContentView: View {
                     .opacity(model.analyzeInput.isEmpty || model.isBusy ? 0.6 : 1)
                 }
 
-                if !model.analyzeResult.isEmpty {
+                if model.isAnalyzing {
+                    EmbedGeneratingView(label: "JUDGING…")
+                        .frame(height: 150)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                } else if !model.analyzeResult.isEmpty {
                     ScrollView {
                         Text(model.analyzeResult)
                             .font(.system(size: 10, weight: .heavy, design: .monospaced))

@@ -108,6 +108,14 @@ struct MeowGramComposeView: View {
             }
         }
         .padding(12)
+        .overlay {
+            if busy {
+                EmbedGeneratingView(label: "SENDING…")
+                    .background(GameShow.paperWhite)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .padding(8)
+            }
+        }
     }
 
     private func send() {
@@ -117,6 +125,7 @@ struct MeowGramComposeView: View {
         let pass = passphrase.isEmpty ? nil : passphrase
         Task {
             do {
+                async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
                 let url: URL = try await Task.detached {
                     let image = try ColorImageIO.readRGBImage(path: path)
                     let stego = try MeowGram.embedMessage(msg, passphrase: pass, into: image)
@@ -128,6 +137,7 @@ struct MeowGramComposeView: View {
                     try data.write(to: out)
                     return out
                 }.value
+                try? await minShow
                 insert(url)
                 busy = false
             } catch {

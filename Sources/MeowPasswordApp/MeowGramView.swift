@@ -183,15 +183,16 @@ struct MeowGramView: View {
     private var decodePane: some View {
         VStack(spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(GameShow.paperWhite.opacity(model.isDropTargeted ? 1.0 : 0.85))
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(model.isDropTargeted ? GameShow.neonLime : GameShow.neonCyan,
-                            style: StrokeStyle(lineWidth: 4, dash: [10, 8]))
-                VStack(spacing: 8) {
-                    if model.isDecoding {
-                        ProgressView().controlSize(.large)
-                    } else {
+                if model.isDecoding {
+                    EmbedGeneratingView(label: "DECODING…")
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                } else {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(GameShow.paperWhite.opacity(model.isDropTargeted ? 1.0 : 0.85))
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(model.isDropTargeted ? GameShow.neonLime : GameShow.neonCyan,
+                                style: StrokeStyle(lineWidth: 4, dash: [10, 8]))
+                    VStack(spacing: 8) {
                         Image(systemName: "arrow.down.doc.fill")
                             .font(.system(size: 40, weight: .black))
                         Text("DROP A MEOWGRAM PNG HERE")
@@ -200,8 +201,8 @@ struct MeowGramView: View {
                             .font(.system(size: 10, weight: .heavy, design: .rounded))
                             .opacity(0.6)
                     }
+                    .foregroundStyle(GameShow.inkBlack.opacity(0.6))
                 }
-                .foregroundStyle(GameShow.inkBlack.opacity(0.6))
             }
             .frame(minHeight: 200)
 

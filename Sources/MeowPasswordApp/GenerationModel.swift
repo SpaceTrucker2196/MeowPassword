@@ -18,6 +18,7 @@ final class GenerationModel: ObservableObject {
     @Published var analyzeResult: String = ""
 
     @Published var isBusy: Bool = false
+    @Published var isAnalyzing: Bool = false
     @Published var lastError: String?
 
     struct Candidate: Identifiable {
@@ -53,12 +54,16 @@ final class GenerationModel: ObservableObject {
     func analyze() {
         let input = analyzeInput
         guard !input.isEmpty else { return }
-        runOffMain(
-            work: { MeowPass.analyze(input) },
-            apply: { result in
-                self.analyzeResult = result.analysis + "\n\n" + result.verdict
-            }
-        )
+        isAnalyzing = true
+        analyzeResult = ""
+        lastError = nil
+        Task {
+            async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
+            let result = await Task.detached { MeowPass.analyze(input) }.value
+            try? await minShow
+            self.analyzeResult = result.analysis + "\n\n" + result.verdict
+            self.isAnalyzing = false
+        }
     }
 
     func copyBest() {

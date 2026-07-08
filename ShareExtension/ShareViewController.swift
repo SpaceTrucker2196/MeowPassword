@@ -21,6 +21,9 @@ final class ShareViewController: UIViewController {
         })
         let host = UIHostingController(rootView: root)
         host.view.backgroundColor = .clear
+        // Fixed game-show palette regardless of the host's light/dark setting.
+        host.overrideUserInterfaceStyle = .light
+        overrideUserInterfaceStyle = .light
         addChild(host)
         host.view.frame = view.bounds
         host.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]

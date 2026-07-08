@@ -26,6 +26,10 @@ final class MessagesViewController: MSMessagesAppViewController {
         )
         let controller = UIHostingController(rootView: root)
         controller.view.backgroundColor = .clear
+        // Force the fixed game-show palette regardless of the Messages host's
+        // light/dark appearance, so text never lands white-on-white.
+        controller.overrideUserInterfaceStyle = .light
+        overrideUserInterfaceStyle = .light
         addChild(controller)
         controller.view.frame = view.bounds
         controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]

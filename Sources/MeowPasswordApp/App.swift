@@ -31,7 +31,7 @@ struct MeowPasswordApp: App {
                 Button("Generate + Copy") { model.generateAndCopy() }
                     .keyboardShortcut("c", modifiers: [.command, .shift])
 
-                MeowGramMenuItem()
+                MeowGramMenuItem(model: meowGramModel)
 
                 Divider()
 
@@ -104,12 +104,21 @@ struct MeowPasswordApp: App {
 
 private struct MeowGramMenuItem: View {
     @Environment(\.openWindow) private var openWindow
+    let model: MeowGramModel
     var body: some View {
         Button("New MeowGram…") {
+            model.mode = .compose
             openWindow(id: "meowgram")
             NSApp.activate(ignoringOtherApps: true)
         }
         .keyboardShortcut("m", modifiers: [.command, .shift])
+
+        Button("Decode MeowGram…") {
+            model.mode = .decode
+            openWindow(id: "meowgram")
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        .keyboardShortcut("d", modifiers: [.command, .shift])
     }
 }
 

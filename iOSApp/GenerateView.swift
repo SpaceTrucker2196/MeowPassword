@@ -13,6 +13,7 @@ final class GenerateModel: ObservableObject {
     @Published var analyzeInput = ""
     @Published var analyzeResult = ""
     @Published var isBusy = false
+    @Published var isAnalyzing = false
 
     private func config() -> PasswordConfig {
         PasswordConfig(numNumbers: numbers, numSymbols: symbols, maxLength: maxLength)
@@ -33,9 +34,14 @@ final class GenerateModel: ObservableObject {
     func analyze() {
         guard !analyzeInput.isEmpty else { return }
         let input = analyzeInput
+        isAnalyzing = true
+        analyzeResult = ""
         Task {
+            async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
             let r = await Task.detached { MeowPass.analyze(input) }.value
+            try? await minShow
             self.analyzeResult = r.analysis + "\n\n" + r.verdict
+            self.isAnalyzing = false
         }
     }
 }
@@ -170,6 +176,7 @@ struct GenerateView: View {
                 HStack {
                     TextField("Paste a password…", text: $model.analyzeInput)
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(GameShow.inkBlack)
                         .padding(8)
                         .background(RoundedRectangle(cornerRadius: 8).fill(.white))
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
@@ -180,7 +187,11 @@ struct GenerateView: View {
                         .fixedSize()
                         .disabled(model.analyzeInput.isEmpty)
                 }
-                if !model.analyzeResult.isEmpty {
+                if model.isAnalyzing {
+                    EmbedGeneratingView(label: "JUDGING…")
+                        .frame(height: 140)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else if !model.analyzeResult.isEmpty {
                     Text(model.analyzeResult)
                         .font(.system(size: 11, weight: .heavy, design: .monospaced))
                         .foregroundStyle(GameShow.neonLime)

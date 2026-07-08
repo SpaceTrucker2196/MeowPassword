@@ -30,7 +30,9 @@ struct ShareDecodeView: View {
                 }
 
                 if decoding {
-                    ProgressView().controlSize(.large).tint(.white)
+                    EmbedGeneratingView(label: "DECODING…")
+                        .frame(height: 170)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 } else if let message {
                     messagePanel(message)
                 } else {
