@@ -1,9 +1,12 @@
 import UIKit
 import SwiftUI
 import UniformTypeIdentifiers
+import MeowGramKit
 
 /// Share-sheet target "Decode MeowGram": receives a shared image (from
-/// Messages, Photos, Files, …), extracts the hidden message, and shows it.
+/// Messages, Photos, Files, …) and hands it to the MeowPassword app, which
+/// opens on its decode screen with the image loaded. Falls back to decoding
+/// inline if the app can't be opened (e.g. App Group unavailable).
 @objc(ShareViewController)
 final class ShareViewController: UIViewController {
 
@@ -11,17 +14,29 @@ final class ShareViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .clear
         loadSharedImageData { [weak self] data in
-            DispatchQueue.main.async { self?.present(data: data) }
+            DispatchQueue.main.async { self?.handle(data) }
         }
     }
 
-    private func present(data: Data?) {
+    private func handle(_ data: Data?) {
+        // Preferred path: drop the image in the shared inbox and open the app
+        // straight to its decode screen.
+        if let data, MeowGramInbox.isAvailable, MeowGramInbox.write(data),
+           let url = URL(string: "meowpass://decode") {
+            openContainingApp(url)
+            extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+            return
+        }
+        // Fallback: decode inline in the share sheet.
+        presentInlineDecode(data)
+    }
+
+    private func presentInlineDecode(_ data: Data?) {
         let root = ShareDecodeView(imageData: data, close: { [weak self] in
             self?.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
         })
         let host = UIHostingController(rootView: root)
         host.view.backgroundColor = .clear
-        // Fixed game-show palette regardless of the host's light/dark setting.
         host.overrideUserInterfaceStyle = .light
         overrideUserInterfaceStyle = .light
         addChild(host)
@@ -29,6 +44,20 @@ final class ShareViewController: UIViewController {
         host.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(host.view)
         host.didMove(toParent: self)
+    }
+
+    /// Open the containing app from the extension (walk the responder chain to
+    /// a UIApplication that responds to openURL:).
+    private func openContainingApp(_ url: URL) {
+        var responder: UIResponder? = self
+        let selector = sel_registerName("openURL:")
+        while let r = responder {
+            if r.responds(to: selector) {
+                _ = r.perform(selector, with: url)
+                return
+            }
+            responder = r.next
+        }
     }
 
     /// Pull the shared image out as raw bytes, preferring exact PNG data

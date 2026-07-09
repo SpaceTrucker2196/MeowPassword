@@ -26,6 +26,17 @@
 	<dict/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>MeowGram saves your cat-mail images to Photos as lossless PNGs so the hidden message survives.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>io.river.MeowPassword</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>meowpass</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

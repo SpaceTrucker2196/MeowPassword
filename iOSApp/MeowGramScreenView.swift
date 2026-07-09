@@ -11,6 +11,7 @@ struct MeowGramScreen: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var showFileImporter = false
     var onClose: () -> Void = {}
+    var decodeOnOpen: Data? = nil
 
     var body: some View {
         ZStack {
@@ -34,7 +35,15 @@ struct MeowGramScreen: View {
             .padding(12)
         }
         .preferredColorScheme(.light)
-        .task { model.load() }
+        .task {
+            model.load()
+            // Opened from the "Decode MeowGram" share extension: jump to decode
+            // and decode the handed-off image immediately.
+            if let data = decodeOnOpen {
+                model.mode = .decode
+                model.decode(data: data, display: UIImage(data: data))
+            }
+        }
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
             Task {

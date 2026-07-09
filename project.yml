@@ -48,6 +48,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword
         INFOPLIST_FILE: iOSApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: iOSApp/MeowPassword.entitlements
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -102,6 +103,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.Share
         INFOPLIST_FILE: ShareExtension/Info.plist
+        CODE_SIGN_ENTITLEMENTS: ShareExtension/MeowGramDecode.entitlements
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         TARGETED_DEVICE_FAMILY: "1,2"
 
