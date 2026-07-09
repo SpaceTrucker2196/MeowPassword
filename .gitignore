@@ -28,3 +28,4 @@ test_meowpass_combined.swift
 # MeowGram source images — only the keyed PNG masters ship with the app
 meowgrams/*.jpg
 /.build-ios
+/.build-dev

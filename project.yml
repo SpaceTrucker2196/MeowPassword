@@ -15,7 +15,7 @@ settings:
     SWIFT_VERSION: "5.10"
     MARKETING_VERSION: "1.1.0"
     CURRENT_PROJECT_VERSION: "1"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: "U3Z59VXPUB"
     CODE_SIGN_STYLE: Automatic
 # Both app targets link the shared SwiftPM libraries from this same package
 # (local path package) so iOS and macOS ship one engine under one App Store
@@ -46,7 +46,7 @@ targets:
         product: MeowUI
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword
         INFOPLIST_FILE: iOSApp/Info.plist
         CODE_SIGN_ENTITLEMENTS: iOSApp/MeowPassword.entitlements
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
@@ -76,7 +76,7 @@ targets:
         product: MeowUI
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.Messages
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword.Messages
         INFOPLIST_FILE: MessagesExtension/Info.plist
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         TARGETED_DEVICE_FAMILY: "1,2"
@@ -101,7 +101,7 @@ targets:
         product: MeowUI
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.Share
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword.decode
         INFOPLIST_FILE: ShareExtension/Info.plist
         CODE_SIGN_ENTITLEMENTS: ShareExtension/MeowGramDecode.entitlements
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
@@ -118,7 +118,7 @@ targets:
       - target: MeowPassword
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.tests
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword.tests
         GENERATE_INFOPLIST_FILE: YES
 
   # ── iOS UI tests (readability in light + dark appearance) ──────────────
@@ -132,7 +132,7 @@ targets:
       - target: MeowPassword
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword.uitests
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword.uitests
         GENERATE_INFOPLIST_FILE: YES
 
   # ── macOS (same App Store Connect record) ──────────────────────────────
@@ -160,7 +160,7 @@ targets:
         product: MeowUI
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.river.MeowPassword
+        PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword
         PRODUCT_NAME: MeowPassword
         INFOPLIST_FILE: Sources/MeowPasswordApp/Resources/Info.plist
         MACOSX_DEPLOYMENT_TARGET: "13.0"
@@ -168,3 +168,31 @@ targets:
         # Mac App Store build: App Sandbox on (the Developer ID / DMG path via
         # build_app.sh uses the non-sandbox MeowPassword.entitlements instead).
         CODE_SIGN_ENTITLEMENTS: Sources/MeowPasswordApp/Resources/MeowPassword-AppStore.entitlements
+
+# Explicit shared schemes. Without these, Xcode auto-manages schemes and will
+# happily try to build the package's macOS-only executable targets (the
+# `meowpass` CLI, the `MeowPasswordApp` SwiftPM app) against an iOS device —
+# which fails on AppKit / Process. Each scheme below builds ONLY its app target;
+# Xcode pulls in the five library products as implicit dependencies.
+schemes:
+  MeowPassword:            # iOS (iPhone + iPad)
+    build:
+      targets:
+        MeowPassword: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - MeowPasswordTests
+        - MeowPasswordUITests
+    archive:
+      config: Release
+  MeowPasswordMac:         # macOS (same App Store Connect record)
+    build:
+      targets:
+        MeowPasswordMac: all
+    run:
+      config: Debug
+    archive:
+      config: Release
