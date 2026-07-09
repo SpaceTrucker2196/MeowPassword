@@ -17,3 +17,4 @@
 | 30314ee | 2026-07-07T08:21:37Z | claude-opus-4-8 | 1823 | 83774 | 66613940 | 99221 | 36.4026 | App Store setup: bundle ID registered, web-UI app-record guidance, key validated |
 | 2327ed1 | 2026-07-08T21:55:02Z | claude-opus-4-8 | 2147 | 56197 | 51245051 | 2792856 | 54.9667 | Generating animation in judge/decode/send flows; force light in extensions; Deco |
 | c012214 | 2026-07-09T00:24:06Z | claude-opus-4-8 | 787 | 48521 | 10712882 | 2845833 | 35.0317 | Lazy cat thumbnails + deferred catalog to speed up iMessage extension load |
+| 353217e | 2026-07-09T02:46:01Z | claude-opus-4-8 | 74932 | 35693 | 36534605 | 126776 | 20.8020 | iOS Decode MeowGram share -> open app on decode screen with image loaded |
