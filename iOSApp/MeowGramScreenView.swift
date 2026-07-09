@@ -127,7 +127,8 @@ struct MeowGramScreen: View {
                     label("PICK A CAT!", tint: GameShow.hotPink)
                     GeometryReader { geo in
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
+                            // Lazy so only visible cats decode a thumbnail.
+                            LazyHStack(spacing: 8) {
                                 ForEach(model.catalog) { entry in
                                     Thumb(entry: entry,
                                           selected: model.selectedID == entry.id,

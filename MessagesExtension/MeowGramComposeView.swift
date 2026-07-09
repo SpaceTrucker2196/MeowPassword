@@ -38,7 +38,11 @@ struct MeowGramComposeView: View {
             }
         }
         .preferredColorScheme(.light)
-        .task { if catalog.isEmpty { catalog = MeowGramCatalog.load() } }
+        // Only enumerate the cats once the extension is expanded — keeps the
+        // compact "tap to open" bar instant to load.
+        .task(id: state.isExpanded) {
+            if state.isExpanded && catalog.isEmpty { catalog = MeowGramCatalog.load() }
+        }
     }
 
     private var composer: some View {
@@ -81,7 +85,9 @@ struct MeowGramComposeView: View {
                     label("PICK A CAT!", tint: GameShow.hotPink)
                     GeometryReader { geo in
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
+                            // Lazy so only visible cats decode a thumbnail — the
+                            // extension has a tight memory/launch budget.
+                            LazyHStack(spacing: 8) {
                                 ForEach(catalog) { entry in
                                     Thumb(entry: entry, selected: selectedID == entry.id, height: geo.size.height)
                                         .onTapGesture { selectedID = entry.id }
