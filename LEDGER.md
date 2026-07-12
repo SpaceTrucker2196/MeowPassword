@@ -19,3 +19,4 @@
 | c012214 | 2026-07-09T00:24:06Z | claude-opus-4-8 | 787 | 48521 | 10712882 | 2845833 | 35.0317 | Lazy cat thumbnails + deferred catalog to speed up iMessage extension load |
 | 353217e | 2026-07-09T02:46:01Z | claude-opus-4-8 | 74932 | 35693 | 36534605 | 126776 | 20.8020 | iOS Decode MeowGram share -> open app on decode screen with image loaded |
 | 001d45d | 2026-07-09T05:12:28Z | claude-opus-4-8 | 17381 | 266739 | 25399383 | 335373 | 22.8088 | Fix iOS device signing: team, io.river.meowpassword bundle IDs, App Groups, shar |
+| 448104b | 2026-07-12T06:04:59Z | claude-opus-4-8 | 25136 | 405756 | 74959982 | 1364946 | 61.3990 | Decode-panel redesign + deferred decode, first-launch coach-mark tutorials, Spar |
