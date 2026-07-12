@@ -21,3 +21,4 @@
 | 001d45d | 2026-07-09T05:12:28Z | claude-opus-4-8 | 17381 | 266739 | 25399383 | 335373 | 22.8088 | Fix iOS device signing: team, io.river.meowpassword bundle IDs, App Groups, shar |
 | 448104b | 2026-07-12T06:04:59Z | claude-opus-4-8 | 25136 | 405756 | 74959982 | 1364946 | 61.3990 | Decode-panel redesign + deferred decode, first-launch coach-mark tutorials, Spar |
 | bc91b55 | 2026-07-12T15:43:18Z | claude-opus-4-8 | 1700 | 55667 | 11717578 | 1214694 | 19.4059 | Katakana digital-rain (Matrix-style) decode animation sized to the MeowGram |
+| 6ad810a | 2026-07-12T15:51:10Z | claude-opus-4-8 | 2273 | 26865 | 15717252 | 30280 | 8.8444 | Propagate digital-rain decode animation to macOS and Share-extension decode surf |
