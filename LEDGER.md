@@ -23,3 +23,4 @@
 | bc91b55 | 2026-07-12T15:43:18Z | claude-opus-4-8 | 1700 | 55667 | 11717578 | 1214694 | 19.4059 | Katakana digital-rain (Matrix-style) decode animation sized to the MeowGram |
 | 6ad810a | 2026-07-12T15:51:10Z | claude-opus-4-8 | 2273 | 26865 | 15717252 | 30280 | 8.8444 | Propagate digital-rain decode animation to macOS and Share-extension decode surf |
 | 9ae625d | 2026-07-12T15:55:05Z | claude-opus-4-8 | 1516 | 19208 | 9010534 | 24299 | 5.2360 | Fix Bundle.module so the XcodeGen macOS target compiles for App Store archive |
+| fa1c6a3 | 2026-07-12T16:13:20Z | claude-opus-4-8 | 2957 | 84050 | 30675503 | 116567 | 18.6195 | Make macOS MeowGram decode flow consistent with iOS (deferred decode, reordered  |
