@@ -31,3 +31,4 @@
 | fa777c0 | 2026-07-12T17:15:52Z | claude-opus-4-8 | 998 | 10449 | 12878313 | 17306 | 6.8784 | Remove the iMessage app extension (MeowGramMessages) |
 | c433e92 | 2026-07-12T19:07:44Z | claude-opus-4-8 | 10753 | 96378 | 62959028 | 109500 | 35.0377 | Finalize + push iOS App Store listing metadata (name, subtitle, description, key |
 | b8710df | 2026-07-12T19:24:36Z | claude-opus-4-8 | 26 | 19847 | 8465149 | 26396 | 4.9928 | Fix fastlane APP_ID to io.river.meowpassword and add commit-count build number |
+| da5dcb6 | 2026-07-12T19:38:13Z | claude-opus-4-8 | 1605 | 87735 | 39163528 | 156641 | 23.3496 | Generate iOS App Store screenshots (iPhone 6.9 + iPad 13) + demoGenerate QA arg |
