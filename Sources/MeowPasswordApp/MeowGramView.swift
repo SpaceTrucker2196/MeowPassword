@@ -182,80 +182,108 @@ struct MeowGramView: View {
 
     private var decodePane: some View {
         VStack(spacing: 12) {
-            ZStack {
-                if model.isDecoding {
-                    MatrixDecodeView(label: "DECODING…")
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                } else {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(GameShow.paperWhite.opacity(model.isDropTargeted ? 1.0 : 0.85))
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(model.isDropTargeted ? GameShow.neonLime : GameShow.neonCyan,
-                                style: StrokeStyle(lineWidth: 4, dash: [10, 8]))
-                    VStack(spacing: 8) {
-                        Image(systemName: "arrow.down.doc.fill")
-                            .font(.system(size: 40, weight: .black))
-                        Text("DROP A MEOWGRAM PNG HERE")
-                            .font(.system(size: 14, weight: .black, design: .rounded))
-                        Text("かくされたメッセージをさがす")
-                            .font(.system(size: 10, weight: .heavy, design: .rounded))
-                            .opacity(0.6)
+            // Decoded message lands at the top, under the mode toggle.
+            if let msg = model.decodedMessage { decodedMessagePanel(msg) }
+
+            GamePanel(tint: GameShow.neonCyan) {
+                VStack(spacing: 10) {
+                    sectionLabel("DECODE A MEOWGRAM", tint: GameShow.hotPink)
+
+                    // The MeowGram — full width; the decode rain lays over it.
+                    ZStack {
+                        if let img = model.decodedImage {
+                            Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity)
+                                .overlay { if model.isDecoding { MatrixDecodeView(label: "DECODING…") } }
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        } else if model.isDecoding {
+                            MatrixDecodeView(label: "DECODING…")
+                                .frame(maxWidth: .infinity)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        } else {
+                            dropZone
+                        }
                     }
-                    .foregroundStyle(GameShow.inkBlack.opacity(0.6))
+                    .frame(minHeight: 220)
+
+                    // Bright callout so the passphrase field is unmissable.
+                    VStack(alignment: .leading, spacing: 6) {
+                        sectionLabel("PASSPHRASE", tint: GameShow.hotPink)
+                        passphraseField(placeholder: "ENTER IT IF THIS MEOWGRAM IS LOCKED", secure: false)
+                    }
+                    .padding(10)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(GameShow.neonYellow))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(GameShow.inkBlack, lineWidth: 2))
+
+                    // Primary action, full width, right under the passphrase.
+                    Button { model.decodeLoaded() } label: {
+                        Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill")
+                    }
+                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                    .disabled(model.loadedData == nil || model.isDecoding)
+
+                    // Pick the source last (or drag a PNG onto the panel above).
+                    HStack(spacing: 10) {
+                        Button { model.openAndLoad() } label: { Label("OPEN", systemImage: "folder") }
+                            .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        Button { model.pasteAndLoad() } label: { Label("PASTE", systemImage: "doc.on.clipboard") }
+                            .keyboardShortcut("v", modifiers: [.command])
+                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                    }
                 }
             }
-            .frame(minHeight: 200)
+        }
+    }
 
-            HStack(spacing: 10) {
-                Button { model.pasteAndDecode() } label: {
-                    Label("PASTE MEOWGRAM", systemImage: "doc.on.clipboard.fill")
+    private var dropZone: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(GameShow.paperWhite.opacity(model.isDropTargeted ? 1.0 : 0.85))
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(model.isDropTargeted ? GameShow.neonLime : GameShow.neonCyan,
+                        style: StrokeStyle(lineWidth: 4, dash: [10, 8]))
+            VStack(spacing: 8) {
+                Image(systemName: "arrow.down.doc.fill").font(.system(size: 40, weight: .black))
+                Text("DROP A MEOWGRAM PNG HERE")
+                    .font(.system(size: 14, weight: .black, design: .rounded))
+                Text("かくされたメッセージをさがす")
+                    .font(.system(size: 10, weight: .heavy, design: .rounded)).opacity(0.6)
+            }
+            .foregroundStyle(GameShow.inkBlack.opacity(0.6))
+        }
+    }
+
+    private func decodedMessagePanel(_ msg: String) -> some View {
+        GamePanel(tint: GameShow.neonYellow) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    sectionLabel("MESSAGE!", tint: GameShow.hotPink)
+                    if let guid = model.decodedGUID {
+                        Text("🐱 authentic · \(guid.prefix(8))")
+                            .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                            .foregroundStyle(GameShow.inkBlack.opacity(0.5))
+                    }
                 }
-                .keyboardShortcut("v", modifiers: [.command])
-                .buttonStyle(NeonButton(fill: GameShow.neonCyan))
-            }
-
-            passphraseField(placeholder: "PASSPHRASE (IF LOCKED)", secure: false)
-
-            if let img = model.decodedImage {
-                Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
-                    .frame(maxHeight: 160)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 1.5))
-            }
-
-            if let msg = model.decodedMessage {
-                GamePanel(tint: GameShow.neonYellow) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 6) {
-                            sectionLabel("MESSAGE!", tint: GameShow.hotPink)
-                            if let guid = model.decodedGUID {
-                                Text("🐱 authentic · \(guid.prefix(8))")
-                                    .font(.system(size: 9, weight: .heavy, design: .monospaced))
-                                    .foregroundStyle(GameShow.inkBlack.opacity(0.5))
-                            }
-                        }
-                        ZStack(alignment: .topLeading) {
-                            RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack)
-                            HStack(alignment: .top) {
-                                Text(msg)
-                                    .font(.system(size: 13, weight: .heavy, design: .monospaced))
-                                    .foregroundStyle(GameShow.neonYellow)
-                                    .textSelection(.enabled)
-                                    .padding(.horizontal, 10).padding(.vertical, 8)
-                                Spacer()
-                                Button { Clipboard.copy(msg) } label: {
-                                    Image(systemName: "doc.on.clipboard.fill")
-                                        .font(.system(size: 13, weight: .black))
-                                        .foregroundStyle(GameShow.inkBlack)
-                                        .padding(6)
-                                        .background(Circle().fill(GameShow.neonYellow))
-                                        .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
-                                }
-                                .buttonStyle(.plain)
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack)
+                    HStack(alignment: .top) {
+                        Text(msg)
+                            .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                            .foregroundStyle(GameShow.neonYellow)
+                            .textSelection(.enabled)
+                            .padding(.horizontal, 10).padding(.vertical, 8)
+                        Spacer()
+                        Button { Clipboard.copy(msg) } label: {
+                            Image(systemName: "doc.on.clipboard.fill")
+                                .font(.system(size: 13, weight: .black))
+                                .foregroundStyle(GameShow.inkBlack)
                                 .padding(6)
-                                .help("Copy message")
-                            }
+                                .background(Circle().fill(GameShow.neonYellow))
+                                .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
                         }
+                        .buttonStyle(.plain)
+                        .padding(6)
+                        .help("Copy message")
                     }
                 }
             }

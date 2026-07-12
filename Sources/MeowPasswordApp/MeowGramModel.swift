@@ -31,6 +31,10 @@ final class MeowGramModel: ObservableObject {
     @Published var decodedImage: NSImage?
     @Published var decodedGUID: String?
     @Published var isDecoding = false
+    /// Raw bytes of the staged MeowGram, kept so "DECODE MEOWGRAM!" can run
+    /// with a passphrase after the image is dropped / pasted / opened.
+    @Published private(set) var loadedData: Data?
+    private var loadedLossy = false
 
     // Shared
     @Published var lastError: String?
@@ -182,21 +186,33 @@ final class MeowGramModel: ObservableObject {
 
     /// Decode a MeowGram straight from the clipboard: a copied PNG file if
     /// present (lossless), otherwise image data on the pasteboard.
-    func pasteAndDecode() {
+    func pasteAndLoad() {
         mode = .decode
         let pb = NSPasteboard.general
         if let urls = pb.readObjects(forClasses: [NSURL.self],
                                      options: [.urlReadingFileURLsOnly: true]) as? [URL],
            let u = urls.first {
-            decode(fileURL: u)
+            load(fileURL: u)
             return
         }
         if let data = pb.data(forType: .png) ?? pb.data(forType: .tiff),
            let img = NSImage(data: data) {
-            decode(image: img, lossyHint: false)
+            load(image: img)
             return
         }
         lastError = "Nothing to paste — copy a MeowGram image or PNG file first."
+    }
+
+    /// Open a MeowGram from disk (matches iOS "FILES") — loads, doesn't decode.
+    func openAndLoad() {
+        mode = .decode
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.png, .image]
+        panel.allowsMultipleSelection = false
+        panel.begin { resp in
+            guard resp == .OK, let url = panel.url else { return }
+            Task { @MainActor in self.load(fileURL: url) }
+        }
     }
 
     func savePNG() {
@@ -230,56 +246,68 @@ final class MeowGramModel: ObservableObject {
             guard let url else { return }
             Task { @MainActor in
                 self.mode = .decode
-                self.decode(fileURL: url)
+                self.load(fileURL: url)
             }
         }
         return true
     }
 
-    func decode(fileURL: URL) {
+    // MARK: Deferred load → decode (mirrors iOS: stage the image, then the
+    // "DECODE MEOWGRAM!" button decodes it with the current passphrase).
+
+    func load(fileURL: URL) {
         guard let type = UTType(filenameExtension: fileURL.pathExtension),
               type.conforms(to: .image) else {
             lastError = "That doesn't look like an image. Drop a MeowGram PNG."
             return
         }
-        let lossy = ["jpg", "jpeg", "heic", "heif", "webp"].contains(fileURL.pathExtension.lowercased())
-        beginDecode()
-        let pass = passphrase.isEmpty ? nil : passphrase
+        let accessed = fileURL.startAccessingSecurityScopedResource()
+        defer { if accessed { fileURL.stopAccessingSecurityScopedResource() } }
+        guard let data = try? Data(contentsOf: fileURL) else {
+            lastError = "Couldn't read that file."
+            return
+        }
+        loadedLossy = ["jpg", "jpeg", "heic", "heif", "webp"].contains(fileURL.pathExtension.lowercased())
+        stage(data: data, display: NSImage(contentsOf: fileURL))
+    }
 
+    func load(image nsImage: NSImage) {
+        guard let tiff = nsImage.tiffRepresentation,
+              let rep = NSBitmapImageRep(data: tiff),
+              let png = rep.representation(using: .png, properties: [:]) else {
+            lastError = "Couldn't read that pasted image."
+            return
+        }
+        loadedLossy = false
+        stage(data: png, display: nsImage)
+    }
+
+    private func stage(data: Data, display: NSImage?) {
+        mode = .decode
+        loadedData = data
+        decodedImage = display
+        decodedMessage = nil; decodedGUID = nil; lastError = nil; statusText = nil
+        isDecoding = false
+    }
+
+    /// Decode the staged MeowGram with the current passphrase — the action
+    /// behind the "DECODE MEOWGRAM!" button. Keeps the image on screen so the
+    /// decode animation lays over it.
+    func decodeLoaded() {
+        guard let data = loadedData else { return }
+        isDecoding = true
+        lastError = nil; decodedMessage = nil; decodedGUID = nil; statusText = nil
+        let pass = passphrase.isEmpty ? nil : passphrase
+        let display = decodedImage
+        let lossy = loadedLossy
         Task.detached(priority: .userInitiated) {
-            let accessed = fileURL.startAccessingSecurityScopedResource()
-            defer { if accessed { fileURL.stopAccessingSecurityScopedResource() } }
-            let display = NSImage(contentsOf: fileURL)
             do {
-                let image = try ColorImageIO.readRGBImage(path: fileURL.path)
+                let image = try ColorImageIO.readRGBImage(data: data)
                 await self.finishDecode(image: image, display: display, lossy: lossy, pass: pass)
             } catch {
                 await self.failDecode(error, display: display, lossy: lossy)
             }
         }
-    }
-
-    /// Decode an in-memory image (e.g. pasted from the clipboard).
-    func decode(image nsImage: NSImage, lossyHint: Bool) {
-        guard let cg = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            lastError = "Couldn't read that pasted image."
-            return
-        }
-        beginDecode()
-        let pass = passphrase.isEmpty ? nil : passphrase
-        Task.detached(priority: .userInitiated) {
-            do {
-                let image = try ColorImageIO.rgb(from: cg)
-                await self.finishDecode(image: image, display: nsImage, lossy: lossyHint, pass: pass)
-            } catch {
-                await self.failDecode(error, display: nsImage, lossy: lossyHint)
-            }
-        }
-    }
-
-    private func beginDecode() {
-        isDecoding = true; lastError = nil; decodedMessage = nil
-        decodedGUID = nil; statusText = nil; decodedImage = nil
     }
 
     /// Runs off the detached task; report authenticity even when there is no
