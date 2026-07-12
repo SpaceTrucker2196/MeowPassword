@@ -28,6 +28,9 @@ final class MeowGramModeliOS: ObservableObject {
     @Published var decodedGUID: String?
     @Published var decodedImage: UIImage?
     @Published var isDecoding = false
+    /// Raw bytes of the currently loaded MeowGram, kept so "DECODE MEOWGRAM!"
+    /// can re-run with a passphrase after the image is picked.
+    @Published private(set) var loadedData: Data?
 
     @Published var status: String?
     @Published var errorText: String?
@@ -111,17 +114,20 @@ final class MeowGramModeliOS: ObservableObject {
 
     func decode(data: Data, display: UIImage?) {
         mode = .decode
+        loadedData = data
         isDecoding = true; errorText = nil; decodedMessage = nil; decodedGUID = nil
         decodedImage = display ?? UIImage(data: data)
         let pass = passphrase.isEmpty ? nil : passphrase
         Task {
             do {
+                async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
                 let (msg, guid): (String?, String?) = try await Task.detached {
                     let image = try ColorImageIO.readRGBImage(data: data)
                     let guid = MeowGram.readGUIDString(from: image)
                     let decoded = try MeowGram.readMessage(from: image, passphrase: pass)
                     return (decoded.message, decoded.guid ?? guid)
                 }.value
+                try? await minShow
                 self.decodedMessage = msg
                 self.decodedGUID = guid
             } catch { self.errorText = describe(error) }
@@ -129,11 +135,28 @@ final class MeowGramModeliOS: ObservableObject {
         }
     }
 
-    func pasteAndDecode() {
+    /// Load a MeowGram image WITHOUT decoding — the picker actions just stage
+    /// the image so the user can type a passphrase before tapping "DECODE
+    /// MEOWGRAM!". Clears any prior result.
+    func load(data: Data, display: UIImage?) {
+        mode = .decode
+        loadedData = data
+        decodedImage = display ?? UIImage(data: data)
+        decodedMessage = nil; decodedGUID = nil; errorText = nil; isDecoding = false
+    }
+
+    /// Decode the already-loaded MeowGram with the current passphrase —
+    /// the action behind the "DECODE MEOWGRAM!" button.
+    func decodeLoaded() {
+        guard let data = loadedData else { return }
+        decode(data: data, display: decodedImage)
+    }
+
+    func pasteAndLoad() {
         if let img = UIPasteboard.general.image, let data = img.pngData() {
-            decode(data: data, display: img)
+            load(data: data, display: img)
         } else if let data = UIPasteboard.general.data(forPasteboardType: UTType.png.identifier) {
-            decode(data: data, display: UIImage(data: data))
+            load(data: data, display: UIImage(data: data))
         } else {
             mode = .decode
             errorText = "Nothing to paste — copy a MeowGram image first."

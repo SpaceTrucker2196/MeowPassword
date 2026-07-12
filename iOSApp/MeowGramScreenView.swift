@@ -13,6 +13,41 @@ struct MeowGramScreen: View {
     var onClose: () -> Void = {}
     var decodeOnOpen: Data? = nil
 
+    @AppStorage("meow.tut.mg.compose.v1") private var seenCompose = false
+    @AppStorage("meow.tut.mg.decode.v1") private var seenDecode = false
+    @State private var showComposeTour = false
+    @State private var showDecodeTour = false
+
+    private var composeSteps: [CoachStep] {
+        [
+            CoachStep(title: "MEOWGRAM",
+                      text: "MeowGram hides a secret message inside an ordinary-looking cat photo. Here's how to send one."),
+            CoachStep(anchor: "mg.mode", title: "COMPOSE / DECODE",
+                      text: "COMPOSE hides a message; DECODE reveals one you were sent. Tap to switch anytime."),
+            CoachStep(anchor: "mg.message", title: "SECRET MESSAGE",
+                      text: "Type the message you want to smuggle. The counter shows how much still fits."),
+            CoachStep(anchor: "mg.pass", title: "PASSPHRASE",
+                      text: "Optionally lock it. GENERATE mints a cat-name key that's easy to read aloud to your recipient."),
+            CoachStep(anchor: "mg.cats", title: "PICK A CAT!",
+                      text: "Choose the cat that carries your message — swipe sideways to browse all 100."),
+            CoachStep(anchor: "mg.embed", title: "EMBED!",
+                      text: "Writes the hidden message into the cat, then SHARE or SAVE the innocent-looking photo."),
+        ]
+    }
+
+    private var decodeSteps: [CoachStep] {
+        [
+            CoachStep(title: "DECODE A MEOWGRAM",
+                      text: "Got a cat photo from someone? Reveal the message hidden inside it."),
+            CoachStep(anchor: "mg.dsource", title: "LOAD IT",
+                      text: "Bring the cat photo in from PHOTOS, FILES, or PASTE. It just loads — nothing decodes yet."),
+            CoachStep(anchor: "mg.dpass", title: "PASSPHRASE",
+                      text: "If the sender locked it, type the passphrase they read you first."),
+            CoachStep(anchor: "mg.ddecode", title: "DECODE MEOWGRAM!",
+                      text: "Tap to reveal the hidden message — it appears in a panel up top."),
+        ]
+    }
+
     var body: some View {
         ZStack {
             GameShow.bg.ignoresSafeArea()
@@ -38,17 +73,28 @@ struct MeowGramScreen: View {
         .task {
             model.load()
             // Opened from the "Decode MeowGram" share extension: jump to decode
-            // and decode the handed-off image immediately.
+            // and stage the handed-off image (the user taps DECODE MEOWGRAM!).
             if let data = decodeOnOpen {
-                model.mode = .decode
-                model.decode(data: data, display: UIImage(data: data))
+                model.load(data: data, display: UIImage(data: data))
             }
+            // First-launch tour for whichever mode we land on.
+            if model.mode == .compose, !seenCompose { showComposeTour = true }
+            else if model.mode == .decode, !seenDecode { showDecodeTour = true }
+        }
+        .coachTour(composeSteps, isActive: $showComposeTour)
+        .coachTour(decodeSteps, isActive: $showDecodeTour)
+        .onChange(of: showComposeTour) { _, active in if !active { seenCompose = true } }
+        .onChange(of: showDecodeTour) { _, active in if !active { seenDecode = true } }
+        .onChange(of: model.mode) { _, m in
+            // First time each mode is viewed, run its tour (one at a time).
+            if m == .decode, !seenDecode, !showComposeTour { showDecodeTour = true }
+            if m == .compose, !seenCompose, !showDecodeTour { showComposeTour = true }
         }
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self) {
-                    model.decode(data: data, display: UIImage(data: data))
+                    model.load(data: data, display: UIImage(data: data))
                 }
             }
         }
@@ -58,7 +104,7 @@ struct MeowGramScreen: View {
                 let ok = url.startAccessingSecurityScopedResource()
                 defer { if ok { url.stopAccessingSecurityScopedResource() } }
                 if let data = try? Data(contentsOf: url) {
-                    model.decode(data: data, display: UIImage(data: data))
+                    model.load(data: data, display: UIImage(data: data))
                 }
             }
         }
@@ -80,6 +126,14 @@ struct MeowGramScreen: View {
                     .foregroundStyle(.white)
                     .shadow(color: GameShow.inkBlack, radius: 0, x: 2, y: 2)
                 Spacer()
+                Button { if model.mode == .compose { showComposeTour = true } else { showDecodeTour = true } } label: {
+                    Image(systemName: "questionmark")
+                        .font(.system(size: 15, weight: .black))
+                        .foregroundStyle(GameShow.inkBlack)
+                        .frame(width: 34, height: 34)
+                        .background(Circle().fill(GameShow.paperWhite))
+                        .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                }
             }
             HStack(spacing: 12) {
                 ForEach(MeowGramModeliOS.Mode.allCases, id: \.self) { m in
@@ -89,6 +143,7 @@ struct MeowGramScreen: View {
                     .buttonStyle(NeonButton(fill: model.mode == m ? GameShow.neonYellow : GameShow.paperWhite))
                 }
             }
+            .coachAnchor("mg.mode")
         }
     }
 
@@ -111,6 +166,7 @@ struct MeowGramScreen: View {
                         .padding(7)
                         .background(RoundedRectangle(cornerRadius: 8).fill(.white))
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .coachAnchor("mg.message")
                     HStack(spacing: 8) {
                         TextField("Passphrase (optional)", text: $model.passphrase)
                             .font(.system(size: 12, weight: .heavy, design: .monospaced))
@@ -127,6 +183,7 @@ struct MeowGramScreen: View {
                                 .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
                         }
                     }
+                    .coachAnchor("mg.pass")
                 }
             }
 
@@ -151,6 +208,7 @@ struct MeowGramScreen: View {
                 }
             }
             .frame(maxHeight: .infinity)
+            .coachAnchor("mg.cats")
 
             // Preview + actions — compact. While embedding, the whole panel
             // becomes the generating animation.
@@ -177,6 +235,7 @@ struct MeowGramScreen: View {
                             }
                             .buttonStyle(NeonButton(fill: GameShow.neonYellow))
                             .disabled(model.selectedID == nil || model.message.isEmpty || model.isOverBudget)
+                            .coachAnchor("mg.embed")
                         }
                         HStack(spacing: 8) {
                             if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
@@ -199,32 +258,7 @@ struct MeowGramScreen: View {
 
     private var decodePane: some View {
         VStack(spacing: 12) {
-            GamePanel(tint: GameShow.neonCyan) {
-                VStack(spacing: 10) {
-                    label("DECODE A MEOWGRAM", tint: GameShow.hotPink)
-                    if model.isDecoding { ProgressView() }
-                    if let img = model.decodedImage {
-                        Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
-                            .frame(maxHeight: 200).clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    HStack(spacing: 10) {
-                        PhotosPicker(selection: $pickerItem, matching: .images) {
-                            Label("PHOTOS", systemImage: "photo")
-                        }
-                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
-                        Button { showFileImporter = true } label: { Label("FILES", systemImage: "folder") }
-                            .buttonStyle(NeonButton(fill: GameShow.neonLime))
-                        Button { model.pasteAndDecode() } label: { Label("PASTE", systemImage: "doc.on.clipboard") }
-                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
-                    }
-                    TextField("Passphrase (if locked)", text: $model.passphrase)
-                        .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                        .autocorrectionDisabled().textInputAutocapitalization(.never)
-                        .padding(8)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
-                }
-            }
+            // Decoded message lands right at the top, under the mode buttons.
             if let msg = model.decodedMessage {
                 GamePanel(tint: GameShow.neonYellow) {
                     VStack(alignment: .leading, spacing: 8) {
@@ -248,6 +282,60 @@ struct MeowGramScreen: View {
                         }
                         .background(RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack))
                     }
+                }
+            }
+
+            GamePanel(tint: GameShow.neonCyan) {
+                VStack(spacing: 10) {
+                    label("DECODE A MEOWGRAM", tint: GameShow.hotPink)
+                    // The MeowGram itself — full width, the panel resizes to it.
+                    if model.isDecoding {
+                        EmbedGeneratingView(label: "DECODING…")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 220)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else if let img = model.decodedImage {
+                        Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    // Bright callout so the passphrase field is unmissable.
+                    VStack(alignment: .leading, spacing: 6) {
+                        label("PASSPHRASE", tint: GameShow.hotPink)
+                        TextField("Enter it if this MeowGram is locked", text: $model.passphrase)
+                            .font(.system(size: 13, weight: .heavy, design: .monospaced))
+                            .foregroundStyle(GameShow.inkBlack)
+                            .autocorrectionDisabled().textInputAutocapitalization(.never)
+                            .padding(10)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 2))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(10)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(GameShow.neonYellow))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(GameShow.inkBlack, lineWidth: 2))
+                    .coachAnchor("mg.dpass")
+
+                    // Primary action, full width, right under the passphrase.
+                    Button { model.decodeLoaded() } label: {
+                        Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill")
+                    }
+                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                    .disabled(model.loadedData == nil || model.isDecoding)
+                    .coachAnchor("mg.ddecode")
+
+                    // Pick the source last, at the bottom.
+                    HStack(spacing: 10) {
+                        PhotosPicker(selection: $pickerItem, matching: .images) {
+                            Label("PHOTOS", systemImage: "photo")
+                        }
+                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        Button { showFileImporter = true } label: { Label("FILES", systemImage: "folder") }
+                            .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                        Button { model.pasteAndLoad() } label: { Label("PASTE", systemImage: "doc.on.clipboard") }
+                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                    }
+                    .coachAnchor("mg.dsource")
                 }
             }
         }
