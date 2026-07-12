@@ -102,7 +102,13 @@ struct GenerateView: View {
         }
         .overlay(alignment: .topTrailing) { helpButton }
         .coachTour(tourSteps, isActive: $showTour)
-        .onAppear { if !seenTour { showTour = true } }
+        .onAppear {
+            if !seenTour { showTour = true }
+            #if DEBUG
+            // QA/screenshots: `-demoGenerate` fills the screen with a result.
+            if ProcessInfo.processInfo.arguments.contains("-demoGenerate") { model.generate() }
+            #endif
+        }
         .onChange(of: showTour) { _, active in if !active { seenTour = true } }
     }
 
