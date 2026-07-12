@@ -138,7 +138,17 @@ struct SparkleLayerView: UIViewRepresentable {
 final class SparkleHostUIView: UIView {
     private let count: Int
     private var builtSize: CGSize = .zero
-    init(count: Int) { self.count = count; super.init(frame: .zero); backgroundColor = .clear; isUserInteractionEnabled = false }
+    init(count: Int) {
+        self.count = count
+        super.init(frame: .zero)
+        backgroundColor = .clear
+        isUserInteractionEnabled = false
+        // Core Animation removes running animations when the layer leaves the
+        // window (a full-screen cover) or the app backgrounds — re-add them on
+        // return so the sparkles never freeze.
+        NotificationCenter.default.addObserver(self, selector: #selector(rebuild),
+            name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -146,6 +156,15 @@ final class SparkleHostUIView: UIView {
             builtSize = bounds.size
             buildSparkles(in: layer, size: bounds.size, count: count)
         }
+    }
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil { rebuild() }
+    }
+    @objc private func rebuild() {
+        guard bounds.width > 1, bounds.height > 1 else { return }
+        builtSize = bounds.size
+        buildSparkles(in: layer, size: bounds.size, count: count)
     }
 }
 #elseif canImport(AppKit)
@@ -158,7 +177,13 @@ struct SparkleLayerView: NSViewRepresentable {
 final class SparkleHostNSView: NSView {
     private let count: Int
     private var builtSize: CGSize = .zero
-    init(count: Int) { self.count = count; super.init(frame: .zero); wantsLayer = true }
+    init(count: Int) {
+        self.count = count
+        super.init(frame: .zero)
+        wantsLayer = true
+        NotificationCenter.default.addObserver(self, selector: #selector(rebuild),
+            name: NSApplication.didBecomeActiveNotification, object: nil)
+    }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     override func layout() {
         super.layout()
@@ -167,6 +192,15 @@ final class SparkleHostNSView: NSView {
             builtSize = bounds.size
             buildSparkles(in: layer, size: bounds.size, count: count)
         }
+    }
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        rebuild()
+    }
+    @objc private func rebuild() {
+        guard let layer, bounds.width > 1, bounds.height > 1, window != nil else { return }
+        builtSize = bounds.size
+        buildSparkles(in: layer, size: bounds.size, count: count)
     }
 }
 #endif
