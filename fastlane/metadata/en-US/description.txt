@@ -13,8 +13,8 @@ MEOWGRAM — SECRET CAT-MAIL
 • Pick one of 100 cats, type a secret message, and share it — the message is
   hidden invisibly inside the image.
 • Optional passphrase locks the message so only your recipient can read it.
-• Send straight from the Messages app, or decode a received MeowGram right from
-  the share sheet.
+• Share it through Messages, Mail, or anywhere — and decode a MeowGram you were
+  sent right from the share sheet.
 
 Private by design. Your passwords and messages never leave your device except
 when you choose to send them.
