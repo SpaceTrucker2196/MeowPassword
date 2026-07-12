@@ -77,6 +77,15 @@ struct MeowGramScreen: View {
             if let data = decodeOnOpen {
                 model.load(data: data, display: UIImage(data: data))
             }
+            #if DEBUG
+            // QA: `-previewDecode` freezes the decode animation over a sample cat.
+            if ProcessInfo.processInfo.arguments.contains("-previewDecode"),
+               let first = model.catalog.first, let data = try? Data(contentsOf: first.url) {
+                seenCompose = true; seenDecode = true
+                model.load(data: data, display: UIImage(data: data))
+                model.isDecoding = true
+            }
+            #endif
             // First-launch tour for whichever mode we land on.
             if model.mode == .compose, !seenCompose { showComposeTour = true }
             else if model.mode == .decode, !seenDecode { showDecodeTour = true }
@@ -289,14 +298,17 @@ struct MeowGramScreen: View {
                 VStack(spacing: 10) {
                     label("DECODE A MEOWGRAM", tint: GameShow.hotPink)
                     // The MeowGram itself — full width, the panel resizes to it.
-                    if model.isDecoding {
-                        EmbedGeneratingView(label: "DECODING…")
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 220)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    } else if let img = model.decodedImage {
+                    if let img = model.decodedImage {
+                        // The decode animation lays over the MeowGram, so it's
+                        // exactly the same size — the image gets "decoded".
                         Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity)
+                            .overlay { if model.isDecoding { MatrixDecodeView(label: "DECODING…") } }
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    } else if model.isDecoding {
+                        MatrixDecodeView(label: "DECODING…")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 220)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                     // Bright callout so the passphrase field is unmissable.

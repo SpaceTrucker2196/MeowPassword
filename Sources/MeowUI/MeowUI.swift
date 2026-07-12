@@ -358,6 +358,76 @@ public struct EmbedGeneratingView: View {
     }
 }
 
+/// Full-frame "decoding" animation: katakana digital rain in the broadcast
+/// neon palette with a sweeping read-head scan line and a chyron. Meant to be
+/// laid OVER the MeowGram being decoded (semi-opaque ink) so it reads as the
+/// image itself being decoded. Fills whatever frame it's given.
+public struct MatrixDecodeView: View {
+    var label: String
+    public init(label: String = "DECODING…") { self.label = label }
+
+    // Halfwidth katakana + digits + symbols — echoes the ミャオ broadcast type.
+    private static let glyphs = Array("ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789=+-*<>#%&$@")
+
+    public var body: some View {
+        TimelineView(.animation) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+            ZStack {
+                // Semi-opaque so the cat ghosts through — "decoding the image".
+                GameShow.inkBlack.opacity(0.88)
+
+                Canvas { ctx, size in
+                    let colW: CGFloat = 16, rowH: CGFloat = 18, tail = 10
+                    let cols = max(1, Int(size.width / colW))
+                    let rows = max(1, Int(size.height / rowH))
+                    let wrap = Double(rows + tail + 2)
+                    for c in 0..<cols {
+                        let speed = 7.0 + Double((c * 37) % 9)               // rows/sec, per column
+                        let phase = Double((c * 53) % 100) / 100.0 * wrap
+                        let head = (t * speed + phase).truncatingRemainder(dividingBy: wrap)
+                        for k in 0...tail {
+                            let r = Int(head) - k
+                            if r < 0 || r >= rows { continue }
+                            let bright = 1.0 - Double(k) / Double(tail)
+                            let gi = abs(Int(t * 8 + Double(c) * 3) + r * 13) % Self.glyphs.count
+                            let base = (k == 0) ? Color.white : (c % 3 == 0 ? GameShow.neonCyan : GameShow.neonLime)
+                            ctx.draw(
+                                Text(String(Self.glyphs[gi]))
+                                    .font(.system(size: 13, weight: .bold, design: .monospaced))
+                                    .foregroundColor(base.opacity(bright)),
+                                at: CGPoint(x: CGFloat(c) * colW + colW / 2,
+                                            y: CGFloat(r) * rowH + rowH / 2))
+                        }
+                    }
+                }
+
+                // Sweeping read-head scan line.
+                GeometryReader { geo in
+                    let y = (sin(t * 1.5) * 0.5 + 0.5) * geo.size.height
+                    Rectangle()
+                        .fill(LinearGradient(colors: [.clear, GameShow.neonCyan.opacity(0.85), .clear],
+                                             startPoint: .top, endPoint: .bottom))
+                        .frame(height: 24)
+                        .position(x: geo.size.width / 2, y: y)
+                }
+
+                // Chyron.
+                VStack {
+                    Spacer()
+                    Text(label)
+                        .font(.system(size: 13, weight: .black, design: .rounded))
+                        .foregroundStyle(GameShow.inkBlack)
+                        .padding(.horizontal, 12).padding(.vertical, 5)
+                        .background(Capsule().fill(GameShow.neonLime)
+                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 2)))
+                        .padding(.bottom, 10)
+                }
+            }
+        }
+        .clipped()
+    }
+}
+
 /// Theme-styled slider: capsule track, tinted fill, black-outlined thumb.
 public struct ChunkySlider: View {
     @Binding var value: Int
