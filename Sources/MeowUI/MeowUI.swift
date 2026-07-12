@@ -405,3 +405,164 @@ public struct ChunkySlider: View {
         .frame(height: 22)
     }
 }
+
+// MARK: - Coach marks (first-launch guided tours)
+
+/// One stop on a guided tour. `anchor` names a control tagged with
+/// `.coachAnchor(_:)`; a nil anchor is a centered intro card.
+public struct CoachStep: Identifiable {
+    public let id = UUID()
+    public var anchorID: String?
+    public var title: String
+    public var text: String
+    public init(anchor: String? = nil, title: String, text: String) {
+        self.anchorID = anchor
+        self.title = title
+        self.text = text
+    }
+}
+
+/// Collects the on-screen bounds of every control tagged with `.coachAnchor`.
+public struct CoachAnchorKey: PreferenceKey {
+    public static let defaultValue: [String: Anchor<CGRect>] = [:]
+    public static func reduce(value: inout [String: Anchor<CGRect>],
+                              nextValue: () -> [String: Anchor<CGRect>]) {
+        value.merge(nextValue()) { _, new in new }
+    }
+}
+
+public extension View {
+    /// Tag a control so a `coachTour` step can spotlight it by `id`.
+    func coachAnchor(_ id: String) -> some View {
+        anchorPreference(key: CoachAnchorKey.self, value: .bounds) { [id: $0] }
+    }
+
+    /// Attach a guided tour to a screen root. When `isActive` is true it dims
+    /// the screen, spotlights each step's anchored control, and shows a caption
+    /// card. Flip `isActive` to false to dismiss (do this once and persist it
+    /// with @AppStorage for a real first-launch tutorial).
+    func coachTour(_ steps: [CoachStep], isActive: Binding<Bool>) -> some View {
+        overlayPreferenceValue(CoachAnchorKey.self) { anchors in
+            GeometryReader { proxy in
+                if isActive.wrappedValue && !steps.isEmpty {
+                    CoachOverlay(steps: steps, anchors: anchors, proxy: proxy, isActive: isActive)
+                }
+            }
+        }
+    }
+
+}
+
+struct CoachOverlay: View {
+    let steps: [CoachStep]
+    let anchors: [String: Anchor<CGRect>]
+    let proxy: GeometryProxy
+    @Binding var isActive: Bool
+    @State private var index: Int = {
+        #if DEBUG
+        // QA: jump straight to a step to verify spotlight alignment, e.g.
+        // `xcrun simctl launch <sim> <bid> -coachStart 3`.
+        let a = ProcessInfo.processInfo.arguments
+        if let i = a.firstIndex(of: "-coachStart"), i + 1 < a.count, let n = Int(a[i + 1]) { return n }
+        #endif
+        return 0
+    }()
+
+    private var step: CoachStep { steps[min(index, steps.count - 1)] }
+    private var targetRect: CGRect? {
+        step.anchorID.flatMap { anchors[$0] }.map { proxy[$0].insetBy(dx: -7, dy: -7) }
+    }
+    private var last: Bool { index >= steps.count - 1 }
+    private func finish() { withAnimation { isActive = false } }
+
+    var body: some View {
+        let rect = targetRect
+        // Place the caption opposite the target so it never covers it.
+        let cardAtTop = (rect?.midY ?? proxy.size.height / 2) > proxy.size.height / 2
+        ZStack {
+            Rectangle()
+                .fill(Color.black.opacity(0.74))
+                .mask {
+                    ZStack {
+                        Rectangle().fill(.white)
+                        if let r = rect {
+                            RoundedRectangle(cornerRadius: 14)
+                                .frame(width: r.width, height: r.height)
+                                .position(x: r.midX, y: r.midY)
+                                .blendMode(.destinationOut)   // punch the spotlight hole
+                        }
+                    }
+                    .compositingGroup()
+                }
+                .contentShape(Rectangle())
+                .onTapGesture { advance() }
+
+            if let r = rect {
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(GameShow.neonYellow, lineWidth: 3)
+                    .frame(width: r.width, height: r.height)
+                    .position(x: r.midX, y: r.midY)
+                    .allowsHitTesting(false)
+            }
+
+            VStack {
+                if rect == nil { Spacer() }        // intro: center
+                else if cardAtTop { } else { Spacer() }
+                card
+                if rect == nil { Spacer() }
+                else if cardAtTop { Spacer() } else { }
+            }
+            .padding(18)
+        }
+        // NB: no .ignoresSafeArea() — the spotlight is positioned in the
+        // preference GeometryReader's coordinate space, so the overlay must
+        // share it or the hole/ring drift by the safe-area inset.
+        .transition(.opacity)
+    }
+
+    private func advance() {
+        if last { finish() } else { withAnimation { index += 1 } }
+    }
+
+    private var card: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(step.title)
+                    .font(.system(size: 15, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10).padding(.vertical, 3)
+                    .background(Capsule().fill(GameShow.hotPink)
+                        .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5)))
+                Spacer()
+                Text("\(index + 1)/\(steps.count)")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .foregroundStyle(GameShow.inkBlack.opacity(0.55))
+            }
+            Text(step.text)
+                .font(.system(size: 13, weight: .heavy, design: .rounded))
+                .foregroundStyle(GameShow.inkBlack)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack {
+                Button { finish() } label: {
+                    Text("SKIP")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .foregroundStyle(GameShow.inkBlack.opacity(0.6))
+                }
+                Spacer()
+                Button { advance() } label: {
+                    Text(last ? "GOT IT!" : "NEXT")
+                        .font(.system(size: 13, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+                        .background(Capsule().fill(last ? GameShow.neonLime : GameShow.hotPink)
+                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 2)))
+                }
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: 340)
+        .background(RoundedRectangle(cornerRadius: 16).fill(GameShow.paperWhite)
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(GameShow.inkBlack, lineWidth: 2.5))
+            .shadow(color: GameShow.inkBlack.opacity(0.5), radius: 0, x: 0, y: 5))
+    }
+}

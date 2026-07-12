@@ -50,6 +50,24 @@ struct GenerateView: View {
     @StateObject private var model = GenerateModel()
     var onMeowGram: () -> Void = {}
 
+    @AppStorage("meow.tut.generate.v1") private var seenTour = false
+    @State private var showTour = false
+
+    private var tourSteps: [CoachStep] {
+        [
+            CoachStep(title: "WELCOME!",
+                      text: "MeowPassword makes passwords that are strong, easy to read aloud, and — with MeowGram — hideable inside cat photos."),
+            CoachStep(anchor: "gen.generate", title: "GENERATE!",
+                      text: "Conjures five strong passwords and crowns the highest-scoring winner. Tap the clipboard to copy it."),
+            CoachStep(anchor: "gen.meowgram", title: "MEOWGRAM!",
+                      text: "Opens the cat-mail studio — hide a secret message inside an ordinary-looking cat picture, or decode one you were sent."),
+            CoachStep(anchor: "gen.judge", title: "JUDGE!",
+                      text: "Paste any password to score its strength from 0 to 10, with a verdict."),
+            CoachStep(anchor: "gen.rules", title: "RULES",
+                      text: "Dial in how many numbers and symbols to mix in, and the maximum length."),
+        ]
+    }
+
     var body: some View {
         ZStack {
             GameShow.bg.ignoresSafeArea()
@@ -65,21 +83,39 @@ struct GenerateView: View {
                         .buttonStyle(NeonButton(fill: GameShow.neonYellow))
                         .disabled(model.isBusy)
                         .opacity(model.isBusy ? 0.6 : 1)
+                        .coachAnchor("gen.generate")
 
                         Button { onMeowGram() } label: {
                             Label("MEOWGRAM!", systemImage: "envelope.badge.fill")
                         }
                         .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                        .coachAnchor("gen.meowgram")
                     }
 
                     if let best = model.best { winner(best) }
                     if !model.candidates.isEmpty { candidatesPanel }
-                    analyzePanel
-                    rulesPanel
+                    analyzePanel.coachAnchor("gen.judge")
+                    rulesPanel.coachAnchor("gen.rules")
                 }
                 .padding(16)
             }
         }
+        .overlay(alignment: .topTrailing) { helpButton }
+        .coachTour(tourSteps, isActive: $showTour)
+        .onAppear { if !seenTour { showTour = true } }
+        .onChange(of: showTour) { _, active in if !active { seenTour = true } }
+    }
+
+    private var helpButton: some View {
+        Button { showTour = true } label: {
+            Image(systemName: "questionmark")
+                .font(.system(size: 15, weight: .black))
+                .foregroundStyle(GameShow.inkBlack)
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(GameShow.paperWhite))
+                .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+        }
+        .padding(.trailing, 16).padding(.top, 8)
     }
 
     private var hero: some View {
