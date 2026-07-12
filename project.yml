@@ -32,7 +32,6 @@ targets:
     sources:
       - path: iOSApp
     dependencies:
-      - target: MeowGramMessages   # embed the iMessage app extension
       - target: MeowGramDecode     # embed the decode share extension
       - package: MeowLocal
         product: MeowStego
@@ -53,34 +52,6 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_PREVIEWS: YES
-
-  # ── iMessage app extension (MeowGram in the Messages app drawer) ────────
-  # One iMessage extension surfaces in Messages on iPhone, iPad, and — synced
-  # from the iPhone — in Messages on Mac.
-  MeowGramMessages:
-    type: app-extension.messages
-    platform: iOS
-    deploymentTarget: "17.0"
-    sources:
-      - path: MessagesExtension
-    dependencies:
-      - package: MeowLocal
-        product: MeowStego
-      - package: MeowLocal
-        product: MeowGramKit
-      - package: MeowLocal
-        product: MeowGramAssets
-      - package: MeowLocal
-        product: MeowPassCore
-      - package: MeowLocal
-        product: MeowUI
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword.Messages
-        INFOPLIST_FILE: MessagesExtension/Info.plist
-        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
-        TARGETED_DEVICE_FAMILY: "1,2"
-        ASSETCATALOG_COMPILER_APPICON_NAME: "iMessage App Icon"
 
   # ── Decode share extension (Share sheet → "Decode MeowGram") ────────────
   # Links only the decode code — no cat assets — so it stays small.
