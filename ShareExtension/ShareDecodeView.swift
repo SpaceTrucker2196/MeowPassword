@@ -32,16 +32,37 @@ struct ShareDecodeView: View {
                         .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 1.5))
                 }
 
-                if decoding {
-                    if preview == nil {
-                        MatrixDecodeView(label: "DECODING…")
-                            .frame(height: 170)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                } else if let message {
+                // Bright callout so the passphrase field is unmissable.
+                VStack(alignment: .leading, spacing: 6) {
+                    tag("PASSPHRASE", tint: GameShow.hotPink)
+                    TextField("Enter it if this MeowGram is locked", text: $passphrase)
+                        .font(.system(size: 12, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(GameShow.inkBlack)
+                        .autocorrectionDisabled().textInputAutocapitalization(.never)
+                        .padding(8)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
+                .background(RoundedRectangle(cornerRadius: 12).fill(GameShow.neonYellow))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(GameShow.inkBlack, lineWidth: 2))
+
+                // Decode (and the animation) only run once tapped, with an image.
+                Button { decode() } label: { Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill") }
+                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                    .disabled(imageData == nil || decoding)
+
+                if let message {
                     messagePanel(message)
-                } else {
-                    lockedPanel
+                } else if let error, !decoding {
+                    GamePanel(tint: GameShow.neonLime) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            tag("HMM…", tint: GameShow.magenta)
+                            Text(error).font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                .foregroundStyle(GameShow.inkBlack)
+                        }
+                    }
                 }
 
                 Spacer(minLength: 0)
@@ -51,10 +72,8 @@ struct ShareDecodeView: View {
             .padding(16)
         }
         .preferredColorScheme(.light)
-        .onAppear {
-            preview = imageData.flatMap { UIImage(data: $0) }
-            decode()
-        }
+        // Stage the image only — decoding waits for the DECODE MEOWGRAM! tap.
+        .onAppear { preview = imageData.flatMap { UIImage(data: $0) } }
     }
 
     private var header: some View {
@@ -90,30 +109,6 @@ struct ShareDecodeView: View {
                     }.padding(.trailing, 6)
                 }
                 .background(RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack))
-            }
-        }
-    }
-
-    private var lockedPanel: some View {
-        GamePanel(tint: GameShow.neonLime) {
-            VStack(alignment: .leading, spacing: 8) {
-                tag(error == nil ? "LOCKED?" : "HMM…", tint: GameShow.magenta)
-                if let error {
-                    Text(error).font(.system(size: 11, weight: .heavy, design: .monospaced))
-                        .foregroundStyle(GameShow.inkBlack)
-                }
-                HStack(spacing: 8) {
-                    TextField("Passphrase", text: $passphrase)
-                        .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                        .autocorrectionDisabled().textInputAutocapitalization(.never)
-                        .padding(7)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
-                        .foregroundStyle(GameShow.inkBlack)
-                    Button { decode() } label: { Label("DECODE", systemImage: "eye.fill") }
-                        .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
-                        .fixedSize()
-                }
             }
         }
     }
