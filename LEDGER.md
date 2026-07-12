@@ -27,3 +27,4 @@
 | a78de26 | 2026-07-12T16:20:51Z | claude-opus-4-8 | 2256 | 35801 | 12355673 | 42685 | 7.5110 | Fix macOS decode animation freeze (add 1.1s minimum-show to hold isDecoding) |
 | 62b7f2e | 2026-07-12T16:47:08Z | claude-opus-4-8 | 1412 | 49288 | 19345984 | 65370 | 11.5660 | Fix Decode MeowGram share sheet: decode inline (share extensions can't launch th |
 | 3a9389c | 2026-07-12T16:55:27Z | claude-opus-4-8 | 149 | 27451 | 5573334 | 19957 | 3.6733 | Defer share-sheet decode until DECODE tapped (no auto-decode animation on appear |
+| 7545282 | 2026-07-12T17:13:36Z | claude-opus-4-8 | 167 | 35747 | 10912497 | 14419 | 6.4949 | Keep iOS screen awake (disable idle timer) while decoding/embedding a MeowGram |
