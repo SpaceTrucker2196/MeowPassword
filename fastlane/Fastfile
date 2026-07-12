@@ -175,13 +175,16 @@ platform :mac do
   lane :beta do
     ensure_project
     api_key = asc_api_key
+    build_number = `git rev-list --count HEAD`.strip
     build_mac_app(
       project: PROJECT,
       scheme: MAC_SCHEME,
       export_method: "app-store",
-      xcargs: "-allowProvisioningUpdates DEVELOPMENT_TEAM=#{DEV_TEAM}"
+      xcargs: "-allowProvisioningUpdates DEVELOPMENT_TEAM=#{DEV_TEAM} CURRENT_PROJECT_VERSION=#{build_number}"
     )
-    upload_to_testflight(api_key: api_key, app_identifier: APP_ID,
+    # app_platform: "osx" so the uploader picks the .pkg, not a stray iOS .ipa.
+    upload_to_testflight(api_key: api_key, app_identifier: APP_ID, app_platform: "osx",
+                         pkg: "MeowPassword.pkg",
                          skip_waiting_for_build_processing: true)
   end
 

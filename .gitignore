@@ -29,3 +29,5 @@ test_meowpass_combined.swift
 meowgrams/*.jpg
 /.build-ios
 /.build-dev
+/.build-mac
+*.dSYM.zip
