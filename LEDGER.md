@@ -25,3 +25,4 @@
 | 9ae625d | 2026-07-12T15:55:05Z | claude-opus-4-8 | 1516 | 19208 | 9010534 | 24299 | 5.2360 | Fix Bundle.module so the XcodeGen macOS target compiles for App Store archive |
 | fa1c6a3 | 2026-07-12T16:13:20Z | claude-opus-4-8 | 2957 | 84050 | 30675503 | 116567 | 18.6195 | Make macOS MeowGram decode flow consistent with iOS (deferred decode, reordered  |
 | a78de26 | 2026-07-12T16:20:51Z | claude-opus-4-8 | 2256 | 35801 | 12355673 | 42685 | 7.5110 | Fix macOS decode animation freeze (add 1.1s minimum-show to hold isDecoding) |
+| 62b7f2e | 2026-07-12T16:47:08Z | claude-opus-4-8 | 1412 | 49288 | 19345984 | 65370 | 11.5660 | Fix Decode MeowGram share sheet: decode inline (share extensions can't launch th |
