@@ -3,17 +3,22 @@ import AppKit
 import MeowUI
 
 /// Resolve a bundled image by looking in `Bundle.main` first (the .app's
-/// `Contents/Resources/`), then falling back to SwiftPM's module bundle for
-/// `swift run` builds.
+/// `Contents/Resources/`, used by both the XcodeGen app target and the
+/// build_app.sh bundle), then falling back to SwiftPM's module bundle for
+/// `swift run`. `Bundle.module` only exists when compiled by SwiftPM
+/// (`SWIFT_PACKAGE`), so guard it — the XcodeGen macOS target has no such
+/// accessor and would otherwise fail to compile.
 func loadBundledImage(_ name: String, ext: String) -> NSImage? {
     if let url = Bundle.main.url(forResource: name, withExtension: ext),
        let img = NSImage(contentsOf: url) {
         return img
     }
+    #if SWIFT_PACKAGE
     if let url = Bundle.module.url(forResource: name, withExtension: ext),
        let img = NSImage(contentsOf: url) {
         return img
     }
+    #endif
     return nil
 }
 
