@@ -129,14 +129,18 @@ struct ShareDecodeView: View {
         decoding = true; error = nil
         let pass = passphrase.isEmpty ? nil : passphrase
         Task {
+            // Hold the animation long enough to land (decode is near-instant).
+            async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)
             do {
                 let (m, g): (String, String?) = try await Task.detached {
                     let image = try ColorImageIO.readRGBImage(data: data)
                     let decoded = try MeowGram.readMessage(from: image, passphrase: pass)
                     return (decoded.message, decoded.guid)
                 }.value
+                try? await minShow
                 message = m; guid = g
             } catch {
+                try? await minShow
                 message = nil
                 self.error = (error as? CustomStringConvertible)?.description ?? error.localizedDescription
             }
