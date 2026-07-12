@@ -184,7 +184,7 @@ struct MeowGramView: View {
         VStack(spacing: 12) {
             ZStack {
                 if model.isDecoding {
-                    EmbedGeneratingView(label: "DECODING…")
+                    MatrixDecodeView(label: "DECODING…")
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 } else {
                     RoundedRectangle(cornerRadius: 14, style: .continuous)

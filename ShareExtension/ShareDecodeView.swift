@@ -23,16 +23,21 @@ struct ShareDecodeView: View {
             VStack(spacing: 12) {
                 header
                 if let preview {
+                    // The decode rain lays over the MeowGram, so it's the same
+                    // size and the image itself reads as being decoded.
                     Image(uiImage: preview).resizable().aspectRatio(contentMode: .fit)
                         .frame(maxHeight: 150)
+                        .overlay { if decoding { MatrixDecodeView(label: "DECODING…") } }
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 1.5))
                 }
 
                 if decoding {
-                    EmbedGeneratingView(label: "DECODING…")
-                        .frame(height: 170)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    if preview == nil {
+                        MatrixDecodeView(label: "DECODING…")
+                            .frame(height: 170)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
                 } else if let message {
                     messagePanel(message)
                 } else {
