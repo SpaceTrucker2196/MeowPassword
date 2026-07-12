@@ -21,13 +21,19 @@ final class MeowGramModeliOS: ObservableObject {
     @Published var passphrase = "" { didSet { invalidate() } }
     @Published var previewImage: UIImage?
     @Published private(set) var encodedPNG: Data?
-    @Published var isEmbedding = false
+    @Published var isEmbedding = false {
+        // Keep the screen awake while embedding too (same generating animation).
+        didSet { UIApplication.shared.isIdleTimerDisabled = isDecoding || isEmbedding }
+    }
 
     // Decode
     @Published var decodedMessage: String?
     @Published var decodedGUID: String?
     @Published var decodedImage: UIImage?
-    @Published var isDecoding = false
+    @Published var isDecoding = false {
+        // Keep the screen awake while decoding so it can't dim/lock mid-decode.
+        didSet { UIApplication.shared.isIdleTimerDisabled = isDecoding || isEmbedding }
+    }
     /// Raw bytes of the currently loaded MeowGram, kept so "DECODE MEOWGRAM!"
     /// can re-run with a passphrase after the image is picked.
     @Published private(set) var loadedData: Data?
