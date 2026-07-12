@@ -25,7 +25,18 @@ struct MeowGramView: View {
         }
         .frame(minWidth: 720, minHeight: 620)
         .onDrop(of: [.fileURL], isTargeted: $model.isDropTargeted) { model.handleDrop(providers: $0) }
-        .task { model.loadCatalog() }
+        .task {
+            model.loadCatalog()
+            #if DEBUG
+            // QA: `-previewDecode` freezes the decode animation over a sample cat.
+            if ProcessInfo.processInfo.arguments.contains("-previewDecode"),
+               let first = model.catalog.first {
+                model.mode = .decode
+                model.load(fileURL: first.url)
+                model.isDecoding = true
+            }
+            #endif
+        }
     }
 
     // MARK: header + toggle

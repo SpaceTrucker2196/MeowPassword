@@ -301,10 +301,15 @@ final class MeowGramModel: ObservableObject {
         let display = decodedImage
         let lossy = loadedLossy
         Task.detached(priority: .userInitiated) {
+            // In-memory decode is near-instant; hold isDecoding long enough for
+            // the digital-rain animation to actually land (mirrors iOS).
+            async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)
             do {
                 let image = try ColorImageIO.readRGBImage(data: data)
+                try? await minShow
                 await self.finishDecode(image: image, display: display, lossy: lossy, pass: pass)
             } catch {
+                try? await minShow
                 await self.failDecode(error, display: display, lossy: lossy)
             }
         }
