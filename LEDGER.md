@@ -39,3 +39,4 @@
 | c0cb0eb | 2026-07-13T02:13:30Z | claude-opus-4-8 | 880 | 24800 | 2182956 | 18476 | 1.9006 | Bump app version to 1.1.1 for release |
 | 9eb3d84 | 2026-07-13T04:50:05Z | claude-opus-4-8 | 6406 | 116957 | 11290287 | 92716 | 9.5283 | Bump app version to 1.1.2; arm Xcode Cloud TestFlight distribution (buildDistrib |
 | 3a1e78a | 2026-07-13T05:39:49Z | claude-opus-4-8 | 6236 | 147161 | 22160696 | 204067 | 16.8312 | Remove stray .gitkeep from MeowGramAssets bundle (macOS App Store hidden-file hy |
+| 85a51c9 | 2026-07-13T05:50:58Z | claude-opus-4-8 | 1570 | 47787 | 10537803 | 51650 | 6.9879 | Add macOS AppIcon asset catalog to fix App Store rejection ITMS-90546 (missing a |
