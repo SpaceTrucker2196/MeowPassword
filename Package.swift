@@ -65,7 +65,11 @@ let package = Package(
             exclude: [
                 "Resources",
                 "Assets/AppIcon.icns",
-                "Assets/icon_1024.png"
+                "Assets/icon_1024.png",
+                // The macOS App Store asset catalog is compiled by the XcodeGen
+                // MeowPasswordMac target (ASSETCATALOG_COMPILER_APPICON_NAME);
+                // the SwiftPM CLI/app build doesn't need an app icon.
+                "Assets.xcassets"
             ],
             resources: [
                 .process("Assets")

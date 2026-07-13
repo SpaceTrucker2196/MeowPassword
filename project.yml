@@ -135,6 +135,10 @@ targets:
         PRODUCT_NAME: MeowPassword
         INFOPLIST_FILE: Sources/MeowPasswordApp/Resources/Info.plist
         MACOSX_DEPLOYMENT_TARGET: "13.0"
+        # Mac App Store requires the app icon in a compiled asset catalog
+        # (Assets.car) — a loose .icns fails ITMS-90546. Assets.xcassets holds
+        # the macOS AppIcon set; the .icns stays only for the DMG/Developer ID path.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_HARDENED_RUNTIME: YES
         # Mac App Store build: App Sandbox on (the Developer ID / DMG path via
         # build_app.sh uses the non-sandbox MeowPassword.entitlements instead).
