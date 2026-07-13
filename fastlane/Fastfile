@@ -188,6 +188,19 @@ platform :mac do
                          skip_waiting_for_build_processing: true)
   end
 
+  desc "Build the macOS .pkg only (no upload) — validate before running `mac beta`."
+  lane :build_only do
+    ensure_project
+    build_number = `git rev-list --count HEAD`.strip
+    build_mac_app(
+      project: PROJECT,
+      scheme: MAC_SCHEME,
+      export_method: "app-store",
+      xcargs: "-allowProvisioningUpdates DEVELOPMENT_TEAM=#{DEV_TEAM} CURRENT_PROJECT_VERSION=#{build_number}"
+    )
+    UI.success("Built MeowPassword.pkg (build #{build_number}). Upload with: fastlane mac beta")
+  end
+
   desc "Build + upload the macOS app to App Store review (no auto-submit)."
   lane :release do
     ensure_project

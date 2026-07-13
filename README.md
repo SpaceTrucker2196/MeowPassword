@@ -2,6 +2,12 @@
 
 A command-line utility that generates secure, phrase-based passwords using cat names and Kolmogorov complexity analysis with a lolcat theme.
 
+<p align="center">
+  <img src="docs/readme-meowgram.png" alt="MeowGram — hide a secret message inside an ordinary cat photo" width="320">
+</p>
+
+<p align="center"><em>MeowGram: hide a secret message inside an ordinary-looking cat photo, then decode it on the other end.</em></p>
+
 ## Features
 
 - **1000+ Embedded Cat Names** - No external file dependencies
