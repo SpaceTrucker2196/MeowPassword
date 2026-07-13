@@ -33,3 +33,4 @@
 | b8710df | 2026-07-12T19:24:36Z | claude-opus-4-8 | 26 | 19847 | 8465149 | 26396 | 4.9928 | Fix fastlane APP_ID to io.river.meowpassword and add commit-count build number |
 | da5dcb6 | 2026-07-12T19:38:13Z | claude-opus-4-8 | 1605 | 87735 | 39163528 | 156641 | 23.3496 | Generate iOS App Store screenshots (iPhone 6.9 + iPad 13) + demoGenerate QA arg |
 | c92dc59 | 2026-07-12T23:20:48Z | claude-opus-4-8 | 21389 | 111441 | 96537402 | 2292724 | 74.0889 | Fix macOS CFBundleExecutable + mac beta pkg upload; iOS+macOS builds on TestFlig |
+| 487f40c | 2026-07-13T01:21:10Z | claude-opus-4-8 | 10483 | 218565 | 149414722 | 267635 | 82.9003 | iPad two-column layout (password + MeowGram) and macOS App Store screenshots |
