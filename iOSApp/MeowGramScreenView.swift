@@ -59,12 +59,8 @@ struct MeowGramScreen: View {
                 topBar
                 // Compose fills the screen without scrolling (the cat picker
                 // scrolls sideways instead); decode may scroll for the result.
-                Group {
-                    if model.mode == .compose {
-                        composePane
-                    } else {
-                        ScrollView { decodePane }
-                    }
+                ScrollView {
+                    if model.mode == .compose { composePane } else { decodePane }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 if let s = model.status { banner(s, color: GameShow.neonLime, text: GameShow.inkBlack) }
@@ -87,6 +83,13 @@ struct MeowGramScreen: View {
                 seenCompose = true; seenDecode = true
                 model.load(data: data, display: UIImage(data: data))
                 model.isDecoding = true
+            }
+            if ProcessInfo.processInfo.arguments.contains("-previewEmbed"),
+               let first = model.catalog.first {
+                seenCompose = true; seenDecode = true
+                model.selectedID = first.id
+                model.message = "Send Mor Cat foods!"
+                model.previewImage = UIImage(contentsOfFile: first.url.path)
             }
             #endif
             // First-launch tour for whichever mode we land on (not on iPad,
@@ -169,6 +172,37 @@ struct MeowGramScreen: View {
 
     private var composePane: some View {
         VStack(spacing: 10) {
+            // The MeowGram result rides at the top (under the mode buttons),
+            // full width: the embedding animation while working, then the
+            // finished cat with SHARE / SAVE.
+            if model.isEmbedding {
+                GamePanel(tint: GameShow.neonYellow) {
+                    EmbedGeneratingView()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 220)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            } else if let img = model.previewImage {
+                GamePanel(tint: GameShow.neonYellow) {
+                    VStack(spacing: 8) {
+                        Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        HStack(spacing: 8) {
+                            if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
+                                ShareLink(item: url) { Label("SHARE", systemImage: "paperplane.fill") }
+                                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                            }
+                            Button { model.saveToPhotos() } label: {
+                                Label("SAVE", systemImage: "square.and.arrow.down")
+                            }
+                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                            .disabled(model.encodedPNG == nil)
+                        }
+                    }
+                }
+            }
+
             // Message + passphrase — tight.
             GamePanel(tint: GameShow.neonLime) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -222,53 +256,18 @@ struct MeowGramScreen: View {
                             }
                         }
                     }
-                    .frame(minHeight: 90)
+                    .frame(height: 200)
                 }
             }
-            .frame(maxHeight: .infinity)
             .coachAnchor("mg.cats")
 
-            // Preview + actions — compact. While embedding, the whole panel
-            // becomes the generating animation.
-            GamePanel(tint: GameShow.neonYellow) {
-                if model.isEmbedding {
-                    EmbedGeneratingView()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 180)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                } else {
-                    VStack(spacing: 8) {
-                        HStack(spacing: 10) {
-                            if let img = model.previewImage {
-                                Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: 90, maxHeight: 112)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                            } else {
-                                RoundedRectangle(cornerRadius: 8).fill(GameShow.inkBlack.opacity(0.1))
-                                    .frame(width: 90, height: 112)
-                                    .overlay(Image(systemName: "photo").foregroundStyle(GameShow.inkBlack.opacity(0.3)))
-                            }
-                            Button { model.embed() } label: {
-                                Label("EMBED!", systemImage: "wand.and.stars")
-                            }
-                            .buttonStyle(NeonButton(fill: GameShow.neonYellow))
-                            .disabled(model.selectedID == nil || model.message.isEmpty || model.isOverBudget)
-                            .coachAnchor("mg.embed")
-                        }
-                        HStack(spacing: 8) {
-                            if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
-                                ShareLink(item: url) { Label("SHARE", systemImage: "paperplane.fill") }
-                                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
-                            }
-                            Button { model.saveToPhotos() } label: {
-                                Label("SAVE", systemImage: "square.and.arrow.down")
-                            }
-                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
-                            .disabled(model.encodedPNG == nil)
-                        }
-                    }
-                }
+            // Primary action, full width, at the bottom.
+            Button { model.embed() } label: {
+                Label("EMBED!", systemImage: "wand.and.stars")
             }
+            .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+            .disabled(model.selectedID == nil || model.message.isEmpty || model.isOverBudget)
+            .coachAnchor("mg.embed")
         }
     }
 
