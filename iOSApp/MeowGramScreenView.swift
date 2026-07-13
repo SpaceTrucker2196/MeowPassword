@@ -12,6 +12,9 @@ struct MeowGramScreen: View {
     @State private var showFileImporter = false
     var onClose: () -> Void = {}
     var decodeOnOpen: Data? = nil
+    /// True when shown as a column alongside the password system on iPad —
+    /// hides the back button and skips the first-launch tours.
+    var embedded = false
 
     @AppStorage("meow.tut.mg.compose.v1") private var seenCompose = false
     @AppStorage("meow.tut.mg.decode.v1") private var seenDecode = false
@@ -86,15 +89,19 @@ struct MeowGramScreen: View {
                 model.isDecoding = true
             }
             #endif
-            // First-launch tour for whichever mode we land on.
-            if model.mode == .compose, !seenCompose { showComposeTour = true }
-            else if model.mode == .decode, !seenDecode { showDecodeTour = true }
+            // First-launch tour for whichever mode we land on (not on iPad,
+            // where both systems are already visible side by side).
+            if !embedded {
+                if model.mode == .compose, !seenCompose { showComposeTour = true }
+                else if model.mode == .decode, !seenDecode { showDecodeTour = true }
+            }
         }
         .coachTour(composeSteps, isActive: $showComposeTour)
         .coachTour(decodeSteps, isActive: $showDecodeTour)
         .onChange(of: showComposeTour) { _, active in if !active { seenCompose = true } }
         .onChange(of: showDecodeTour) { _, active in if !active { seenDecode = true } }
         .onChange(of: model.mode) { _, m in
+            guard !embedded else { return }
             // First time each mode is viewed, run its tour (one at a time).
             if m == .decode, !seenDecode, !showComposeTour { showDecodeTour = true }
             if m == .compose, !seenCompose, !showDecodeTour { showComposeTour = true }
@@ -122,13 +129,15 @@ struct MeowGramScreen: View {
     private var topBar: some View {
         VStack(spacing: 10) {
             HStack {
-                Button { onClose() } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .black))
-                        .foregroundStyle(GameShow.inkBlack)
-                        .padding(8)
-                        .background(Circle().fill(GameShow.paperWhite))
-                        .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                if !embedded {
+                    Button { onClose() } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundStyle(GameShow.inkBlack)
+                            .padding(8)
+                            .background(Circle().fill(GameShow.paperWhite))
+                            .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                    }
                 }
                 Text("MEOWGRAM")
                     .font(.system(size: 20, weight: .black, design: .rounded))

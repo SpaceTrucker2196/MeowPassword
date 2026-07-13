@@ -49,6 +49,10 @@ final class GenerateModel: ObservableObject {
 struct GenerateView: View {
     @StateObject private var model = GenerateModel()
     var onMeowGram: () -> Void = {}
+    /// On iPad the MeowGram system sits in its own column, so the button that
+    /// opens it (and the first-launch tour) are redundant here.
+    var showsMeowGramButton = true
+    var autoTour = true
 
     @AppStorage("meow.tut.generate.v1") private var seenTour = false
     @State private var showTour = false
@@ -85,11 +89,13 @@ struct GenerateView: View {
                         .opacity(model.isBusy ? 0.6 : 1)
                         .coachAnchor("gen.generate")
 
-                        Button { onMeowGram() } label: {
-                            Label("MEOWGRAM!", systemImage: "envelope.badge.fill")
+                        if showsMeowGramButton {
+                            Button { onMeowGram() } label: {
+                                Label("MEOWGRAM!", systemImage: "envelope.badge.fill")
+                            }
+                            .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                            .coachAnchor("gen.meowgram")
                         }
-                        .buttonStyle(NeonButton(fill: GameShow.neonLime))
-                        .coachAnchor("gen.meowgram")
                     }
 
                     if let best = model.best { winner(best) }
@@ -103,7 +109,7 @@ struct GenerateView: View {
         .overlay(alignment: .topTrailing) { helpButton }
         .coachTour(tourSteps, isActive: $showTour)
         .onAppear {
-            if !seenTour { showTour = true }
+            if autoTour, !seenTour { showTour = true }
             #if DEBUG
             // QA/screenshots: `-demoGenerate` fills the screen with a result.
             if ProcessInfo.processInfo.arguments.contains("-demoGenerate") { model.generate() }
