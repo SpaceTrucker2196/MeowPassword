@@ -36,3 +36,4 @@
 | 487f40c | 2026-07-13T01:21:10Z | claude-opus-4-8 | 10483 | 218565 | 149414722 | 267635 | 82.9003 | iPad two-column layout (password + MeowGram) and macOS App Store screenshots |
 | 08ea136 | 2026-07-13T01:32:40Z | claude-opus-4-8 | 1552 | 66463 | 35771980 | 80531 | 20.3606 | MeowGram compose: full-width embed result/animation at the top |
 | 21d1bd5 | 2026-07-13T02:08:02Z | claude-opus-4-8 | 75818 | 175860 | 59550877 | 299075 | 37.5418 | Fix macOS CFBundleVersion (was frozen at 3); add mac build_only lane; README mar |
+| c0cb0eb | 2026-07-13T02:13:30Z | claude-opus-4-8 | 880 | 24800 | 2182956 | 18476 | 1.9006 | Bump app version to 1.1.1 for release |
