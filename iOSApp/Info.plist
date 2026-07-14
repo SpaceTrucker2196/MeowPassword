@@ -12,6 +12,14 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>en-GB</string>
+		<string>de</string>
+		<string>fr</string>
+		<string>ja</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>MeowPassword</string>
 	<key>CFBundlePackageType</key>

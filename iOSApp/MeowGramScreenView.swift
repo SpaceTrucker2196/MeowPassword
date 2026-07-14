@@ -159,7 +159,7 @@ struct MeowGramScreen: View {
             HStack(spacing: 12) {
                 ForEach(MeowGramModeliOS.Mode.allCases, id: \.self) { m in
                     Button { model.mode = m } label: {
-                        Label(m.rawValue, systemImage: m == .compose ? "square.and.pencil" : "eye.fill")
+                        Label(LocalizedStringKey(m.rawValue), systemImage: m == .compose ? "square.and.pencil" : "eye.fill")
                     }
                     .buttonStyle(NeonButton(fill: model.mode == m ? GameShow.neonYellow : GameShow.paperWhite))
                 }
@@ -361,7 +361,7 @@ struct MeowGramScreen: View {
         }
     }
 
-    private func label(_ text: String, tint: Color) -> some View {
+    private func label(_ text: LocalizedStringKey, tint: Color) -> some View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)

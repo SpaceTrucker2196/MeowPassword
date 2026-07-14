@@ -343,7 +343,7 @@ public struct EmbedGeneratingView: View {
                     // Chyron.
                     VStack {
                         Spacer()
-                        Text(label)
+                        Text(LocalizedStringKey(label))
                             .font(.system(size: 13, weight: .black, design: .rounded))
                             .foregroundStyle(GameShow.inkBlack)
                             .padding(.horizontal, 12).padding(.vertical, 5)
@@ -414,7 +414,7 @@ public struct MatrixDecodeView: View {
                 // Chyron.
                 VStack {
                     Spacer()
-                    Text(label)
+                    Text(LocalizedStringKey(label))
                         .font(.system(size: 13, weight: .black, design: .rounded))
                         .foregroundStyle(GameShow.inkBlack)
                         .padding(.horizontal, 12).padding(.vertical, 5)
@@ -597,7 +597,7 @@ struct CoachOverlay: View {
     private var card: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(step.title)
+                Text(LocalizedStringKey(step.title))
                     .font(.system(size: 15, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 10).padding(.vertical, 3)
@@ -608,7 +608,7 @@ struct CoachOverlay: View {
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .foregroundStyle(GameShow.inkBlack.opacity(0.55))
             }
-            Text(step.text)
+            Text(LocalizedStringKey(step.text))
                 .font(.system(size: 13, weight: .heavy, design: .rounded))
                 .foregroundStyle(GameShow.inkBlack)
                 .fixedSize(horizontal: false, vertical: true)
@@ -620,7 +620,7 @@ struct CoachOverlay: View {
                 }
                 Spacer()
                 Button { advance() } label: {
-                    Text(last ? "GOT IT!" : "NEXT")
+                    Text(last ? LocalizedStringKey("GOT IT!") : LocalizedStringKey("NEXT"))
                         .font(.system(size: 13, weight: .black, design: .rounded))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 16).padding(.vertical, 8)

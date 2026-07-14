@@ -40,7 +40,15 @@ final class GenerateModel: ObservableObject {
             async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
             let r = await Task.detached { MeowPass.analyze(input) }.value
             try? await minShow
-            self.analyzeResult = r.analysis + "\n\n" + r.verdict
+            // Keep the whimsical analysis block in English; localize the verdict by score.
+            let verdict: String
+            switch r.score {
+            case ..<3.0: verdict = String(localized: "Hiss! A kitten could paw this one open! Try a meowpass-generated password instead!")
+            case ..<5.0: verdict = String(localized: "Meow... this string is a bit too easy for a clever cat to guess.")
+            case ..<7.0: verdict = String(localized: "Not bad, hooman! This string has decent whisker-resistance.")
+            default: verdict = String(localized: "Purrfect! This string is fur-midably complex. Even the cleverest cats can't crack it!")
+            }
+            self.analyzeResult = r.analysis + "\n\n" + verdict
             self.isAnalyzing = false
         }
     }
@@ -263,7 +271,7 @@ struct GenerateView: View {
         }
     }
 
-    private func rule(_ title: String, value: Binding<Int>, range: ClosedRange<Int>, tint: Color) -> some View {
+    private func rule(_ title: LocalizedStringKey, value: Binding<Int>, range: ClosedRange<Int>, tint: Color) -> some View {
         HStack(spacing: 10) {
             Text(title).font(.system(size: 11, weight: .black, design: .rounded))
                 .foregroundStyle(GameShow.inkBlack).frame(width: 96, alignment: .leading)
@@ -275,7 +283,7 @@ struct GenerateView: View {
         }
     }
 
-    private func label(_ text: String, tint: Color) -> some View {
+    private func label(_ text: LocalizedStringKey, tint: Color) -> some View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)

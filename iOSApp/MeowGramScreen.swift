@@ -73,7 +73,7 @@ final class MeowGramModeliOS: ObservableObject {
                 try? await minShow
                 self.encodedPNG = data
                 self.previewImage = UIImage(data: data)
-                self.status = "Embedded! Ready to share."
+                self.status = String(localized: "Embedded! Ready to share.")
             } catch { self.errorText = describe(error) }
             self.isEmbedding = false
         }
@@ -82,7 +82,7 @@ final class MeowGramModeliOS: ObservableObject {
     func generateKey() {
         let key = MeowPass.meowKey()
         passphrase = key
-        status = "Key: \(key) — read it aloud to your recipient."
+        status = String(format: String(localized: "Key: %@ — read it aloud to your recipient."), key)
     }
 
     /// Write the embedded PNG to a temp file for ShareLink (lossless).
@@ -101,7 +101,7 @@ final class MeowGramModeliOS: ObservableObject {
         guard let png = encodedPNG else { return }
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { st in
             guard st == .authorized || st == .limited else {
-                Task { @MainActor in self.errorText = "Photos access denied." }; return
+                Task { @MainActor in self.errorText = String(localized: "Photos access denied.") }; return
             }
             PHPhotoLibrary.shared().performChanges {
                 // Add the PNG bytes verbatim so the stego payload survives.
@@ -109,8 +109,8 @@ final class MeowGramModeliOS: ObservableObject {
                 req.addResource(with: .photo, data: png, options: nil)
             } completionHandler: { ok, err in
                 Task { @MainActor in
-                    if ok { self.status = "Saved to Photos (as PNG)." }
-                    else { self.errorText = err?.localizedDescription ?? "Couldn't save." }
+                    if ok { self.status = String(localized: "Saved to Photos (as PNG).") }
+                    else { self.errorText = err?.localizedDescription ?? String(localized: "Couldn't save.") }
                 }
             }
         }
@@ -165,12 +165,21 @@ final class MeowGramModeliOS: ObservableObject {
             load(data: data, display: UIImage(data: data))
         } else {
             mode = .decode
-            errorText = "Nothing to paste — copy a MeowGram image first."
+            errorText = String(localized: "Nothing to paste — copy a MeowGram image first.")
         }
     }
 
     private func describe(_ error: Error) -> String {
-        (error as? CustomStringConvertible)?.description ?? error.localizedDescription
+        if let mg = error as? MeowGram.MGError {
+            switch mg {
+            case .notAMeowGram:   return String(localized: "This image isn't a MeowGram (no provenance key found).")
+            case .noMessage:      return String(localized: "No hidden message found in this MeowGram.")
+            case .wrongPassphrase: return String(localized: "Wrong passphrase — the message couldn't be unlocked.")
+            case .messageTooLong(let n): return String(format: String(localized: "Message too long (%1$d bytes; max %2$d)."), n, MeowGram.maxMessageBytes)
+            case .malformed:      return String(localized: "The embedded data is malformed.")
+            }
+        }
+        return (error as? CustomStringConvertible)?.description ?? error.localizedDescription
     }
 }
 
