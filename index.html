@@ -27,17 +27,8 @@
   a{color:inherit;}
   .wrap{max-width:1080px; margin:0 auto; padding:0 22px; position:relative; z-index:1;}
 
-  /* sparkle field */
-  .stars{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
-    background-image:
-      radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent 52%),
-      radial-gradient(1.5px 1.5px at 70% 20%, #fff 50%, transparent 52%),
-      radial-gradient(2px 2px at 40% 70%, #fff 50%, transparent 52%),
-      radial-gradient(1.5px 1.5px at 85% 60%, #fff 50%, transparent 52%),
-      radial-gradient(1.5px 1.5px at 12% 80%, #fff 50%, transparent 52%),
-      radial-gradient(2px 2px at 55% 45%, #fff 50%, transparent 52%),
-      radial-gradient(1.5px 1.5px at 92% 88%, #fff 50%, transparent 52%);
-    background-size:640px 640px;}
+  /* animated sparkle field (mirrors the app's SparkleField) */
+  .sparkles{position:fixed; inset:0; z-index:0; pointer-events:none;}
 
   /* white bubble game-show lettering */
   .bubble{color:#fff; -webkit-text-stroke:3px var(--ink);
@@ -138,7 +129,7 @@
 </style>
 </head>
 <body>
-<div class="stars"></div>
+<canvas class="sparkles" id="sparkles" aria-hidden="true"></canvas>
 
 <nav><div class="wrap">
   <a class="brand" href="#top"><img src="docs/img/icon.png" alt=""> MeowPass!</a>
@@ -233,5 +224,6 @@
   </div>
   <div class="sp">© 2026 River.io LLC · ミャオ</div>
 </div></footer>
+<script src="sparkles.js"></script>
 </body>
 </html>

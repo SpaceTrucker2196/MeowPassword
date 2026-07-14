@@ -11,8 +11,7 @@
   *{box-sizing:border-box;} html,body{margin:0;padding:0;}
   body{font-family:var(--fun);color:var(--cream);min-height:100vh;
     background:linear-gradient(158deg,var(--pink) 0%,var(--magenta) 52%,var(--purple) 100%);background-attachment:fixed;}
-  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background-size:640px 640px;
-    background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff 50%,transparent 52%),radial-gradient(2px 2px at 40% 70%,#fff 50%,transparent 52%),radial-gradient(1.5px 1.5px at 85% 60%,#fff 50%,transparent 52%),radial-gradient(1.5px 1.5px at 70% 20%,#fff 50%,transparent 52%);}
+  .sparkles{position:fixed;inset:0;z-index:0;pointer-events:none;}
   .wrap{max-width:780px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
   nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(6px);background:rgba(23,13,38,.55);border-bottom:3px solid var(--ink);}
   nav .wrap{display:flex;align-items:center;gap:10px;height:62px;}
@@ -34,7 +33,7 @@
 </style>
 </head>
 <body>
-<div class="stars"></div>
+<canvas class="sparkles" id="sparkles" aria-hidden="true"></canvas>
 <nav><div class="wrap">
   <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> MeowPass!</a>
   <a class="home" href="../index.html">← Home</a>
@@ -69,5 +68,6 @@
     <a class="btn" href="mailto:jeff@river.io?subject=MeowPass%20support">Contact support</a>
   </div>
 </main>
+<script src="../sparkles.js"></script>
 </body>
 </html>
