@@ -3,42 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meow Password — Privacy Policy</title>
+<title>Meow Pass — Privacy Policy</title>
 <link rel="icon" href="img/icon.png">
 <style>
-  :root{--hot:#FF3DA1;--mag:#B0218F;--deep:#5A1A8C;--yellow:#FFEB00;--cyan:#00E6FF;--lime:#A6FF33;--ink:#170D26;--paper:#FFFAF0;--font:'Trebuchet MS',system-ui,-apple-system,'Segoe UI',sans-serif;}
+  :root{--cream:#F4E9CE;--red:#E23B2E;--yellow:#F2B417;--teal:#1B8A8A;--ink:#1A1712;--hanko:#C1272D;
+    --shout:'Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;--whisper:ui-monospace,Menlo,monospace;--shadow:5px 6px 0 var(--ink);}
   *{box-sizing:border-box;} html,body{margin:0;padding:0;}
-  body{font-family:var(--font);color:var(--ink);
-    background:linear-gradient(135deg,var(--hot),var(--mag) 45%,var(--deep));min-height:100vh;}
-  .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
-  nav{position:sticky;top:0;background:rgba(23,13,38,.5);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink);}
+  body{font-family:var(--shout);color:var(--ink);background:var(--cream);min-height:100vh;}
+  .rays{position:fixed;inset:-30%;z-index:-2;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 18%,rgba(242,180,23,.18) 0deg 5deg,transparent 5deg 12deg);}
+  .halftone{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.09;background-image:radial-gradient(var(--ink) 1.3px,transparent 1.5px);background-size:13px 13px;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+  nav{position:sticky;top:0;background:var(--cream);border-bottom:3px solid var(--ink);box-shadow:0 4px 0 rgba(26,23,18,.12);}
   nav .wrap{display:flex;align-items:center;gap:10px;height:60px;}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--paper);text-decoration:none;}
-  .brand img{width:34px;height:34px;border-radius:8px;border:2px solid var(--ink);}
-  nav a.home{margin-left:auto;color:var(--ink);background:var(--yellow);border:2px solid var(--ink);padding:6px 14px;border-radius:20px;font-weight:800;text-decoration:none;font-size:13px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none;}
+  .brand img{width:34px;height:34px;border:2.5px solid var(--ink);}
+  nav a.home{margin-left:auto;background:var(--yellow);border:2.5px solid var(--ink);padding:6px 14px;font-weight:800;text-decoration:none;font-size:13px;box-shadow:2px 2px 0 var(--ink);}
   main{padding:36px 0 60px;}
-  .card{background:var(--paper);border:3px solid var(--ink);border-radius:20px;padding:28px;box-shadow:8px 8px 0 rgba(23,13,38,.5);}
-  h1{margin:.1em 0 .1em;font-size:2rem;}
-  .updated{opacity:.7;font-size:.9rem;margin-bottom:1.4em;}
-  h2{margin-top:1.5em;font-size:1.2rem;color:var(--mag);}
-  a{color:var(--mag);} code{font-family:ui-monospace,Menlo,monospace;background:#eee;padding:1px 5px;border-radius:5px;}
-  ul{line-height:1.7;}
-  .big{font-size:1.15rem;font-weight:700;}
+  .card{background:var(--cream);border:3px solid var(--ink);padding:28px;box-shadow:var(--shadow);}
+  h1{margin:.1em 0;font-size:2rem;}
+  .kicker{font-family:var(--whisper);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);}
+  .updated{opacity:.7;font-size:.9rem;margin-bottom:1.3em;font-family:var(--whisper);}
+  h2{margin-top:1.5em;font-size:1.2rem;color:var(--red);}
+  a{color:var(--red);} code{font-family:var(--whisper);background:rgba(26,23,18,.08);padding:1px 5px;}
+  ul{line-height:1.7;} .big{font-size:1.15rem;font-weight:700;}
 </style>
 </head>
 <body>
+<div class="rays"></div><div class="halftone"></div>
 <nav><div class="wrap">
-  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Password!</a>
+  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Pass!</a>
   <a class="home" href="../index.html">← Home</a>
 </div></nav>
 <main class="wrap"><div class="card">
+  <div class="kicker">プライバシー · policy</div>
   <h1>Privacy Policy</h1>
   <p class="updated">Last updated: 2026-07-14 · applies to the iOS, macOS, and Android apps</p>
 
-  <p class="big">Meow Password is built to collect nothing. 🐾</p>
+  <p class="big">Meow Pass is built to collect nothing. 🐾</p>
 
   <h2>What we collect</h2>
-  <p><strong>Nothing.</strong> Meow Password has no user accounts, no analytics, no advertising, and no crash reporting. The Android app declares no <code>INTERNET</code> permission and the Apple apps make no network calls, so the app cannot send any data off your device.</p>
+  <p><strong>Nothing.</strong> Meow Pass has no user accounts, no analytics, no advertising, and no crash reporting. The Android app declares no <code>INTERNET</code> permission and the Apple apps make no network calls, so the app cannot send any data off your device.</p>
 
   <h2>What stays on your device</h2>
   <ul>

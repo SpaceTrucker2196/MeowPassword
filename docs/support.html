@@ -3,35 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meow Password — Support</title>
+<title>Meow Pass — Support</title>
 <link rel="icon" href="img/icon.png">
 <style>
-  :root{--hot:#FF3DA1;--mag:#B0218F;--deep:#5A1A8C;--yellow:#FFEB00;--cyan:#00E6FF;--lime:#A6FF33;--ink:#170D26;--paper:#FFFAF0;--font:'Trebuchet MS',system-ui,-apple-system,'Segoe UI',sans-serif;}
+  :root{--cream:#F4E9CE;--red:#E23B2E;--yellow:#F2B417;--teal:#1B8A8A;--ink:#1A1712;--hanko:#C1272D;
+    --shout:'Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;--whisper:ui-monospace,Menlo,monospace;--shadow:5px 6px 0 var(--ink);}
   *{box-sizing:border-box;} html,body{margin:0;padding:0;}
-  body{font-family:var(--font);color:var(--ink);
-    background:linear-gradient(135deg,var(--hot),var(--mag) 45%,var(--deep));min-height:100vh;}
-  .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
-  nav{position:sticky;top:0;background:rgba(23,13,38,.5);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink);}
+  body{font-family:var(--shout);color:var(--ink);background:var(--cream);min-height:100vh;}
+  .rays{position:fixed;inset:-30%;z-index:-2;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 18%,rgba(242,180,23,.18) 0deg 5deg,transparent 5deg 12deg);}
+  .halftone{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.09;background-image:radial-gradient(var(--ink) 1.3px,transparent 1.5px);background-size:13px 13px;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+  nav{position:sticky;top:0;background:var(--cream);border-bottom:3px solid var(--ink);box-shadow:0 4px 0 rgba(26,23,18,.12);}
   nav .wrap{display:flex;align-items:center;gap:10px;height:60px;}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--paper);text-decoration:none;}
-  .brand img{width:34px;height:34px;border-radius:8px;border:2px solid var(--ink);}
-  nav a.home{margin-left:auto;color:var(--ink);background:var(--yellow);border:2px solid var(--ink);padding:6px 14px;border-radius:20px;font-weight:800;text-decoration:none;font-size:13px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none;}
+  .brand img{width:34px;height:34px;border:2.5px solid var(--ink);}
+  nav a.home{margin-left:auto;background:var(--yellow);border:2.5px solid var(--ink);padding:6px 14px;font-weight:800;text-decoration:none;font-size:13px;box-shadow:2px 2px 0 var(--ink);}
   main{padding:36px 0 60px;}
-  h1{color:var(--paper);font-size:2.2rem;text-shadow:3px 3px 0 var(--ink);margin:.1em 0 .5em;}
-  .card{background:var(--paper);border:3px solid var(--ink);border-radius:18px;padding:22px 24px;box-shadow:6px 6px 0 rgba(23,13,38,.5);margin-bottom:16px;}
-  .card h3{margin:.1em 0 .3em;color:var(--mag);font-size:1.15rem;}
-  .card p{margin:.2em 0;line-height:1.6;} a{color:var(--mag);font-weight:700;}
-  code{font-family:ui-monospace,Menlo,monospace;background:#eee;padding:1px 5px;border-radius:5px;}
-  .contact{background:var(--ink);color:var(--paper);text-align:center;}
-  .contact a{color:var(--yellow);} .contact .btn{display:inline-block;margin-top:10px;background:var(--yellow);color:var(--ink);border:3px solid var(--paper);border-radius:14px;padding:12px 22px;font-weight:900;text-decoration:none;}
+  .kicker{font-family:var(--whisper);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);}
+  h1{font-size:2.1rem;margin:.1em 0 .6em;}
+  .card{background:var(--cream);border:3px solid var(--ink);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .card:nth-child(odd){transform:rotate(-.6deg);} .card:nth-child(even){transform:rotate(.6deg);}
+  .card h3{margin:.1em 0 .3em;color:var(--red);font-size:1.15rem;}
+  .card p{margin:.2em 0;line-height:1.6;font-weight:500;} a{color:var(--red);font-weight:700;}
+  code{font-family:var(--whisper);background:rgba(26,23,18,.08);padding:1px 5px;}
+  .contact{background:var(--ink);color:var(--cream);text-align:center;transform:none;}
+  .contact h3{color:var(--yellow);} .contact a.btn{display:inline-block;margin-top:10px;background:var(--yellow);color:var(--ink);border:3px solid var(--cream);padding:12px 22px;font-weight:900;text-decoration:none;box-shadow:var(--shadow);}
 </style>
 </head>
 <body>
+<div class="rays"></div><div class="halftone"></div>
 <nav><div class="wrap">
-  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Password!</a>
+  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Pass!</a>
   <a class="home" href="../index.html">← Home</a>
 </div></nav>
 <main class="wrap">
+  <div class="kicker">サポート · help desk</div>
   <h1>Support &amp; FAQ 🐱</h1>
 
   <div class="card"><h3>Do I need an account?</h3>
@@ -41,7 +47,7 @@
     <p>No. The Android app doesn't even request the <code>INTERNET</code> permission, and the Apple apps make no network calls. Nothing you do leaves your device. See the <a href="privacy-policy.html">privacy policy</a>.</p></div>
 
   <div class="card"><h3>What is a MeowGram?</h3>
-    <p>A MeowGram is an ordinary-looking cat photo with a secret message hidden invisibly inside it (using DCT steganography). Pick one of the built-in cats, type your message, and share the image. Whoever receives it opens it in Meow Password to reveal the message.</p></div>
+    <p>A MeowGram is an ordinary-looking cat photo with a secret message hidden invisibly inside it (using DCT steganography). Pick one of the built-in cats, type your message, and share the image. Whoever receives it opens it in Meow Pass to reveal the message.</p></div>
 
   <div class="card"><h3>Is my hidden message secure?</h3>
     <p>If you add a passphrase, the message is encrypted with ChaCha20-Poly1305 (key derived via HKDF-SHA256) before it's hidden — only someone with the passphrase can read it. Without a passphrase, the message is hidden but not encrypted.</p></div>
@@ -55,7 +61,7 @@
   <div class="card"><h3>Which platforms are supported?</h3>
     <p>iPhone, iPad, Mac, and Android.</p></div>
 
-  <div class="card contact"><h3 style="color:var(--yellow)">Still need help?</h3>
+  <div class="card contact"><h3>Still need help?</h3>
     <p>Email us — a real human (with a cat) will reply.</p>
     <a class="btn" href="mailto:jeff@river.io?subject=Meow%20Password%20support">Contact support</a>
   </div>
