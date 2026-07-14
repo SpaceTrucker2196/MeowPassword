@@ -7,7 +7,7 @@
 <meta name="description" content="Strong, sayable passwords made from cat names — and hide secret messages inside ordinary cat photos. On-device. No accounts. No network. iOS · macOS · Android.">
 <meta property="og:title" content="Meow Pass!">
 <meta property="og:description" content="Cat-name passwords + MeowGram cat-mail. Strong, sayable, and private — all on your device.">
-<meta property="og:image" content="docs/img/og-share.png">
+<meta property="og:image" content="docs/img/og-showa.png">
 <link rel="icon" href="docs/img/icon.png">
 <style>
   /* ---- Shōwa Broadcast tokens (docs/DESIGN.md) ---- */
@@ -84,6 +84,15 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
     font-weight:900; box-shadow:4px 5px 0 rgba(26,23,18,.35);}
   .hanko .jp{font-size:20px; line-height:1;} .hanko .en{font-size:9px; letter-spacing:.12em; margin-top:3px;}
+  /* Shōwa mascot cat (hanko baked in) */
+  .mascot{position:relative; justify-self:center; max-width:340px;}
+  .mascot img{display:block; width:100%; filter:drop-shadow(6px 8px 0 rgba(26,23,18,.28));
+    transform:rotate(1.5deg);}
+  /* printed stamp on each feature card */
+  .card .stamp{float:right; width:74px; height:74px; margin:-2px -2px 4px 10px; transform:rotate(7deg);}
+  /* hanko divider strip */
+  .divider{margin:8px 0 0; background-repeat:repeat-x; background-position:center;
+    background-size:auto 44px; height:44px; opacity:.9;}
 
   /* marquee chyron band */
   .band{border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); background:var(--ink);
@@ -154,7 +163,7 @@
 <header class="wrap hero">
   <div>
     <span class="plate">EP. 01 · iOS · macOS · Android</span>
-    <h1><span class="l1">Meow</span><br><span class="l2">Password!</span></h1>
+    <h1><span class="l1">Meow</span><br><span class="l2">Pass!</span></h1>
     <p class="lead">Strong passwords you can actually <strong>say out loud</strong> — built from cat names — plus <strong>MeowGram</strong>: hide a secret message inside an ordinary cat photo.</p>
     <div class="cta">
       <a class="btn red" href="#get">Get the app</a>
@@ -162,9 +171,8 @@
     </div>
     <div class="pills"><span>NO ACCOUNTS</span><span>NO NETWORK</span><span>NO ANALYTICS</span><span>ON-DEVICE</span></div>
   </div>
-  <div class="stage">
-    <div class="titlecard"><img src="docs/img/screen-generate.png" alt="Meow Pass generating a strong password with a score meter"></div>
-    <div class="hanko"><span class="jp">認証成功</span><span class="en">MEOW VERIFIED</span></div>
+  <div class="mascot">
+    <img src="docs/img/cat-hanko.png" alt="Meow Pass mascot — a tabby cat with a red MEOW VERIFIED hanko seal">
   </div>
 </header>
 
@@ -186,10 +194,10 @@
   <h2 class="h2">Two superpowers, one very cool cat</h2>
   <p class="sub">A password generator and a secret cat-mail studio — broadcast with a game-show attitude.</p>
   <div class="cards">
-    <div class="card"><span class="chip" style="background:var(--yellow)">GENERATE!</span><h3>Sayable strong passwords</h3><p>Five candidates conjured from 1,000+ cat names, scored by Kolmogorov-style complexity. The highest score wins. Tap to copy.</p><span class="ep">EP. 01 / パスワード</span></div>
-    <div class="card"><span class="chip" style="background:var(--teal); color:var(--cream)">JUDGE!</span><h3>Honest strength verdict</h3><p>Paste any password for a 0–10 score and a cheeky verdict — from "a kitten could paw this open" to "fur-midably complex."</p><span class="ep">EP. 02 / スコア</span></div>
-    <div class="card"><span class="chip" style="background:var(--red); color:var(--cream)">MEOWGRAM</span><h3>Hide messages in cats</h3><p>Tuck a secret note invisibly inside an ordinary cat photo with DCT steganography. Lock it with a passphrase (ChaCha20-Poly1305) if you like.</p><span class="ep">EP. 03 / にゃんメール</span></div>
-    <div class="card"><span class="chip" style="background:var(--cream)">PRIVATE</span><h3>Nothing leaves your device</h3><p>No accounts, no servers, no tracking. The Android build ships without the network permission at all. Your cats keep your secrets.</p><span class="ep">EP. 04 / オフライン</span></div>
+    <div class="card"><img class="stamp" src="docs/img/stamp-generate.png" alt=""><span class="chip" style="background:var(--yellow)">GENERATE!</span><h3>Sayable strong passwords</h3><p>Five candidates conjured from 1,000+ cat names, scored by Kolmogorov-style complexity. The highest score wins. Tap to copy.</p><span class="ep">EP. 01 / パスワード</span></div>
+    <div class="card"><img class="stamp" src="docs/img/stamp-judge.png" alt=""><span class="chip" style="background:var(--teal); color:var(--cream)">JUDGE!</span><h3>Honest strength verdict</h3><p>Paste any password for a 0–10 score and a cheeky verdict — from "a kitten could paw this open" to "fur-midably complex."</p><span class="ep">EP. 02 / スコア</span></div>
+    <div class="card"><img class="stamp" src="docs/img/stamp-meowgram.png" alt=""><span class="chip" style="background:var(--red); color:var(--cream)">MEOWGRAM</span><h3>Hide messages in cats</h3><p>Tuck a secret note invisibly inside an ordinary cat photo with DCT steganography. Lock it with a passphrase (ChaCha20-Poly1305) if you like.</p><span class="ep">EP. 03 / にゃんメール</span></div>
+    <div class="card"><img class="stamp" src="docs/img/stamp-private.png" alt=""><span class="chip" style="background:var(--cream)">PRIVATE</span><h3>Nothing leaves your device</h3><p>No accounts, no servers, no tracking. The Android build ships without the network permission at all. Your cats keep your secrets.</p><span class="ep">EP. 04 / オフライン</span></div>
   </div>
 </section>
 
@@ -201,6 +209,7 @@
     <figure class="shot"><img src="docs/img/screen-generate.png" alt="Generate screen"><figcaption>Generate &amp; judge passwords</figcaption></figure>
     <figure class="shot"><img src="docs/img/screen-meowgram.png" alt="MeowGram compose screen"><figcaption>Compose a MeowGram</figcaption></figure>
   </div>
+  <div class="divider" style="background-image:url(docs/img/divider-hanko.png)"></div>
 </section>
 
 <section id="roadmap" class="wrap">
