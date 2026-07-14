@@ -45,3 +45,4 @@
 | 84726a1 | 2026-07-14T17:35:03Z | claude-opus-4-8 | 103651 | 262950 | 241219248 | 604964 | 133.7513 | Shōwa marketing site rebuild + theme-pack design docs + Meow Pass rebrand |
 | 8456af5 | 2026-07-14T17:38:24Z | claude-opus-4-8 | 5214 | 20593 | 2186277 | 29125 | 1.9253 | Deploy Shōwa graphics into marketing site (hero mascot, feature stamps, OG image |
 | 84735ff | 2026-07-14T17:52:30Z | claude-opus-4-8 | 15942 | 141006 | 8544364 | 240597 | 10.2830 | Rebuild marketing site in app neon GameShow palette with real screenshots |
+| db19fdb | 2026-07-14T17:57:28Z | claude-opus-4-8 | 8154 | 3878 | 1612319 | 15881 | 1.1027 | Swap in reworded MEOWPASS! hero + OG image |
