@@ -3,35 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meow Pass — Privacy Policy</title>
+<title>MeowPass — Privacy Policy</title>
 <link rel="icon" href="img/icon.png">
 <style>
-  :root{--cream:#F4E9CE;--red:#E23B2E;--yellow:#F2B417;--teal:#1B8A8A;--ink:#1A1712;--hanko:#C1272D;
-    --shout:'Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;--whisper:ui-monospace,Menlo,monospace;--shadow:5px 6px 0 var(--ink);}
+  :root{--pink:#FF3DA1;--magenta:#B0218F;--purple:#591A8C;--yellow:#FFEB00;--cyan:#00E6FF;--lime:#A6FF33;
+    --ink:#170D26;--cream:#FFFAF0;--fun:'Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;--mono:ui-monospace,Menlo,monospace;--shadow:6px 6px 0 var(--ink);}
   *{box-sizing:border-box;} html,body{margin:0;padding:0;}
-  body{font-family:var(--shout);color:var(--ink);background:var(--cream);min-height:100vh;}
-  .rays{position:fixed;inset:-30%;z-index:-2;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 18%,rgba(242,180,23,.18) 0deg 5deg,transparent 5deg 12deg);}
-  .halftone{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.09;background-image:radial-gradient(var(--ink) 1.3px,transparent 1.5px);background-size:13px 13px;}
-  .wrap{max-width:760px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
-  nav{position:sticky;top:0;background:var(--cream);border-bottom:3px solid var(--ink);box-shadow:0 4px 0 rgba(26,23,18,.12);}
-  nav .wrap{display:flex;align-items:center;gap:10px;height:60px;}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none;}
-  .brand img{width:34px;height:34px;border:2.5px solid var(--ink);}
-  nav a.home{margin-left:auto;background:var(--yellow);border:2.5px solid var(--ink);padding:6px 14px;font-weight:800;text-decoration:none;font-size:13px;box-shadow:2px 2px 0 var(--ink);}
+  body{font-family:var(--fun);color:var(--cream);min-height:100vh;
+    background:linear-gradient(158deg,var(--pink) 0%,var(--magenta) 52%,var(--purple) 100%);background-attachment:fixed;}
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background-size:640px 640px;
+    background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff 50%,transparent 52%),radial-gradient(2px 2px at 40% 70%,#fff 50%,transparent 52%),radial-gradient(1.5px 1.5px at 85% 60%,#fff 50%,transparent 52%),radial-gradient(1.5px 1.5px at 70% 20%,#fff 50%,transparent 52%);}
+  .wrap{max-width:780px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(6px);background:rgba(23,13,38,.55);border-bottom:3px solid var(--ink);}
+  nav .wrap{display:flex;align-items:center;gap:10px;height:62px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none;color:#fff;}
+  .brand img{width:36px;height:36px;border-radius:9px;border:2.5px solid var(--ink);}
+  nav a.home{margin-left:auto;background:var(--yellow);color:var(--ink);border:2.5px solid var(--ink);border-radius:999px;padding:6px 15px;font-weight:800;text-decoration:none;font-size:13px;box-shadow:2px 2px 0 var(--ink);}
   main{padding:36px 0 60px;}
-  .card{background:var(--cream);border:3px solid var(--ink);padding:28px;box-shadow:var(--shadow);}
-  h1{margin:.1em 0;font-size:2rem;}
-  .kicker{font-family:var(--whisper);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);}
-  .updated{opacity:.7;font-size:.9rem;margin-bottom:1.3em;font-family:var(--whisper);}
-  h2{margin-top:1.5em;font-size:1.2rem;color:var(--red);}
-  a{color:var(--red);} code{font-family:var(--whisper);background:rgba(26,23,18,.08);padding:1px 5px;}
-  ul{line-height:1.7;} .big{font-size:1.15rem;font-weight:700;}
+  .card{background:var(--cream);color:var(--ink);border:4px solid var(--yellow);border-radius:20px;padding:30px;box-shadow:var(--shadow);}
+  h1{margin:.1em 0;font-size:2.1rem;}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:700;}
+  .updated{opacity:.7;font-size:.9rem;margin-bottom:1.3em;font-family:var(--mono);}
+  h2{margin-top:1.5em;font-size:1.2rem;color:var(--magenta);}
+  a{color:var(--magenta);font-weight:700;} code{font-family:var(--mono);background:rgba(23,13,38,.08);padding:1px 5px;border-radius:4px;}
+  ul{line-height:1.7;} .big{font-size:1.2rem;font-weight:800;}
 </style>
 </head>
 <body>
-<div class="rays"></div><div class="halftone"></div>
+<div class="stars"></div>
 <nav><div class="wrap">
-  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Pass!</a>
+  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> MeowPass!</a>
   <a class="home" href="../index.html">← Home</a>
 </div></nav>
 <main class="wrap"><div class="card">
@@ -39,10 +40,10 @@
   <h1>Privacy Policy</h1>
   <p class="updated">Last updated: 2026-07-14 · applies to the iOS, macOS, and Android apps</p>
 
-  <p class="big">Meow Pass is built to collect nothing. 🐾</p>
+  <p class="big">MeowPass is built to collect nothing. 🐾</p>
 
   <h2>What we collect</h2>
-  <p><strong>Nothing.</strong> Meow Pass has no user accounts, no analytics, no advertising, and no crash reporting. The Android app declares no <code>INTERNET</code> permission and the Apple apps make no network calls, so the app cannot send any data off your device.</p>
+  <p><strong>Nothing.</strong> MeowPass has no user accounts, no analytics, no advertising, and no crash reporting. The Android app declares no <code>INTERNET</code> permission and the Apple apps make no network calls, so the app cannot send any data off your device.</p>
 
   <h2>What stays on your device</h2>
   <ul>

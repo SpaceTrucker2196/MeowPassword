@@ -3,152 +3,145 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meow Pass! — cat-name passwords &amp; cat-mail</title>
+<title>MeowPass! — cat-name passwords &amp; cat-mail</title>
 <meta name="description" content="Strong, sayable passwords made from cat names — and hide secret messages inside ordinary cat photos. On-device. No accounts. No network. iOS · macOS · Android.">
-<meta property="og:title" content="Meow Pass!">
+<meta property="og:title" content="MeowPass!">
 <meta property="og:description" content="Cat-name passwords + MeowGram cat-mail. Strong, sayable, and private — all on your device.">
-<meta property="og:image" content="docs/img/og-showa.png">
+<meta property="og:image" content="docs/img/hero-meowpass.png">
 <link rel="icon" href="docs/img/icon.png">
 <style>
-  /* ---- Shōwa Broadcast tokens (docs/DESIGN.md) ---- */
+  /* ---- GameShow neon tokens (match the app: Sources/MeowUI/MeowUI.swift) ---- */
   :root{
-    --cream:#F4E9CE; --red:#E23B2E; --yellow:#F2B417; --teal:#1B8A8A;
-    --ink:#1A1712; --hanko:#C1272D;
-    --shout:'Arial Rounded MT Bold','Trebuchet MS',system-ui,-apple-system,sans-serif;
-    --whisper:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    --shadow:5px 6px 0 var(--ink);   /* hard, blur-0 */
+    --pink:#FF3DA1; --magenta:#B0218F; --purple:#591A8C;
+    --yellow:#FFEB00; --cyan:#00E6FF; --lime:#A6FF33;
+    --ink:#170D26; --cream:#FFFAF0;
+    --fun:'Arial Rounded MT Bold','Trebuchet MS',system-ui,-apple-system,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --shadow:6px 6px 0 var(--ink);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{font-family:var(--shout); color:var(--ink); background:var(--cream);
-    -webkit-font-smoothing:antialiased; overflow-x:hidden;}
+  body{font-family:var(--fun); color:var(--cream); overflow-x:hidden;
+    background:linear-gradient(158deg,var(--pink) 0%,var(--magenta) 52%,var(--purple) 100%);
+    background-attachment:fixed; -webkit-font-smoothing:antialiased;}
   a{color:inherit;}
-  .wrap{max-width:1060px; margin:0 auto; padding:0 22px; position:relative; z-index:1;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 22px; position:relative; z-index:1;}
 
-  /* studio floor: flat cream + measured mustard sunburst + halftone audience */
-  .bg{position:fixed; inset:0; z-index:-3; background:var(--cream);}
-  .rays{position:fixed; inset:-30% -30% -30% -30%; z-index:-2; pointer-events:none;
-    background:repeating-conic-gradient(from 0deg at 50% 22%,
-      rgba(242,180,23,.20) 0deg 5deg, transparent 5deg 12deg);}
-  .halftone{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.10;
-    background-image:radial-gradient(var(--ink) 1.3px, transparent 1.5px);
-    background-size:13px 13px;}
+  /* sparkle field */
+  .stars{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 70% 20%, #fff 50%, transparent 52%),
+      radial-gradient(2px 2px at 40% 70%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 85% 60%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 12% 80%, #fff 50%, transparent 52%),
+      radial-gradient(2px 2px at 55% 45%, #fff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 92% 88%, #fff 50%, transparent 52%);
+    background-size:640px 640px;}
 
-  /* vertical katakana chyron down the right margin */
-  .chyron{position:fixed; top:0; right:6px; bottom:0; z-index:0; display:flex; align-items:center;
-    writing-mode:vertical-rl; text-orientation:upright; letter-spacing:.5em;
-    font-weight:900; font-size:15px; color:var(--ink); opacity:.28; pointer-events:none;}
-  @media(max-width:900px){.chyron{display:none;}}
+  /* white bubble game-show lettering */
+  .bubble{color:#fff; -webkit-text-stroke:3px var(--ink);
+    text-shadow:4px 5px 0 var(--ink); paint-order:stroke fill;}
+
+  /* neon chip pill */
+  .chip{display:inline-block; border:2.5px solid var(--ink); border-radius:999px;
+    padding:4px 14px; font-weight:900; font-size:13px; letter-spacing:.02em;
+    box-shadow:3px 3px 0 var(--ink); color:var(--ink);}
+  .chip.pink{background:var(--pink); color:#fff;} .chip.cyan{background:var(--cyan);}
+  .chip.lime{background:var(--lime);} .chip.yellow{background:var(--yellow);}
+  .chip.magenta{background:var(--magenta); color:#fff;}
 
   /* nav */
-  nav{position:sticky; top:0; z-index:20; background:var(--cream);
-    border-bottom:3px solid var(--ink); box-shadow:0 4px 0 rgba(26,23,18,.12);}
-  nav .wrap{display:flex; align-items:center; gap:14px; height:64px;}
-  .brand{display:flex; align-items:center; gap:10px; font-weight:900; text-decoration:none; font-size:18px;}
-  .brand img{width:36px; height:36px; border-radius:8px; border:2.5px solid var(--ink);}
+  nav{position:sticky; top:0; z-index:30; backdrop-filter:blur(6px);
+    background:rgba(23,13,38,.55); border-bottom:3px solid var(--ink);}
+  nav .wrap{display:flex; align-items:center; gap:14px; height:66px;}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:900; text-decoration:none;
+    font-size:19px; color:#fff;}
+  .brand img{width:38px; height:38px; border-radius:9px; border:2.5px solid var(--ink);}
   nav .links{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
-  nav .links a{background:var(--cream); border:2.5px solid var(--ink); padding:6px 12px;
-    font-weight:800; font-size:13px; text-decoration:none; box-shadow:2px 2px 0 var(--ink);}
+  nav .links a{background:var(--cream); color:var(--ink); border:2.5px solid var(--ink);
+    border-radius:999px; padding:6px 13px; font-weight:800; font-size:13px; text-decoration:none;
+    box-shadow:2px 2px 0 var(--ink);}
   nav .links a:hover{background:var(--yellow);}
 
-  /* whisper labels */
-  .whisper{font-family:var(--whisper); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink);}
-
   /* hero */
-  .hero{display:grid; grid-template-columns:1.15fr .85fr; gap:34px; align-items:center; padding:52px 0 30px;}
-  .plate{display:inline-block; background:var(--red); color:var(--cream); border:3px solid var(--ink);
-    box-shadow:var(--shadow); padding:2px 12px; transform:rotate(-1.5deg); font-weight:900;
-    font-size:13px; letter-spacing:.08em;}
-  h1{font-family:var(--shout); font-weight:900; font-size:clamp(46px,8.5vw,86px); line-height:.92;
-    margin:16px 0 8px; letter-spacing:-.01em;}
-  h1 .l1{color:var(--ink);} h1 .l2{color:var(--red);}
-  .lead{font-size:19px; max-width:33ch; line-height:1.5; font-weight:600;}
-  .cta{display:flex; gap:14px; flex-wrap:wrap; margin:22px 0 12px;}
+  .hero{display:grid; grid-template-columns:1.02fr .98fr; gap:34px; align-items:center; padding:44px 0 24px;}
+  h1{font-family:var(--fun); font-weight:900; font-size:clamp(52px,10vw,104px); line-height:.9;
+    margin:10px 0 14px;}
+  .lead{font-size:20px; max-width:34ch; line-height:1.5; font-weight:600; color:#fff;
+    text-shadow:0 2px 0 rgba(23,13,38,.35);}
+  .cta{display:flex; gap:14px; flex-wrap:wrap; margin:24px 0 14px;}
   .btn{display:inline-flex; align-items:center; gap:8px; font-weight:900; text-decoration:none;
-    border:3px solid var(--ink); padding:13px 20px; font-size:16px; box-shadow:var(--shadow);
-    transition:transform .08s, box-shadow .08s;}
-  .btn:active{transform:translate(5px,6px); box-shadow:0 0 0 var(--ink);}
-  .btn.red{background:var(--red); color:var(--cream);}
-  .btn.yellow{background:var(--yellow); color:var(--ink);}
-  .pills{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
-  .pills span{background:var(--cream); border:2.5px solid var(--ink); padding:5px 12px;
-    font-family:var(--whisper); font-size:12px; font-weight:700; box-shadow:2px 2px 0 var(--ink);}
+    color:var(--ink); border:3px solid var(--ink); border-radius:15px; padding:14px 22px;
+    font-size:16px; box-shadow:var(--shadow); transition:transform .08s, box-shadow .08s;}
+  .btn:active{transform:translate(6px,6px); box-shadow:0 0 0 var(--ink);}
+  .btn.yellow{background:var(--yellow);} .btn.lime{background:var(--lime);}
+  .btn.pink{background:var(--pink); color:#fff;} .btn.cyan{background:var(--cyan);}
+  .pills{display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;}
+  .pills span{background:rgba(23,13,38,.45); color:#fff; border:2px solid var(--ink);
+    border-radius:999px; padding:5px 13px; font-family:var(--mono); font-size:12px; font-weight:700;}
+  .heroimg{justify-self:center; max-width:420px; width:100%;
+    filter:drop-shadow(8px 10px 0 rgba(23,13,38,.4));}
 
-  /* hero visual: a broadcast title card + hanko seal */
-  .stage{position:relative; justify-self:center;}
-  .titlecard{background:var(--cream); border:4px solid var(--ink); box-shadow:8px 10px 0 var(--ink);
-    padding:10px; transform:rotate(1.5deg); max-width:300px;}
-  .titlecard img{display:block; width:100%; border:2px solid var(--ink);}
-  .hanko{position:absolute; right:-26px; top:-26px; width:104px; height:104px; border-radius:50%;
-    background:var(--cream); border:4px solid var(--hanko); color:var(--hanko); transform:rotate(8deg);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
-    font-weight:900; box-shadow:4px 5px 0 rgba(26,23,18,.35);}
-  .hanko .jp{font-size:20px; line-height:1;} .hanko .en{font-size:9px; letter-spacing:.12em; margin-top:3px;}
-  /* Shōwa mascot cat (hanko baked in) */
-  .mascot{position:relative; justify-self:center; max-width:340px;}
-  .mascot img{display:block; width:100%; filter:drop-shadow(6px 8px 0 rgba(26,23,18,.28));
-    transform:rotate(1.5deg);}
-  /* printed stamp on each feature card */
-  .card .stamp{float:right; width:74px; height:74px; margin:-2px -2px 4px 10px; transform:rotate(7deg);}
-  /* hanko divider strip */
-  .divider{margin:8px 0 0; background-repeat:repeat-x; background-position:center;
-    background-size:auto 44px; height:44px; opacity:.9;}
-
-  /* marquee chyron band */
+  /* marquee band */
   .band{border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); background:var(--ink);
-    color:var(--yellow); overflow:hidden; padding:11px 0; margin:22px 0;}
+    color:var(--yellow); overflow:hidden; padding:12px 0; margin:22px 0;}
   .band .track{display:inline-flex; white-space:nowrap; gap:26px; font-weight:900; font-size:17px;
     animation:slide 26s linear infinite;}
-  .band .sep{color:var(--red);}
+  .band .sep{color:var(--cyan);}
   @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
   /* sections */
-  section{padding:46px 0;}
-  .kicker{font-family:var(--whisper); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--red); font-weight:700;}
-  .h2{font-family:var(--shout); font-size:clamp(30px,5vw,46px); font-weight:900; margin:4px 0 4px;}
-  .sub{font-weight:600; margin:0 0 26px; font-size:18px; max-width:52ch;}
+  section{padding:44px 0;}
+  .kicker{font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--yellow); font-weight:700;}
+  .h2{font-family:var(--fun); font-size:clamp(32px,5.5vw,52px); font-weight:900; margin:4px 0 6px; color:#fff;
+    -webkit-text-stroke:2px var(--ink); text-shadow:3px 4px 0 var(--ink); paint-order:stroke fill;}
+  .sub{font-weight:600; margin:0 0 26px; font-size:18px; max-width:54ch; color:#fff;}
 
-  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px;}
-  .card{background:var(--cream); border:3px solid var(--ink); padding:20px; box-shadow:var(--shadow);}
-  .card:nth-child(odd){transform:rotate(-1deg);} .card:nth-child(even){transform:rotate(1deg);}
-  .chip{display:inline-block; border:2.5px solid var(--ink); padding:3px 10px; font-weight:900;
-    font-size:12px; box-shadow:2px 2px 0 var(--ink); margin-bottom:10px;}
-  .card h3{margin:.3em 0; font-size:20px;} .card p{margin:0; line-height:1.5; font-weight:500;}
-  .card .ep{font-family:var(--whisper); font-size:11px; letter-spacing:.1em; color:var(--teal); text-transform:uppercase; display:block; margin-top:10px;}
+  /* cream cards, chunky neon border + hard shadow (like the app panels) */
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:22px;}
+  .card{background:var(--cream); color:var(--ink); border:4px solid var(--ink); border-radius:18px;
+    padding:22px; box-shadow:var(--shadow);}
+  .card.b-yellow{border-color:var(--yellow);} .card.b-cyan{border-color:var(--cyan);}
+  .card.b-lime{border-color:var(--lime);} .card.b-pink{border-color:var(--pink);}
+  .card h3{margin:.5em 0 .25em; font-size:21px;} .card p{margin:0; line-height:1.5; font-weight:500;}
+  .card .ep{font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--magenta);
+    text-transform:uppercase; display:block; margin-top:12px; font-weight:700;}
 
-  .shots{display:grid; grid-template-columns:1fr 1fr; gap:26px;}
-  .shot{background:var(--cream); border:4px solid var(--ink); box-shadow:8px 10px 0 var(--ink); padding:10px;}
-  .shot:nth-child(1){transform:rotate(-1.5deg);} .shot:nth-child(2){transform:rotate(1.5deg);}
-  .shot img{display:block; width:100%; border:2px solid var(--ink);}
-  .shot figcaption{font-weight:800; margin-top:8px; text-align:center;}
+  /* phone screenshots */
+  .shots{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .shot figure{margin:0;}
+  .shot img{display:block; width:100%; border:4px solid var(--ink); border-radius:22px;
+    box-shadow:var(--shadow); background:var(--ink);}
+  .shot figcaption{font-weight:800; margin-top:10px; text-align:center; color:#fff;}
+  @media(max-width:760px){.shots{grid-template-columns:1fr; max-width:360px; margin:0 auto;}}
 
   .soon{border-style:dashed;}
   .get{text-align:center;}
   .badges{display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:20px;}
   .store{display:inline-flex; flex-direction:column; align-items:flex-start; gap:2px;
-    background:var(--ink); color:var(--cream); border:3px solid var(--ink); box-shadow:var(--shadow);
-    padding:12px 20px; text-decoration:none; min-width:210px;}
-  .store b{font-size:18px;} .store small{opacity:.85; font-family:var(--whisper); font-size:11px; letter-spacing:.1em;}
+    background:var(--ink); color:#fff; border:3px solid var(--cream); border-radius:15px;
+    box-shadow:var(--shadow); padding:13px 22px; text-decoration:none; min-width:220px;}
+  .store b{font-size:18px;} .store small{opacity:.85; font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--cyan);}
 
-  footer{border-top:3px solid var(--ink); background:var(--ink); color:var(--cream); padding:28px 0; margin-top:24px;}
+  footer{border-top:3px solid var(--ink); background:var(--ink); color:var(--cream); padding:30px 0; margin-top:24px;}
   footer .wrap{display:flex; gap:16px; flex-wrap:wrap; align-items:center;}
-  footer a{color:var(--yellow); font-weight:800; text-decoration:none; margin-right:16px;}
-  footer .sp{margin-left:auto; opacity:.75; font-family:var(--whisper); font-size:13px;}
+  footer a{color:var(--cyan); font-weight:800; text-decoration:none; margin-right:16px;}
+  footer .sp{margin-left:auto; opacity:.75; font-family:var(--mono); font-size:13px;}
 
   @media(max-width:820px){
     .hero{grid-template-columns:1fr; text-align:center;}
     .lead{margin-inline:auto;} .cta,.pills{justify-content:center;}
-    .titlecard{transform:none; margin-inline:auto;} .hanko{right:0; top:-20px;}
-    .shots{grid-template-columns:1fr;}
+    .heroimg{max-width:340px; margin-top:8px;}
   }
 </style>
 </head>
 <body>
-<div class="bg"></div><div class="rays"></div><div class="halftone"></div>
-<div class="chyron">ミャオ・パスワード・ゲームショー</div>
+<div class="stars"></div>
 
 <nav><div class="wrap">
-  <a class="brand" href="#top"><img src="docs/img/icon.png" alt=""> Meow Pass!</a>
+  <a class="brand" href="#top"><img src="docs/img/icon.png" alt=""> MeowPass!</a>
   <div class="links">
     <a href="#features">Features</a>
     <a href="#screens">Screens</a>
@@ -162,18 +155,16 @@
 <a id="top"></a>
 <header class="wrap hero">
   <div>
-    <span class="plate">EP. 01 · iOS · macOS · Android</span>
-    <h1><span class="l1">Meow</span><br><span class="l2">Pass!</span></h1>
+    <span class="chip yellow">iOS · macOS · ANDROID</span>
+    <h1 class="bubble">MeowPass!</h1>
     <p class="lead">Strong passwords you can actually <strong>say out loud</strong> — built from cat names — plus <strong>MeowGram</strong>: hide a secret message inside an ordinary cat photo.</p>
     <div class="cta">
-      <a class="btn red" href="#get">Get the app</a>
-      <a class="btn yellow" href="#features">See how it works</a>
+      <a class="btn yellow" href="#get">Get the app</a>
+      <a class="btn lime" href="#features">See how it works</a>
     </div>
     <div class="pills"><span>NO ACCOUNTS</span><span>NO NETWORK</span><span>NO ANALYTICS</span><span>ON-DEVICE</span></div>
   </div>
-  <div class="mascot">
-    <img src="docs/img/cat-hanko.png" alt="Meow Pass mascot — a tabby cat with a red MEOW VERIFIED hanko seal">
-  </div>
+  <img class="heroimg" src="docs/img/hero-meowpass.png" alt="MeowPass mascot — a tabby cat over a neon game-show banner">
 </header>
 
 <div class="band"><div class="track">
@@ -194,10 +185,10 @@
   <h2 class="h2">Two superpowers, one very cool cat</h2>
   <p class="sub">A password generator and a secret cat-mail studio — broadcast with a game-show attitude.</p>
   <div class="cards">
-    <div class="card"><img class="stamp" src="docs/img/stamp-generate.png" alt=""><span class="chip" style="background:var(--yellow)">GENERATE!</span><h3>Sayable strong passwords</h3><p>Five candidates conjured from 1,000+ cat names, scored by Kolmogorov-style complexity. The highest score wins. Tap to copy.</p><span class="ep">EP. 01 / パスワード</span></div>
-    <div class="card"><img class="stamp" src="docs/img/stamp-judge.png" alt=""><span class="chip" style="background:var(--teal); color:var(--cream)">JUDGE!</span><h3>Honest strength verdict</h3><p>Paste any password for a 0–10 score and a cheeky verdict — from "a kitten could paw this open" to "fur-midably complex."</p><span class="ep">EP. 02 / スコア</span></div>
-    <div class="card"><img class="stamp" src="docs/img/stamp-meowgram.png" alt=""><span class="chip" style="background:var(--red); color:var(--cream)">MEOWGRAM</span><h3>Hide messages in cats</h3><p>Tuck a secret note invisibly inside an ordinary cat photo with DCT steganography. Lock it with a passphrase (ChaCha20-Poly1305) if you like.</p><span class="ep">EP. 03 / にゃんメール</span></div>
-    <div class="card"><img class="stamp" src="docs/img/stamp-private.png" alt=""><span class="chip" style="background:var(--cream)">PRIVATE</span><h3>Nothing leaves your device</h3><p>No accounts, no servers, no tracking. The Android build ships without the network permission at all. Your cats keep your secrets.</p><span class="ep">EP. 04 / オフライン</span></div>
+    <div class="card b-yellow"><span class="chip yellow">GENERATE!</span><h3>Sayable strong passwords</h3><p>Five candidates conjured from 1,000+ cat names, scored by Kolmogorov-style complexity. The highest score wins. Tap to copy.</p><span class="ep">EP. 01 / パスワード</span></div>
+    <div class="card b-lime"><span class="chip magenta">JUDGE!</span><h3>Honest strength verdict</h3><p>Paste any password for a 0–10 score and a cheeky verdict — from "a kitten could paw this open" to "fur-midably complex."</p><span class="ep">EP. 02 / スコア</span></div>
+    <div class="card b-pink"><span class="chip pink">MEOWGRAM</span><h3>Hide messages in cats</h3><p>Tuck a secret note invisibly inside an ordinary cat photo with DCT steganography. Lock it with a passphrase (ChaCha20-Poly1305) if you like.</p><span class="ep">EP. 03 / にゃんメール</span></div>
+    <div class="card b-cyan"><span class="chip cyan">PRIVATE</span><h3>Nothing leaves your device</h3><p>No accounts, no servers, no tracking. The Android build ships without the network permission at all. Your cats keep your secrets.</p><span class="ep">EP. 04 / オフライン</span></div>
   </div>
 </section>
 
@@ -206,10 +197,10 @@
   <h2 class="h2">Take a peek 👀</h2>
   <p class="sub">Real screens from the app.</p>
   <div class="shots">
-    <figure class="shot"><img src="docs/img/screen-generate.png" alt="Generate screen"><figcaption>Generate &amp; judge passwords</figcaption></figure>
-    <figure class="shot"><img src="docs/img/screen-meowgram.png" alt="MeowGram compose screen"><figcaption>Compose a MeowGram</figcaption></figure>
+    <div class="shot"><figure><img src="docs/img/shot-generate.png" alt="Generate screen — a winning password with a score meter"><figcaption>Generate &amp; judge</figcaption></figure></div>
+    <div class="shot"><figure><img src="docs/img/shot-compose.png" alt="MeowGram compose screen — pick a cat and hide a message"><figcaption>Compose a MeowGram</figcaption></figure></div>
+    <div class="shot"><figure><img src="docs/img/shot-decode.png" alt="MeowGram decode screen — reveal a hidden message"><figcaption>Decode a MeowGram</figcaption></figure></div>
   </div>
-  <div class="divider" style="background-image:url(docs/img/divider-hanko.png)"></div>
 </section>
 
 <section id="roadmap" class="wrap">
@@ -217,19 +208,19 @@
   <h2 class="h2">On the roadmap 🗺️</h2>
   <p class="sub">Where the cats are headed next — the base app stays free; these are optional in-app purchases.</p>
   <div class="cards">
-    <div class="card soon"><span class="chip" style="background:var(--teal); color:var(--cream)">SOON · IN-APP PURCHASE</span><h3>Custom MeowGrams 🐱📸</h3><p>Bring your own cat. Import any photo from your library and hide your secret message inside <em>it</em> — not just our 100 built-in cats.</p><span class="ep">課金予定 / coming</span></div>
-    <div class="card soon"><span class="chip" style="background:var(--yellow)">SOON · IN-APP PURCHASE</span><h3>Spy-thriller theme packs 🕵️</h3><p>Campy parody skins that re-theme the whole show — a cold-war Kremlin-red look, a Pyongyang-broadcast look, and a tuxedo'd "00-Cat" secret-agent look. Purely for laughs.</p><span class="ep">スパイ / parody</span></div>
-    <div class="card soon"><span class="chip" style="background:var(--red); color:var(--cream)">IDEAS</span><h3>More whiskers, more magic</h3><p>Got a feature you'd love? The roadmap is cat-driven — <a href="mailto:jeff@river.io?subject=Meow%20Password%20idea"><strong>send us your ideas</strong></a>.</p><span class="ep">提案募集中</span></div>
+    <div class="card b-cyan soon"><span class="chip cyan">SOON · IN-APP PURCHASE</span><h3>Custom MeowGrams 🐱📸</h3><p>Bring your own cat. Import any photo from your library and hide your secret message inside <em>it</em> — not just our 100 built-in cats.</p><span class="ep">課金予定 / coming</span></div>
+    <div class="card b-yellow soon"><span class="chip yellow">SOON · IN-APP PURCHASE</span><h3>Spy-thriller theme packs 🕵️</h3><p>Campy parody skins that re-theme the whole show — a cold-war Kremlin-red look, a Pyongyang-broadcast look, and a tuxedo'd "00-Cat" secret-agent look. Purely for laughs.</p><span class="ep">スパイ / parody</span></div>
+    <div class="card b-pink soon"><span class="chip pink">IDEAS</span><h3>More whiskers, more magic</h3><p>Got a feature you'd love? The roadmap is cat-driven — <a href="mailto:jeff@river.io?subject=MeowPass%20idea"><strong>send us your ideas</strong></a>.</p><span class="ep">提案募集中</span></div>
   </div>
 </section>
 
 <section id="get" class="wrap get">
   <div class="kicker">入手方法 · how to watch</div>
-  <h2 class="h2">Get Meow Pass!</h2>
+  <h2 class="h2">Get MeowPass!</h2>
   <p class="sub" style="margin-inline:auto;">Rolling out now to the App Store and Google Play.</p>
   <div class="badges">
-    <a class="store" href="mailto:jeff@river.io?subject=Meow%20Password%20TestFlight"><small>iOS · macOS</small><b>Request TestFlight →</b></a>
-    <a class="store" href="mailto:jeff@river.io?subject=Meow%20Password%20Android%20test"><small>ANDROID</small><b>Coming to Google Play →</b></a>
+    <a class="store" href="mailto:jeff@river.io?subject=MeowPass%20TestFlight"><small>iOS · macOS</small><b>Request TestFlight →</b></a>
+    <a class="store" href="mailto:jeff@river.io?subject=MeowPass%20Android%20test"><small>ANDROID</small><b>Coming to Google Play →</b></a>
   </div>
 </section>
 
@@ -240,7 +231,7 @@
     <a href="https://github.com/SpaceTrucker2196/MeowPassword">Source</a>
     <a href="mailto:jeff@river.io">Contact</a>
   </div>
-  <div class="sp">© 2026 River.io LLC · 認証成功</div>
+  <div class="sp">© 2026 River.io LLC · ミャオ</div>
 </div></footer>
 </body>
 </html>

@@ -3,37 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meow Pass — Support</title>
+<title>MeowPass — Support</title>
 <link rel="icon" href="img/icon.png">
 <style>
-  :root{--cream:#F4E9CE;--red:#E23B2E;--yellow:#F2B417;--teal:#1B8A8A;--ink:#1A1712;--hanko:#C1272D;
-    --shout:'Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;--whisper:ui-monospace,Menlo,monospace;--shadow:5px 6px 0 var(--ink);}
+  :root{--pink:#FF3DA1;--magenta:#B0218F;--purple:#591A8C;--yellow:#FFEB00;--cyan:#00E6FF;--lime:#A6FF33;
+    --ink:#170D26;--cream:#FFFAF0;--fun:'Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;--mono:ui-monospace,Menlo,monospace;--shadow:6px 6px 0 var(--ink);}
   *{box-sizing:border-box;} html,body{margin:0;padding:0;}
-  body{font-family:var(--shout);color:var(--ink);background:var(--cream);min-height:100vh;}
-  .rays{position:fixed;inset:-30%;z-index:-2;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 18%,rgba(242,180,23,.18) 0deg 5deg,transparent 5deg 12deg);}
-  .halftone{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.09;background-image:radial-gradient(var(--ink) 1.3px,transparent 1.5px);background-size:13px 13px;}
-  .wrap{max-width:760px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
-  nav{position:sticky;top:0;background:var(--cream);border-bottom:3px solid var(--ink);box-shadow:0 4px 0 rgba(26,23,18,.12);}
-  nav .wrap{display:flex;align-items:center;gap:10px;height:60px;}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none;}
-  .brand img{width:34px;height:34px;border:2.5px solid var(--ink);}
-  nav a.home{margin-left:auto;background:var(--yellow);border:2.5px solid var(--ink);padding:6px 14px;font-weight:800;text-decoration:none;font-size:13px;box-shadow:2px 2px 0 var(--ink);}
+  body{font-family:var(--fun);color:var(--cream);min-height:100vh;
+    background:linear-gradient(158deg,var(--pink) 0%,var(--magenta) 52%,var(--purple) 100%);background-attachment:fixed;}
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;background-size:640px 640px;
+    background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff 50%,transparent 52%),radial-gradient(2px 2px at 40% 70%,#fff 50%,transparent 52%),radial-gradient(1.5px 1.5px at 85% 60%,#fff 50%,transparent 52%),radial-gradient(1.5px 1.5px at 70% 20%,#fff 50%,transparent 52%);}
+  .wrap{max-width:780px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(6px);background:rgba(23,13,38,.55);border-bottom:3px solid var(--ink);}
+  nav .wrap{display:flex;align-items:center;gap:10px;height:62px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none;color:#fff;}
+  .brand img{width:36px;height:36px;border-radius:9px;border:2.5px solid var(--ink);}
+  nav a.home{margin-left:auto;background:var(--yellow);color:var(--ink);border:2.5px solid var(--ink);border-radius:999px;padding:6px 15px;font-weight:800;text-decoration:none;font-size:13px;box-shadow:2px 2px 0 var(--ink);}
   main{padding:36px 0 60px;}
-  .kicker{font-family:var(--whisper);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);}
-  h1{font-size:2.1rem;margin:.1em 0 .6em;}
-  .card{background:var(--cream);border:3px solid var(--ink);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:16px;}
-  .card:nth-child(odd){transform:rotate(-.6deg);} .card:nth-child(even){transform:rotate(.6deg);}
-  .card h3{margin:.1em 0 .3em;color:var(--red);font-size:1.15rem;}
-  .card p{margin:.2em 0;line-height:1.6;font-weight:500;} a{color:var(--red);font-weight:700;}
-  code{font-family:var(--whisper);background:rgba(26,23,18,.08);padding:1px 5px;}
-  .contact{background:var(--ink);color:var(--cream);text-align:center;transform:none;}
-  .contact h3{color:var(--yellow);} .contact a.btn{display:inline-block;margin-top:10px;background:var(--yellow);color:var(--ink);border:3px solid var(--cream);padding:12px 22px;font-weight:900;text-decoration:none;box-shadow:var(--shadow);}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--yellow);font-weight:700;}
+  h1{font-size:2.2rem;margin:.1em 0 .6em;color:#fff;-webkit-text-stroke:2px var(--ink);text-shadow:3px 4px 0 var(--ink);paint-order:stroke fill;}
+  .card{background:var(--cream);color:var(--ink);border:4px solid var(--ink);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .card:nth-child(2){border-color:var(--cyan);} .card:nth-child(3){border-color:var(--lime);}
+  .card:nth-child(4){border-color:var(--pink);} .card:nth-child(5){border-color:var(--yellow);}
+  .card:nth-child(6){border-color:var(--cyan);} .card:nth-child(7){border-color:var(--lime);}
+  .card h3{margin:.1em 0 .3em;color:var(--magenta);font-size:1.18rem;}
+  .card p{margin:.2em 0;line-height:1.6;font-weight:500;} a{color:var(--magenta);font-weight:700;}
+  code{font-family:var(--mono);background:rgba(23,13,38,.08);padding:1px 5px;border-radius:4px;}
+  .contact{background:var(--ink);color:var(--cream);border-color:var(--yellow);}
+  .contact h3{color:var(--yellow);} .contact a.btn{display:inline-block;margin-top:10px;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:14px;padding:12px 22px;font-weight:900;text-decoration:none;box-shadow:4px 4px 0 var(--pink);}
 </style>
 </head>
 <body>
-<div class="rays"></div><div class="halftone"></div>
+<div class="stars"></div>
 <nav><div class="wrap">
-  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Pass!</a>
+  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> MeowPass!</a>
   <a class="home" href="../index.html">← Home</a>
 </div></nav>
 <main class="wrap">
@@ -47,7 +50,7 @@
     <p>No. The Android app doesn't even request the <code>INTERNET</code> permission, and the Apple apps make no network calls. Nothing you do leaves your device. See the <a href="privacy-policy.html">privacy policy</a>.</p></div>
 
   <div class="card"><h3>What is a MeowGram?</h3>
-    <p>A MeowGram is an ordinary-looking cat photo with a secret message hidden invisibly inside it (using DCT steganography). Pick one of the built-in cats, type your message, and share the image. Whoever receives it opens it in Meow Pass to reveal the message.</p></div>
+    <p>A MeowGram is an ordinary-looking cat photo with a secret message hidden invisibly inside it (using DCT steganography). Pick one of the built-in cats, type your message, and share the image. Whoever receives it opens it in MeowPass to reveal the message.</p></div>
 
   <div class="card"><h3>Is my hidden message secure?</h3>
     <p>If you add a passphrase, the message is encrypted with ChaCha20-Poly1305 (key derived via HKDF-SHA256) before it's hidden — only someone with the passphrase can read it. Without a passphrase, the message is hidden but not encrypted.</p></div>
@@ -63,7 +66,7 @@
 
   <div class="card contact"><h3>Still need help?</h3>
     <p>Email us — a real human (with a cat) will reply.</p>
-    <a class="btn" href="mailto:jeff@river.io?subject=Meow%20Password%20support">Contact support</a>
+    <a class="btn" href="mailto:jeff@river.io?subject=MeowPass%20support">Contact support</a>
   </div>
 </main>
 </body>
