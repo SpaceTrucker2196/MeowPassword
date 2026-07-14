@@ -61,7 +61,15 @@ final class GenerationModel: ObservableObject {
             async let minShow: Void = Task.sleep(nanoseconds: 1_100_000_000)  // let the animation land
             let result = await Task.detached { MeowPass.analyze(input) }.value
             try? await minShow
-            self.analyzeResult = result.analysis + "\n\n" + result.verdict
+            // Keep the whimsical analysis block in English; localize the verdict by score.
+            let verdict: String
+            switch result.score {
+            case ..<3.0: verdict = String(localized: "Hiss! A kitten could paw this one open! Try a meowpass-generated password instead!")
+            case ..<5.0: verdict = String(localized: "Meow... this string is a bit too easy for a clever cat to guess.")
+            case ..<7.0: verdict = String(localized: "Not bad, hooman! This string has decent whisker-resistance.")
+            default: verdict = String(localized: "Purrfect! This string is fur-midably complex. Even the cleverest cats can't crack it!")
+            }
+            self.analyzeResult = result.analysis + "\n\n" + verdict
             self.isAnalyzing = false
         }
     }

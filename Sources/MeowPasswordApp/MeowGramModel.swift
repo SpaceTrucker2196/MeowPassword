@@ -63,14 +63,14 @@ final class MeowGramModel: ObservableObject {
     func generatePassphrase() {
         let key = MeowPass.meowKey()
         passphrase = key
-        statusText = "Key: \(key) — read it aloud to your recipient."
+        statusText = String(format: String(localized: "Key: %@ — read it aloud to your recipient."), key)
     }
 
     func embed() {
-        guard let entry = selectedEntry else { lastError = "Pick a cat first!"; return }
-        guard !message.isEmpty else { lastError = "Type a message first!"; return }
+        guard let entry = selectedEntry else { lastError = String(localized: "Pick a cat first!"); return }
+        guard !message.isEmpty else { lastError = String(localized: "Type a message first!"); return }
         guard !isOverBudget else {
-            lastError = "Message is too long (\(payloadBytesUsed)/\(payloadBytesMax) bytes)."; return
+            lastError = String(format: String(localized: "Message is too long (%1$d/%2$d bytes)."), payloadBytesUsed, payloadBytesMax); return
         }
         let path = entry.url.path
         let msg = message
@@ -89,10 +89,10 @@ final class MeowGramModel: ObservableObject {
                     self.encodedPNG = data
                     self.previewImage = nsImage
                     self.isEmbedding = false
-                    self.statusText = "Embedded! Ready to send."
+                    self.statusText = String(localized: "Embedded! Ready to send.")
                 }
             } catch {
-                let desc = (error as? CustomStringConvertible)?.description ?? error.localizedDescription
+                let desc = self.localizedError(error)
                 await MainActor.run { self.lastError = desc; self.isEmbedding = false }
             }
         }
@@ -110,8 +110,7 @@ final class MeowGramModel: ObservableObject {
 
     /// Message body shared with both the Mail and Messages compose paths.
     private var shareBody: String {
-        "I sent you a MeowGram! 🐱 Drop this PNG into MeowPassword to decode the hidden "
-      + "message. Keep it a PNG — don't screenshot or convert it, or the message is lost."
+        String(localized: "I sent you a MeowGram! 🐱 Drop this PNG into MeowPassword to decode the hidden message. Keep it a PNG — don't screenshot or convert it, or the message is lost.")
     }
 
     /// Write the embedded PNG to a temp file (verbatim — never re-encode) for
@@ -127,7 +126,7 @@ final class MeowGramModel: ObservableObject {
             try png.write(to: fileURL)
             return fileURL
         } catch {
-            lastError = "Couldn't stage the attachment: \(error.localizedDescription)"
+            lastError = String(format: String(localized: "Couldn't stage the attachment: %@"), error.localizedDescription)
             return nil
         }
     }
@@ -137,13 +136,13 @@ final class MeowGramModel: ObservableObject {
         let items: [Any] = [shareBody, fileURL as NSURL]
         guard let service = NSSharingService(named: .composeEmail),
               service.canPerform(withItems: items) else {
-            statusText = "No Mail account is set up — saving the PNG instead."
+            statusText = String(localized: "No Mail account is set up — saving the PNG instead.")
             savePNG()
             return
         }
-        service.subject = "A MeowGram for you 🐱"
+        service.subject = String(localized: "A MeowGram for you 🐱")
         service.perform(withItems: items)
-        statusText = "Handed off to Mail — hit send!"
+        statusText = String(localized: "Handed off to Mail — hit send!")
     }
 
     /// Send the MeowGram via the Messages app (iMessage) with the PNG attached.
@@ -152,12 +151,12 @@ final class MeowGramModel: ObservableObject {
         let items: [Any] = [shareBody, fileURL as NSURL]
         guard let service = NSSharingService(named: .composeMessage),
               service.canPerform(withItems: items) else {
-            statusText = "Messages isn't available — saving the PNG instead."
+            statusText = String(localized: "Messages isn't available — saving the PNG instead.")
             savePNG()
             return
         }
         service.perform(withItems: items)
-        statusText = "Handed off to Messages — hit send!"
+        statusText = String(localized: "Handed off to Messages — hit send!")
     }
 
     /// Copy the embedded MeowGram to the clipboard — as a real PNG file (so
@@ -173,7 +172,7 @@ final class MeowGramModel: ObservableObject {
             try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
             try png.write(to: fileURL)   // verbatim PNG
         } catch {
-            lastError = "Couldn't stage the copy: \(error.localizedDescription)"; return
+            lastError = String(format: String(localized: "Couldn't stage the copy: %@"), error.localizedDescription); return
         }
         let pb = NSPasteboard.general
         pb.clearContents()
@@ -181,7 +180,7 @@ final class MeowGramModel: ObservableObject {
         item.setData(png, forType: .png)
         item.setString(fileURL.absoluteString, forType: .fileURL)
         pb.writeObjects([item])
-        statusText = "Copied! Paste it as a PNG — image-paste targets may re-encode it."
+        statusText = String(localized: "Copied! Paste it as a PNG — image-paste targets may re-encode it.")
     }
 
     /// Decode a MeowGram straight from the clipboard: a copied PNG file if
@@ -200,7 +199,7 @@ final class MeowGramModel: ObservableObject {
             load(image: img)
             return
         }
-        lastError = "Nothing to paste — copy a MeowGram image or PNG file first."
+        lastError = String(localized: "Nothing to paste — copy a MeowGram image or PNG file first.")
     }
 
     /// Open a MeowGram from disk (matches iOS "FILES") — loads, doesn't decode.
@@ -225,7 +224,7 @@ final class MeowGramModel: ObservableObject {
             do {
                 try png.write(to: url)
                 NSWorkspace.shared.activateFileViewerSelecting([url])
-                Task { @MainActor in self.statusText = "Saved \(url.lastPathComponent)" }
+                Task { @MainActor in self.statusText = String(format: String(localized: "Saved %@"), url.lastPathComponent) }
             } catch {
                 Task { @MainActor in self.lastError = error.localizedDescription }
             }
@@ -258,13 +257,13 @@ final class MeowGramModel: ObservableObject {
     func load(fileURL: URL) {
         guard let type = UTType(filenameExtension: fileURL.pathExtension),
               type.conforms(to: .image) else {
-            lastError = "That doesn't look like an image. Drop a MeowGram PNG."
+            lastError = String(localized: "That doesn't look like an image. Drop a MeowGram PNG.")
             return
         }
         let accessed = fileURL.startAccessingSecurityScopedResource()
         defer { if accessed { fileURL.stopAccessingSecurityScopedResource() } }
         guard let data = try? Data(contentsOf: fileURL) else {
-            lastError = "Couldn't read that file."
+            lastError = String(localized: "Couldn't read that file.")
             return
         }
         loadedLossy = ["jpg", "jpeg", "heic", "heif", "webp"].contains(fileURL.pathExtension.lowercased())
@@ -275,7 +274,7 @@ final class MeowGramModel: ObservableObject {
         guard let tiff = nsImage.tiffRepresentation,
               let rep = NSBitmapImageRep(data: tiff),
               let png = rep.representation(using: .png, properties: [:]) else {
-            lastError = "Couldn't read that pasted image."
+            lastError = String(localized: "Couldn't read that pasted image.")
             return
         }
         loadedLossy = false
@@ -326,14 +325,13 @@ final class MeowGramModel: ObservableObject {
         do {
             message = try MeowGram.readMessage(from: image, passphrase: pass).message
         } catch {
-            let desc = (error as? CustomStringConvertible)?.description ?? error.localizedDescription
+            let desc = localizedError(error)
             if guid != nil {
                 // Authentic but message missing or locked — friendlier phrasing.
                 errorText = desc
             } else {
                 errorText = lossy
-                    ? "No MeowGram here — JPEG/HEIC re-compression usually destroys them. "
-                      + "Ask the sender for the original PNG."
+                    ? String(localized: "No MeowGram here — JPEG/HEIC re-compression usually destroys them. Ask the sender for the original PNG.")
                     : desc
             }
         }
@@ -347,14 +345,29 @@ final class MeowGramModel: ObservableObject {
     }
 
     private func failDecode(_ error: Error, display: NSImage?, lossy: Bool) async {
-        let desc = (error as? CustomStringConvertible)?.description ?? error.localizedDescription
+        let desc = localizedError(error)
         await MainActor.run {
             self.decodedImage = display
             self.lastError = lossy
-                ? "Couldn't read that image as a MeowGram (\(desc))."
+                ? String(format: String(localized: "Couldn't read that image as a MeowGram (%@)."), desc)
                 : desc
             self.isDecoding = false
         }
+    }
+
+    /// Map a MeowGram/decoding error to localized text. `nonisolated` so the
+    /// detached decode/embed tasks can call it off the main actor.
+    nonisolated private func localizedError(_ error: Error) -> String {
+        if let mg = error as? MeowGram.MGError {
+            switch mg {
+            case .notAMeowGram:   return String(localized: "This image isn't a MeowGram (no provenance key found).")
+            case .noMessage:      return String(localized: "No hidden message found in this MeowGram.")
+            case .wrongPassphrase: return String(localized: "Wrong passphrase — the message couldn't be unlocked.")
+            case .messageTooLong(let n): return String(format: String(localized: "Message too long (%1$d bytes; max %2$d)."), n, MeowGram.maxMessageBytes)
+            case .malformed:      return String(localized: "The embedded data is malformed.")
+            }
+        }
+        return (error as? CustomStringConvertible)?.description ?? error.localizedDescription
     }
 
     // MARK: - Housekeeping

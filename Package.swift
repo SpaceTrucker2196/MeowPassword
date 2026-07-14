@@ -72,7 +72,8 @@ let package = Package(
                 "Assets.xcassets"
             ],
             resources: [
-                .process("Assets")
+                .process("Assets"),
+                .process("Localizable.xcstrings")
             ]
         ),
         .testTarget(

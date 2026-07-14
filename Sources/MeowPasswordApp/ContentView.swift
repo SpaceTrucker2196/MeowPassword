@@ -134,7 +134,7 @@ struct ContentView: View {
         }
     }
 
-    private func stepperRow(title: String, jp: String, value: Binding<Int>, range: ClosedRange<Int>, tint: Color) -> some View {
+    private func stepperRow(title: LocalizedStringKey, jp: String, value: Binding<Int>, range: ClosedRange<Int>, tint: Color) -> some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
@@ -160,7 +160,7 @@ struct ContentView: View {
         }
     }
 
-    private func sectionLabel(_ text: String, jp: String, tint: Color) -> some View {
+    private func sectionLabel(_ text: LocalizedStringKey, jp: String, tint: Color) -> some View {
         HStack(spacing: 6) {
             Text(text)
                 .font(.system(size: 14, weight: .black, design: .rounded))

@@ -62,7 +62,7 @@ struct MeowGramView: View {
         HStack(spacing: 12) {
             ForEach(MeowGramModel.Mode.allCases, id: \.self) { m in
                 Button { model.mode = m } label: {
-                    Label(m.rawValue, systemImage: m == .compose ? "square.and.pencil" : "eye.fill")
+                    Label(LocalizedStringKey(m.rawValue), systemImage: m == .compose ? "square.and.pencil" : "eye.fill")
                 }
                 .buttonStyle(NeonButton(fill: model.mode == m ? GameShow.neonYellow : GameShow.paperWhite))
             }
@@ -124,7 +124,7 @@ struct MeowGramView: View {
                                         onGenerate: { model.generatePassphrase() })
 
                         Button { model.embed() } label: {
-                            Label(model.isEmbedding ? "EMBEDDING…" : "EMBED!",
+                            Label(model.isEmbedding ? LocalizedStringKey("EMBEDDING…") : LocalizedStringKey("EMBED!"),
                                   systemImage: "wand.and.stars")
                         }
                         .buttonStyle(NeonButton(fill: GameShow.neonYellow))
@@ -304,7 +304,7 @@ struct MeowGramView: View {
     // MARK: shared bits
 
     private func passphraseField(
-        placeholder: String, secure: Bool = true, onGenerate: (() -> Void)? = nil
+        placeholder: LocalizedStringKey, secure: Bool = true, onGenerate: (() -> Void)? = nil
     ) -> some View {
         let trailing: CGFloat = onGenerate != nil ? 96 : 8
         return ZStack(alignment: .leading) {
@@ -354,7 +354,7 @@ struct MeowGramView: View {
         .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
     }
 
-    private func sectionLabel(_ text: String, tint: Color) -> some View {
+    private func sectionLabel(_ text: LocalizedStringKey, tint: Color) -> some View {
         HStack(spacing: 6) {
             Text(text)
                 .font(.system(size: 13, weight: .black, design: .rounded))

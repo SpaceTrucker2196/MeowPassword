@@ -17,7 +17,7 @@ final class ServicesBridge: NSObject {
     /// Replaces the selection with the full catified analysis in place.
     @objc func analyzeWithMeowPassword(_ pboard: NSPasteboard, userData: String?, error errorOut: AutoreleasingUnsafeMutablePointer<NSString?>) {
         guard let input = pboard.string(forType: .string), !input.isEmpty else {
-            errorOut.pointee = "MeowPassword: no text selected" as NSString
+            errorOut.pointee = String(localized: "MeowPassword: no text selected") as NSString
             return
         }
         let result = MeowPass.analyze(input)

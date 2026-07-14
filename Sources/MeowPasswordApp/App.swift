@@ -161,21 +161,21 @@ private func showAboutPanel() {
     let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
 
     let credits = NSMutableAttributedString(
-        string: "A cat-name-based password generator with catified complexity scoring.\n\n",
+        string: String(localized: "A cat-name-based password generator with catified complexity scoring.\n\n"),
         attributes: [
             .font: NSFont.systemFont(ofSize: NSFont.systemFontSize),
             .foregroundColor: NSColor.labelColor
         ]
     )
     credits.append(NSAttributedString(
-        string: "Menu bar, Shortcuts, Services, and URL-scheme integration all wrap the same `meowpass` CLI.\n\n",
+        string: String(localized: "Menu bar, Shortcuts, Services, and URL-scheme integration all wrap the same `meowpass` CLI.\n\n"),
         attributes: [
             .font: NSFont.systemFont(ofSize: NSFont.systemFontSize),
             .foregroundColor: NSColor.secondaryLabelColor
         ]
     ))
     credits.append(NSAttributedString(
-        string: "Built with Swift + SwiftUI · MIT License\n© 2026 Jeffrey Kunzelman",
+        string: String(localized: "Built with Swift + SwiftUI · MIT License\n© 2026 Jeffrey Kunzelman"),
         attributes: [
             .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize),
             .foregroundColor: NSColor.tertiaryLabelColor
@@ -185,7 +185,7 @@ private func showAboutPanel() {
     let opts: [NSApplication.AboutPanelOptionKey: Any] = [
         .applicationName: "MeowPassword",
         .applicationVersion: version,
-        .version: "Build \(build)",
+        .version: String(format: String(localized: "Build %@"), build),
         .credits: credits
     ]
 
