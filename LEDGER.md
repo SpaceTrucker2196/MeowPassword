@@ -42,3 +42,4 @@
 | 85a51c9 | 2026-07-13T05:50:58Z | claude-opus-4-8 | 1570 | 47787 | 10537803 | 51650 | 6.9879 | Add macOS AppIcon asset catalog to fix App Store rejection ITMS-90546 (missing a |
 | b8ebde7 | 2026-07-14T15:23:24Z | claude-opus-4-8 | 51535 | 853715 | 337434209 | 8826152 | 278.5792 | Shared privacy policy page (iOS+Android); window covers this session's Android p |
 | 379b569 | 2026-07-14T15:53:28Z | claude-opus-4-8 | 2708 | 93022 | 48082001 | 109799 | 27.4781 | Marketing GitHub Pages site (landing + privacy + support) for Meow Password |
+| 84726a1 | 2026-07-14T17:35:03Z | claude-opus-4-8 | 103651 | 262950 | 241219248 | 604964 | 133.7513 | Shōwa marketing site rebuild + theme-pack design docs + Meow Pass rebrand |
