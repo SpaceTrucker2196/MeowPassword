@@ -48,3 +48,4 @@
 | db19fdb | 2026-07-14T17:57:28Z | claude-opus-4-8 | 8154 | 3878 | 1612319 | 15881 | 1.1027 | Swap in reworded MEOWPASS! hero + OG image |
 | d4a5c12 | 2026-07-14T23:21:39Z | claude-opus-4-8 | 3920 | 197659 | 36083404 | 944442 | 32.4472 | iOS/macOS localization (de/fr/ja/en-GB) via String Catalog + verdict/error local |
 | e1aadaa | 2026-07-14T23:40:55Z | claude-opus-4-8 | 2171 | 66769 | 19494787 | 77203 | 12.1995 | Add animated sparkle-field background to marketing site (port of app SparkleFiel |
+| 48c5817 | 2026-07-14T23:45:01Z | claude-opus-4-8 | 284 | 11451 | 4400926 | 16353 | 2.6517 | macOS app localization (de/fr/ja/en-GB) via String Catalog + verdict/error local |
