@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meow Password — Support</title>
+<link rel="icon" href="img/icon.png">
+<style>
+  :root{--hot:#FF3DA1;--mag:#B0218F;--deep:#5A1A8C;--yellow:#FFEB00;--cyan:#00E6FF;--lime:#A6FF33;--ink:#170D26;--paper:#FFFAF0;--font:'Trebuchet MS',system-ui,-apple-system,'Segoe UI',sans-serif;}
+  *{box-sizing:border-box;} html,body{margin:0;padding:0;}
+  body{font-family:var(--font);color:var(--ink);
+    background:linear-gradient(135deg,var(--hot),var(--mag) 45%,var(--deep));min-height:100vh;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
+  nav{position:sticky;top:0;background:rgba(23,13,38,.5);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink);}
+  nav .wrap{display:flex;align-items:center;gap:10px;height:60px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--paper);text-decoration:none;}
+  .brand img{width:34px;height:34px;border-radius:8px;border:2px solid var(--ink);}
+  nav a.home{margin-left:auto;color:var(--ink);background:var(--yellow);border:2px solid var(--ink);padding:6px 14px;border-radius:20px;font-weight:800;text-decoration:none;font-size:13px;}
+  main{padding:36px 0 60px;}
+  h1{color:var(--paper);font-size:2.2rem;text-shadow:3px 3px 0 var(--ink);margin:.1em 0 .5em;}
+  .card{background:var(--paper);border:3px solid var(--ink);border-radius:18px;padding:22px 24px;box-shadow:6px 6px 0 rgba(23,13,38,.5);margin-bottom:16px;}
+  .card h3{margin:.1em 0 .3em;color:var(--mag);font-size:1.15rem;}
+  .card p{margin:.2em 0;line-height:1.6;} a{color:var(--mag);font-weight:700;}
+  code{font-family:ui-monospace,Menlo,monospace;background:#eee;padding:1px 5px;border-radius:5px;}
+  .contact{background:var(--ink);color:var(--paper);text-align:center;}
+  .contact a{color:var(--yellow);} .contact .btn{display:inline-block;margin-top:10px;background:var(--yellow);color:var(--ink);border:3px solid var(--paper);border-radius:14px;padding:12px 22px;font-weight:900;text-decoration:none;}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Password!</a>
+  <a class="home" href="../index.html">← Home</a>
+</div></nav>
+<main class="wrap">
+  <h1>Support &amp; FAQ 🐱</h1>
+
+  <div class="card"><h3>Do I need an account?</h3>
+    <p>No. There's no sign-up, no login, and no server. Open the app and go — everything runs on your device.</p></div>
+
+  <div class="card"><h3>Does it use the internet?</h3>
+    <p>No. The Android app doesn't even request the <code>INTERNET</code> permission, and the Apple apps make no network calls. Nothing you do leaves your device. See the <a href="privacy-policy.html">privacy policy</a>.</p></div>
+
+  <div class="card"><h3>What is a MeowGram?</h3>
+    <p>A MeowGram is an ordinary-looking cat photo with a secret message hidden invisibly inside it (using DCT steganography). Pick one of the built-in cats, type your message, and share the image. Whoever receives it opens it in Meow Password to reveal the message.</p></div>
+
+  <div class="card"><h3>Is my hidden message secure?</h3>
+    <p>If you add a passphrase, the message is encrypted with ChaCha20-Poly1305 (key derived via HKDF-SHA256) before it's hidden — only someone with the passphrase can read it. Without a passphrase, the message is hidden but not encrypted.</p></div>
+
+  <div class="card"><h3>Can iOS and Android send MeowGrams to each other?</h3>
+    <p>Yes. The steganography and crypto are byte-for-byte compatible across platforms — a MeowGram made on an iPhone decodes on Android and vice-versa.</p></div>
+
+  <div class="card"><h3>My MeowGram won't decode — why?</h3>
+    <p>The hidden data lives in the image's pixels, so it only survives <em>lossless</em> transfer. Some chat apps re-compress photos, which can destroy the message. Send the MeowGram as a <strong>file/document</strong> (or via a service that keeps the original PNG) rather than as a compressed photo.</p></div>
+
+  <div class="card"><h3>Which platforms are supported?</h3>
+    <p>iPhone, iPad, Mac, and Android.</p></div>
+
+  <div class="card contact"><h3 style="color:var(--yellow)">Still need help?</h3>
+    <p>Email us — a real human (with a cat) will reply.</p>
+    <a class="btn" href="mailto:jeff@river.io?subject=Meow%20Password%20support">Contact support</a>
+  </div>
+</main>
+</body>
+</html>

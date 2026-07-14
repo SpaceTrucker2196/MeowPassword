@@ -4,50 +4,63 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meow Password — Privacy Policy</title>
+<link rel="icon" href="img/icon.png">
 <style>
-  :root { color-scheme: light dark; }
-  body { font: 16px/1.6 -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-         max-width: 720px; margin: 0 auto; padding: 32px 20px; color: #17110f; background: #fffaf0; }
-  @media (prefers-color-scheme: dark) { body { color: #f3eee9; background: #17110f; } }
-  h1 { font-size: 1.7rem; margin-bottom: 0.2em; }
-  h2 { font-size: 1.15rem; margin-top: 1.6em; }
-  .updated { opacity: 0.7; font-size: 0.9rem; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  a { color: #d13a86; }
+  :root{--hot:#FF3DA1;--mag:#B0218F;--deep:#5A1A8C;--yellow:#FFEB00;--cyan:#00E6FF;--lime:#A6FF33;--ink:#170D26;--paper:#FFFAF0;--font:'Trebuchet MS',system-ui,-apple-system,'Segoe UI',sans-serif;}
+  *{box-sizing:border-box;} html,body{margin:0;padding:0;}
+  body{font-family:var(--font);color:var(--ink);
+    background:linear-gradient(135deg,var(--hot),var(--mag) 45%,var(--deep));min-height:100vh;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
+  nav{position:sticky;top:0;background:rgba(23,13,38,.5);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink);}
+  nav .wrap{display:flex;align-items:center;gap:10px;height:60px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--paper);text-decoration:none;}
+  .brand img{width:34px;height:34px;border-radius:8px;border:2px solid var(--ink);}
+  nav a.home{margin-left:auto;color:var(--ink);background:var(--yellow);border:2px solid var(--ink);padding:6px 14px;border-radius:20px;font-weight:800;text-decoration:none;font-size:13px;}
+  main{padding:36px 0 60px;}
+  .card{background:var(--paper);border:3px solid var(--ink);border-radius:20px;padding:28px;box-shadow:8px 8px 0 rgba(23,13,38,.5);}
+  h1{margin:.1em 0 .1em;font-size:2rem;}
+  .updated{opacity:.7;font-size:.9rem;margin-bottom:1.4em;}
+  h2{margin-top:1.5em;font-size:1.2rem;color:var(--mag);}
+  a{color:var(--mag);} code{font-family:ui-monospace,Menlo,monospace;background:#eee;padding:1px 5px;border-radius:5px;}
+  ul{line-height:1.7;}
+  .big{font-size:1.15rem;font-weight:700;}
 </style>
 </head>
 <body>
-<h1>Meow Password — Privacy Policy</h1>
-<p class="updated">Last updated: 2026-07-14 · applies to the iOS, macOS, and Android apps</p>
+<nav><div class="wrap">
+  <a class="brand" href="../index.html"><img src="img/icon.png" alt=""> Meow Password!</a>
+  <a class="home" href="../index.html">← Home</a>
+</div></nav>
+<main class="wrap"><div class="card">
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: 2026-07-14 · applies to the iOS, macOS, and Android apps</p>
 
-<p>Meow Password is built to collect nothing.</p>
+  <p class="big">Meow Password is built to collect nothing. 🐾</p>
 
-<h2>What we collect</h2>
-<p><strong>Nothing.</strong> Meow Password has no user accounts, no analytics, no advertising,
-and no crash reporting. The Android app declares no <code>INTERNET</code> permission and the
-Apple apps make no network calls, so the app cannot send any data off your device.</p>
+  <h2>What we collect</h2>
+  <p><strong>Nothing.</strong> Meow Password has no user accounts, no analytics, no advertising, and no crash reporting. The Android app declares no <code>INTERNET</code> permission and the Apple apps make no network calls, so the app cannot send any data off your device.</p>
 
-<h2>What stays on your device</h2>
-<ul>
-  <li>Passwords you generate or analyze are processed entirely on your device and are never transmitted anywhere.</li>
-  <li>MeowGram images and the messages you hide in or read from them are processed entirely on your device.</li>
-  <li>If you choose to <strong>share</strong> a MeowGram, it is handed to the app you pick (e.g. a
-      messaging app) through the system share sheet. What that app does with it is governed by that app's own privacy policy.</li>
-</ul>
+  <h2>What stays on your device</h2>
+  <ul>
+    <li>Passwords you generate or analyze are processed entirely on your device and are never transmitted anywhere.</li>
+    <li>MeowGram images and the messages you hide in or read from them are processed entirely on your device.</li>
+    <li>If you choose to <strong>share</strong> a MeowGram, it is handed to the app you pick (e.g. a messaging app) through the system share sheet. What that app does with it is governed by that app's own privacy policy.</li>
+  </ul>
 
-<h2>Permissions</h2>
-<ul>
-  <li><strong>No network access.</strong> The app cannot reach the internet.</li>
-  <li>Reading an image to decode is done through the system photo/file picker or share sheet; the app only receives the single image you choose.</li>
-</ul>
+  <h2>Permissions</h2>
+  <ul>
+    <li><strong>No network access.</strong> The app cannot reach the internet.</li>
+    <li>Reading an image to decode is done through the system photo/file picker or share sheet; the app only receives the single image you choose.</li>
+  </ul>
 
-<h2>Children</h2>
-<p>The app does not knowingly collect any personal information from anyone, including children.</p>
+  <h2>Children</h2>
+  <p>The app does not knowingly collect any personal information from anyone, including children.</p>
 
-<h2>Changes</h2>
-<p>If this policy changes, the updated version will be posted here.</p>
+  <h2>Changes</h2>
+  <p>If this policy changes, the updated version will be posted here.</p>
 
-<h2>Contact</h2>
-<p><a href="mailto:jeff@river.io">jeff@river.io</a></p>
+  <h2>Contact</h2>
+  <p><a href="mailto:jeff@river.io">jeff@river.io</a></p>
+</div></main>
 </body>
 </html>
