@@ -43,3 +43,4 @@
 | b8ebde7 | 2026-07-14T15:23:24Z | claude-opus-4-8 | 51535 | 853715 | 337434209 | 8826152 | 278.5792 | Shared privacy policy page (iOS+Android); window covers this session's Android p |
 | 379b569 | 2026-07-14T15:53:28Z | claude-opus-4-8 | 2708 | 93022 | 48082001 | 109799 | 27.4781 | Marketing GitHub Pages site (landing + privacy + support) for Meow Password |
 | 84726a1 | 2026-07-14T17:35:03Z | claude-opus-4-8 | 103651 | 262950 | 241219248 | 604964 | 133.7513 | Shōwa marketing site rebuild + theme-pack design docs + Meow Pass rebrand |
+| 8456af5 | 2026-07-14T17:38:24Z | claude-opus-4-8 | 5214 | 20593 | 2186277 | 29125 | 1.9253 | Deploy Shōwa graphics into marketing site (hero mascot, feature stamps, OG image |
