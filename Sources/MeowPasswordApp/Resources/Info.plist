@@ -3,15 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>MeowPassword</string>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>en</string>
-		<string>en-GB</string>
-		<string>de</string>
-		<string>fr</string>
-		<string>ja</string>
-	</array>
+	<string>MeowPass!</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
@@ -20,8 +12,16 @@
 	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>en-GB</string>
+		<string>de</string>
+		<string>fr</string>
+		<string>ja</string>
+	</array>
 	<key>CFBundleName</key>
-	<string>MeowPassword</string>
+	<string>MeowPass!</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

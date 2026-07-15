@@ -1,4 +1,4 @@
-MeowPassword makes strong passwords you can actually remember — built from a
+MeowPass! makes strong passwords you can actually remember — built from a
 database of over a thousand cat names, scored for complexity, and copied with a
 tap. Then it does something no other password app does: MeowGram lets you hide a
 secret message inside a cat picture and send it.
