@@ -1,4 +1,4 @@
-# MeowPassword
+# MeowPass!
 
 A command-line utility that generates secure, phrase-based passwords using cat names and Kolmogorov complexity analysis with a lolcat theme.
 
@@ -32,7 +32,7 @@ A command-line utility that generates secure, phrase-based passwords using cat n
 # Tap the repository
 brew tap SpaceTrucker2196/meowpassword https://github.com/SpaceTrucker2196/MeowPassword.git
 
-# Install MeowPassword
+# Install MeowPass!
 brew install meowpass
 
 # Now use from anywhere!
@@ -138,7 +138,7 @@ meowpass --help
 
 ## Apple Keychain Integration
 
-MeowPassword can save generated passwords directly into the **macOS Keychain** (including iCloud Keychain when enabled) using Apple's Security framework.
+MeowPass! can save generated passwords directly into the **macOS Keychain** (including iCloud Keychain when enabled) using Apple's Security framework.
 
 ### How It Works
 1. The best-scoring password candidate is generated as usual.
