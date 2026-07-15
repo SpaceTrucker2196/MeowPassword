@@ -51,3 +51,4 @@
 | 48c5817 | 2026-07-14T23:45:01Z | claude-opus-4-8 | 284 | 11451 | 4400926 | 16353 | 2.6517 | macOS app localization (de/fr/ja/en-GB) via String Catalog + verdict/error local |
 | 427cf69 | 2026-07-15T00:34:07Z | claude-fable-5,claude-opus-4-8 | 46164 | 67660 | 5894369 | 156477 | 12.2814 | Restore iMessage compose extension (revert of fa777c0), verified build |
 | 54fdac4 | 2026-07-15T00:46:30Z | claude-fable-5 | 552 | 6376 | 1449731 | 15191 | 2.0779 | Rename app to MeowPass! (Info.plists, App Store metadata) + MEOW PASS! banner ar |
+| 396cb96 | 2026-07-15T04:23:32Z | claude-fable-5 | 45560 | 47665 | 4912261 | 225524 | 12.2616 | README user-facing rename to MeowPass! (title, install comment, Keychain prose) |
