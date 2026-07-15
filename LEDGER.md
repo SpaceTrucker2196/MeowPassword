@@ -59,3 +59,4 @@
 | 8c8770c | 2026-07-15T14:40:49Z | claude-fable-5 | 10707 | 127743 | 38588667 | 148829 | 48.0595 | StoreKit 2 MeowThemeStore module, Configuration.storekit, scheme/test wiring, Me |
 | 982c872 | 2026-07-15T14:43:22Z | claude-fable-5 | 10595 | 12174 | 5282360 | 19227 | 6.3815 | IAP docs: ASC checklist (docs/IAP.md), APPSTORE link, DESIGN/themes status updat |
 | 79844f9 | 2026-07-15T14:59:28Z | claude-fable-5 | 7549 | 65088 | 21384950 | 70194 | 26.1187 | Per-theme UI smoke tests + Theme Studio launch-transaction environment crash fix |
+| 9406c56 | 2026-07-15T15:18:01Z | claude-fable-5 | 7518 | 28859 | 15436660 | 84689 | 18.6486 | ThemeSeal stamps (hanko/iris/star/rosette) on winner panels + SealStyle token, s |
