@@ -65,9 +65,10 @@ struct GenerateView: View {
 
     @AppStorage("meow.tut.generate.v1") private var seenTour = false
     @State private var showTour = false
-    // `-openThemeStudio` launch arg opens the studio immediately (QA / screenshots).
-    @State private var showThemeStudio = ProcessInfo.processInfo.arguments.contains("-openThemeStudio")
+    @State private var showThemeStudio = false
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var themeManager: ThemeManager
+    @EnvironmentObject private var themeStore: ThemeStore
 
     private var tourSteps: [CoachStep] {
         [
@@ -121,13 +122,21 @@ struct GenerateView: View {
             }
         }
         .overlay(alignment: .topTrailing) { helpButton }
-        .sheet(isPresented: $showThemeStudio) { ThemeStudioView() }
+        .sheet(isPresented: $showThemeStudio) {
+            ThemeStudioView(themeManager: themeManager, store: themeStore)
+                .environment(\.theme, themeManager.current)
+                .preferredColorScheme(themeManager.current.colorScheme)
+        }
         .coachTour(tourSteps, isActive: $showTour)
         .onAppear {
             if autoTour, !seenTour { showTour = true }
             #if DEBUG
             // QA/screenshots: `-demoGenerate` fills the screen with a result.
             if ProcessInfo.processInfo.arguments.contains("-demoGenerate") { model.generate() }
+            // `-openThemeStudio` opens the studio (QA / screenshots). Set here
+            // rather than as the @State initial value so the sheet never
+            // presents in the very first transaction.
+            if ProcessInfo.processInfo.arguments.contains("-openThemeStudio") { showThemeStudio = true }
             #endif
         }
         .onChange(of: showTour) { _, active in if !active { seenTour = true } }

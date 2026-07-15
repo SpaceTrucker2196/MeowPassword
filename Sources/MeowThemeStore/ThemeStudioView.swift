@@ -10,8 +10,12 @@ import StoreKit
 import MeowUI
 
 public struct ThemeStudioView: View {
-    @EnvironmentObject private var themeManager: ThemeManager
-    @EnvironmentObject private var store: ThemeStore
+    // Passed explicitly (not via @EnvironmentObject): sheet content built in
+    // the launch transaction — and ForEach items re-evaluated during
+    // accessibility snapshots — can run before/without the presenting
+    // context's environment, where an EnvironmentObject read traps.
+    @ObservedObject private var themeManager: ThemeManager
+    @ObservedObject private var store: ThemeStore
     @Environment(\.theme) private var theme
 
     @State private var purchasing: Theme.ID?
@@ -19,10 +23,22 @@ public struct ThemeStudioView: View {
     @State private var errorText: String?
     @State private var restoring = false
 
-    public init() {}
+    public init(themeManager: ThemeManager, store: ThemeStore) {
+        self.themeManager = themeManager
+        self.store = store
+    }
 
     public var body: some View {
-        ZStack {
+        // Read the observable objects ONCE per body evaluation. ForEach item
+        // closures can be re-evaluated outside a render pass (e.g. when the
+        // accessibility tree is snapshotted), where @EnvironmentObject reads
+        // trap — so the closures below must capture plain values only.
+        let selectedID = themeManager.selectedID
+        let ownedIDs = themeManager.ownedIDs
+        let products = store.products
+        let loadState = store.loadState
+
+        return ZStack {
             ThemedBackground().ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
@@ -31,10 +47,10 @@ public struct ThemeStudioView: View {
                     ForEach(Theme.all) { candidate in
                         ThemeCard(
                             candidate: candidate,
-                            isSelected: themeManager.selectedID == candidate.id,
-                            isOwned: candidate.id.isFree || themeManager.ownedIDs.contains(candidate.id),
-                            product: store.products[candidate.id],
-                            loadState: store.loadState,
+                            isSelected: selectedID == candidate.id,
+                            isOwned: candidate.id.isFree || ownedIDs.contains(candidate.id),
+                            product: products[candidate.id],
+                            loadState: loadState,
                             isPurchasing: purchasing == candidate.id,
                             select: { themeManager.selectedID = candidate.id },
                             buy: { purchase(candidate.id) },

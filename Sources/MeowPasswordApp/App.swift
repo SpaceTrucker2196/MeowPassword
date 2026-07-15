@@ -116,9 +116,7 @@ struct MeowPasswordApp: App {
         // Theme Studio lives in Settings (Cmd+,): pick a look, buy a pack,
         // restore purchases.
         Settings {
-            ThemeStudioView()
-                .environmentObject(themeManager)
-                .environmentObject(themeStore)
+            ThemeStudioView(themeManager: themeManager, store: themeStore)
                 .environment(\.theme, themeManager.current)
                 .preferredColorScheme(themeManager.current.colorScheme)
                 .frame(minWidth: 480, minHeight: 560)
