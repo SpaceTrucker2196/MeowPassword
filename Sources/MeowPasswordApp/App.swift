@@ -1,23 +1,39 @@
 import SwiftUI
 import AppKit
 import MeowUI
+import MeowThemeStore
 
 @main
 struct MeowPasswordApp: App {
     @StateObject private var model = GenerationModel()
     @StateObject private var meowGramModel = MeowGramModel()
-    @StateObject private var themeManager = ThemeManager()
+    @StateObject private var themeManager: ThemeManager
+    @StateObject private var themeStore: ThemeStore
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    init() {
+        let manager = ThemeManager()
+        _themeManager = StateObject(wrappedValue: manager)
+        _themeStore = StateObject(wrappedValue: ThemeStore(themeManager: manager))
+    }
 
     var body: some Scene {
         WindowGroup("MeowPassword", id: "main") {
             ContentView()
                 .environmentObject(model)
                 .environmentObject(themeManager)
+                .environmentObject(themeStore)
                 .environment(\.theme, themeManager.current)
                 // The theme, not the OS setting, decides the scheme — every
                 // theme is a fixed print aesthetic.
                 .preferredColorScheme(themeManager.current.colorScheme)
+                .task {
+                    // Rebuild pack ownership from the local entitlement cache,
+                    // then load prices. On non-App-Store builds (DMG) product
+                    // loading fails and packs simply stay locked.
+                    await themeStore.refreshEntitlements()
+                    await themeStore.loadProducts()
+                }
                 .onAppear { appDelegate.model = model }
                 .onOpenURL { url in handleURL(url) }
         }
@@ -54,6 +70,12 @@ struct MeowPasswordApp: App {
                 Button("Install Command-Line Tool…") {
                     InstallCLI.run()
                 }
+
+                Divider()
+
+                // Discoverability alias for Settings — the Theme Studio is
+                // the only settings surface.
+                ThemeStudioMenuItem()
             }
 
             // MARK: Remove menu items that do nothing in this app
@@ -91,6 +113,17 @@ struct MeowPasswordApp: App {
         .defaultSize(width: 820, height: 700)
         .windowResizability(.contentMinSize)
 
+        // Theme Studio lives in Settings (Cmd+,): pick a look, buy a pack,
+        // restore purchases.
+        Settings {
+            ThemeStudioView()
+                .environmentObject(themeManager)
+                .environmentObject(themeStore)
+                .environment(\.theme, themeManager.current)
+                .preferredColorScheme(themeManager.current.colorScheme)
+                .frame(minWidth: 480, minHeight: 560)
+        }
+
         MenuBarExtra {
             MenuBarView().environmentObject(model)
         } label: {
@@ -108,6 +141,24 @@ struct MeowPasswordApp: App {
         default:
             break
         }
+    }
+}
+
+// MARK: - Theme Studio menu item (opens the Settings scene)
+
+private struct ThemeStudioMenuItem: View {
+    var body: some View {
+        Group {
+            if #available(macOS 14.0, *) {
+                SettingsLink { Text("Theme Studio…") }
+            } else {
+                Button("Theme Studio…") {
+                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                    NSApp.activate(ignoringOtherApps: true)
+                }
+            }
+        }
+        .keyboardShortcut("t", modifiers: [.command, .shift])
     }
 }
 

@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import MeowUI
+import MeowThemeStore
 import MeowPassCore
 
 @MainActor
@@ -64,6 +65,8 @@ struct GenerateView: View {
 
     @AppStorage("meow.tut.generate.v1") private var seenTour = false
     @State private var showTour = false
+    // `-openThemeStudio` launch arg opens the studio immediately (QA / screenshots).
+    @State private var showThemeStudio = ProcessInfo.processInfo.arguments.contains("-openThemeStudio")
     @Environment(\.theme) private var theme
 
     private var tourSteps: [CoachStep] {
@@ -78,6 +81,8 @@ struct GenerateView: View {
                       text: "Paste any password to score its strength from 0 to 10, with a verdict."),
             CoachStep(anchor: "gen.rules", title: "RULES",
                       text: "Dial in how many numbers and symbols to mix in, and the maximum length."),
+            CoachStep(anchor: "gen.themes", title: "THEME STUDIO",
+                      text: "Restyle the whole show — two free looks, plus theme packs to collect."),
         ]
     }
 
@@ -116,6 +121,7 @@ struct GenerateView: View {
             }
         }
         .overlay(alignment: .topTrailing) { helpButton }
+        .sheet(isPresented: $showThemeStudio) { ThemeStudioView() }
         .coachTour(tourSteps, isActive: $showTour)
         .onAppear {
             if autoTour, !seenTour { showTour = true }
@@ -128,13 +134,24 @@ struct GenerateView: View {
     }
 
     private var helpButton: some View {
-        Button { showTour = true } label: {
-            Image(systemName: "questionmark")
-                .font(.system(size: 15, weight: .black))
-                .foregroundStyle(theme.bind)
-                .frame(width: 34, height: 34)
-                .background(Circle().fill(theme.surface))
-                .overlay(Circle().stroke(theme.bind, lineWidth: 2))
+        HStack(spacing: 8) {
+            Button { showThemeStudio = true } label: {
+                Image(systemName: "paintpalette.fill")
+                    .font(.system(size: 14, weight: .black))
+                    .foregroundStyle(theme.bind)
+                    .frame(width: 34, height: 34)
+                    .background(Circle().fill(theme.surface))
+                    .overlay(Circle().stroke(theme.bind, lineWidth: 2))
+            }
+            .coachAnchor("gen.themes")
+            Button { showTour = true } label: {
+                Image(systemName: "questionmark")
+                    .font(.system(size: 15, weight: .black))
+                    .foregroundStyle(theme.bind)
+                    .frame(width: 34, height: 34)
+                    .background(Circle().fill(theme.surface))
+                    .overlay(Circle().stroke(theme.bind, lineWidth: 2))
+            }
         }
         .padding(.trailing, 16).padding(.top, 8)
     }
