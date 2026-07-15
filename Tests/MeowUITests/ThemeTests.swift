@@ -101,6 +101,14 @@ final class ThemeDefinitionTests: XCTestCase {
             XCTAssertFalse(theme.nameKey.isEmpty, "\(theme.id)")
         }
     }
+
+    func testSealStylesMatchTheThemeDocs() {
+        XCTAssertEqual(Theme.showa.sealStyle, .hanko)
+        XCTAssertEqual(Theme.gameShowClassic.sealStyle, .hanko)
+        XCTAssertEqual(Theme.spyThriller.sealStyle, .iris, "gun-barrel iris")
+        XCTAssertEqual(Theme.kremlinCartoon.sealStyle, .star, "five-point star")
+        XCTAssertEqual(Theme.pyongyangPoster.sealStyle, .rosette, "flower-burst rosette")
+    }
 }
 
 @MainActor

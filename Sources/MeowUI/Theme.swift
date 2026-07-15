@@ -88,6 +88,19 @@ public struct Theme: Identifiable, Equatable, Sendable {
         public var isFree: Bool { productID == nil }
     }
 
+    /// Shape of the signature approval stamp (each theme doc's "Signature
+    /// stamp" token).
+    public enum SealStyle: Equatable, Sendable {
+        /// Circular ink seal (Shōwa's hanko; Classic borrows it).
+        case hanko
+        /// Concentric gun-barrel rings (Spy Thriller).
+        case iris
+        /// Five-point star (Kremlin Cartoon).
+        case star
+        /// Flower-burst rosette (Pyongyang Poster).
+        case rosette
+    }
+
     /// Background treatment, one per theme (docs name these "background motifs").
     public enum Motif: Equatable, Sendable {
         /// Shōwa: flat cream + sunburst wedge fan + halftone dots.
@@ -110,16 +123,19 @@ public struct Theme: Identifiable, Equatable, Sendable {
     /// setting); only Spy Thriller is dark.
     public let prefersDark: Bool
     public let motif: Motif
+    public let sealStyle: SealStyle
     /// Text inside the signature approval stamp.
     public let sealCaption: String
 
     public init(id: ID, nameKey: String, palette: ThemePalette,
-                prefersDark: Bool, motif: Motif, sealCaption: String) {
+                prefersDark: Bool, motif: Motif, sealStyle: SealStyle,
+                sealCaption: String) {
         self.id = id
         self.nameKey = nameKey
         self.palette = palette
         self.prefersDark = prefersDark
         self.motif = motif
+        self.sealStyle = sealStyle
         self.sealCaption = sealCaption
     }
 

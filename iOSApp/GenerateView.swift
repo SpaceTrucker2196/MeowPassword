@@ -198,6 +198,10 @@ struct GenerateView: View {
                 scoreMeter(best.score)
             }
         }
+        // The producer's approval, pressed onto the winning frame.
+        .overlay(alignment: .topTrailing) {
+            ThemeSeal(size: 56).offset(x: -2, y: -14)
+        }
     }
 
     private func scoreMeter(_ score: Double) -> some View {

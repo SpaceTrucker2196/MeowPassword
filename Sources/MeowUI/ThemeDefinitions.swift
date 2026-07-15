@@ -52,6 +52,7 @@ public extension Theme {
         ),
         prefersDark: false,
         motif: .sunburstHalftone,
+        sealStyle: .hanko,
         sealCaption: "認証成功 · MEOW VERIFIED"
     )
 
@@ -79,6 +80,7 @@ public extension Theme {
         ),
         prefersDark: false,
         motif: .neonGradient,
+        sealStyle: .hanko,
         sealCaption: "MEOW VERIFIED"
     )
 
@@ -106,6 +108,7 @@ public extension Theme {
         ),
         prefersDark: true,
         motif: .reticleNight,
+        sealStyle: .iris,
         sealCaption: "00-CAT · MEOW LICENCE"
     )
 
@@ -133,6 +136,7 @@ public extension Theme {
         ),
         prefersDark: false,
         motif: .wedgeRays,
+        sealStyle: .star,
         sealCaption: "ОДОБРЕНО · MEOW APPROVED"
     )
 
@@ -160,6 +164,7 @@ public extension Theme {
         ),
         prefersDark: false,
         motif: .sunrise,
+        sealStyle: .rosette,
         sealCaption: "だいせいこう · MEOW SUCCESS"
     )
 }
