@@ -69,8 +69,10 @@ struct MeowGramScreen: View {
             }
             .padding(12)
         }
+        // Theme switched while open: swap to that theme's cat set.
+        .onChange(of: theme.meowgramSet) { _, set in model.load(set: set) }
         .task {
-            model.load()
+            model.load(set: theme.meowgramSet)
             // Opened from the "Decode MeowGram" share extension: jump to decode
             // and stage the handed-off image (the user taps DECODE MEOWGRAM!).
             if let data = decodeOnOpen {

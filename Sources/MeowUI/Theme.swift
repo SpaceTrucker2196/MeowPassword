@@ -128,10 +128,14 @@ public struct Theme: Identifiable, Equatable, Sendable {
     public let sealStyle: SealStyle
     /// Text inside the signature approval stamp.
     public let sealCaption: String
+    /// Name of this theme's bundled MeowGram set (`Meowgrams-<set>` in
+    /// MeowGramAssets); nil uses the default set. Cosmetic only — every
+    /// set's keyed PNGs share the same wire format.
+    public let meowgramSet: String?
 
     public init(id: ID, nameKey: String, palette: ThemePalette,
                 prefersDark: Bool, motif: Motif, sealStyle: SealStyle,
-                sealCaption: String) {
+                sealCaption: String, meowgramSet: String? = nil) {
         self.id = id
         self.nameKey = nameKey
         self.palette = palette
@@ -139,6 +143,7 @@ public struct Theme: Identifiable, Equatable, Sendable {
         self.motif = motif
         self.sealStyle = sealStyle
         self.sealCaption = sealCaption
+        self.meowgramSet = meowgramSet
     }
 
     public var colorScheme: ColorScheme { prefersDark ? .dark : .light }

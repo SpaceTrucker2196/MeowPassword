@@ -8,7 +8,7 @@ import MeowGramAssets
 /// (`NSImage`) stays app-side.
 enum MeowgramCatalog {
     typealias Entry = MeowGramCatalog.Entry
-    static func load() -> [Entry] { MeowGramCatalog.load() }
+    static func load(set: String? = nil) -> [Entry] { MeowGramCatalog.load(set: set) }
 }
 
 /// Downscaled thumbnails generated on demand and cached, so a 100-cell grid

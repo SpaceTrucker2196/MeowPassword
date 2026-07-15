@@ -26,8 +26,10 @@ struct MeowGramView: View {
         }
         .frame(minWidth: 720, minHeight: 620)
         .onDrop(of: [.fileURL], isTargeted: $model.isDropTargeted) { model.handleDrop(providers: $0) }
+        // Theme switched while open: swap to that theme's cat set.
+        .onChange(of: theme.meowgramSet) { set in model.loadCatalog(set: set) }
         .task {
-            model.loadCatalog()
+            model.loadCatalog(set: theme.meowgramSet)
             #if DEBUG
             // QA: `-previewDecode` freezes the decode animation over a sample cat.
             if ProcessInfo.processInfo.arguments.contains("-previewDecode"),

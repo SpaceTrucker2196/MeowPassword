@@ -48,11 +48,16 @@ final class MeowGramModel: ObservableObject {
         catalog.first { $0.id == selectedID }
     }
 
-    func loadCatalog() {
-        guard catalog.isEmpty else { return }
-        let entries = MeowgramCatalog.load()
+    private var loadedSet: String?
+
+    func loadCatalog(set: String? = nil) {
+        guard catalog.isEmpty || loadedSet != set else { return }
+        loadedSet = set
+        let entries = MeowgramCatalog.load(set: set)
         self.catalog = entries
-        if selectedID == nil { selectedID = entries.first?.id }
+        if selectedID == nil || !entries.contains(where: { $0.id == selectedID }) {
+            selectedID = entries.first?.id
+        }
         cleanupOldTempFiles()
     }
 

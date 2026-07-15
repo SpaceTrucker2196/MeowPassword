@@ -44,7 +44,11 @@ let package = Package(
         .target(
             name: "MeowGramAssets",
             path: "Sources/MeowGramAssets",
-            resources: [.copy("Meowgrams")]
+            resources: [
+                .copy("Meowgrams"),
+                // Theme-specific sets: Meowgrams-<Set> (Theme.meowgramSet).
+                .copy("Meowgrams-Soviet")
+            ]
         ),
         // MeowUI: portable SwiftUI design system shared by both apps.
         .target(

@@ -158,6 +158,7 @@ pointed — keep it cheerful nonsense.
 | Frame treatment | Black border + hard shadow; red diagonal banner accents; heroic tilt |
 | Signature stamp | Red wedge piercing a paper circle (replaces the hanko) |
 | Chyron script | Cyrillic-flavoured ticker; keep a small katakana nod |
+| MeowGram set | `Soviet` — 100 keyed cats in the hybrid style (`Meowgrams-Soviet/`) |
 
 ## Sources (the homework)
 

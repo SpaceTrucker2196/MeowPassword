@@ -41,7 +41,7 @@ struct MeowGramComposeView: View {
         // Only enumerate the cats once the extension is expanded — keeps the
         // compact "tap to open" bar instant to load.
         .task(id: state.isExpanded) {
-            if state.isExpanded && catalog.isEmpty { catalog = MeowGramCatalog.load() }
+            if state.isExpanded && catalog.isEmpty { catalog = MeowGramCatalog.load(set: theme.meowgramSet) }
         }
     }
 

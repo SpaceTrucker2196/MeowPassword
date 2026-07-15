@@ -138,7 +138,8 @@ public extension Theme {
         prefersDark: false,
         motif: .redWedge,
         sealStyle: .wedgeCircle,
-        sealCaption: "ОДОБРЕНО · MEOW APPROVED"
+        sealCaption: "ОДОБРЕНО · MEOW APPROVED",
+        meowgramSet: "Soviet"
     )
 
     // MARK: Pyongyang Poster (IAP)

@@ -48,6 +48,13 @@ Plus four **decoration tokens** each theme defines:
 - **Signature stamp** — Shōwa: the hanko (認証成功 / "MEOW VERIFIED"), tilt ~8°.
 - **Chyron script** — Shōwa: vertical katakana. Each theme names its own secondary script/voice.
 
+And optionally a **MeowGram set** (`Theme.meowgramSet`): a theme may bundle
+its own 100 keyed cat images (`Meowgrams-<Set>/` in MeowGramAssets, prepped
+via `meowpass meowgram-prep`) so the picker's cats wear the theme too.
+Themes without a set fall back to the default cats. Cosmetic only — every
+set's keyed PNGs share the same wire format, and decode never needs the
+catalog.
+
 ## Shared laws (inherited by every theme)
 
 These survive every reskin — they're the house craft, not the costume:

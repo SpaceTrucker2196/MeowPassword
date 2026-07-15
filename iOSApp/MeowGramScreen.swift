@@ -47,10 +47,15 @@ final class MeowGramModeliOS: ObservableObject {
 
     private var selectedEntry: MeowGramCatalog.Entry? { catalog.first { $0.id == selectedID } }
 
-    func load() {
-        guard catalog.isEmpty else { return }
-        catalog = MeowGramCatalog.load()
-        if selectedID == nil { selectedID = catalog.first?.id }
+    private var loadedSet: String?
+
+    func load(set: String? = nil) {
+        guard catalog.isEmpty || loadedSet != set else { return }
+        loadedSet = set
+        catalog = MeowGramCatalog.load(set: set)
+        if selectedID == nil || !catalog.contains(where: { $0.id == selectedID }) {
+            selectedID = catalog.first?.id
+        }
     }
 
     private func invalidate() {
