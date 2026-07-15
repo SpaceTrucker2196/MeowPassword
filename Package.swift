@@ -77,6 +77,11 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "MeowUITests",
+            dependencies: ["MeowUI"],
+            path: "Tests/MeowUITests"
+        ),
+        .testTarget(
             name: "MeowStegoTests",
             dependencies: ["MeowStego"],
             path: "Tests/MeowStegoTests"

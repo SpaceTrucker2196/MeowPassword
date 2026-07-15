@@ -206,10 +206,12 @@ final class SparkleHostNSView: NSView {
 #endif
 
 /// Chunky rounded panel with thick colored border and a hard offset shadow.
+/// A nil `tint` uses the theme's cool accent.
 public struct GamePanel<Content: View>: View {
-    var tint: Color
+    var tint: Color?
     let content: () -> Content
-    public init(tint: Color = GameShow.neonCyan, @ViewBuilder content: @escaping () -> Content) {
+    @Environment(\.theme) private var theme
+    public init(tint: Color? = nil, @ViewBuilder content: @escaping () -> Content) {
         self.tint = tint
         self.content = content
     }
@@ -217,56 +219,70 @@ public struct GamePanel<Content: View>: View {
         content()
             .padding(12)
             .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous).fill(GameShow.paperWhite)
+                RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.surface)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(tint, lineWidth: 4)
+                RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(tint ?? theme.cool, lineWidth: 4)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(GameShow.inkBlack, lineWidth: 2).padding(2).opacity(0.15)
+                    .stroke(theme.bind, lineWidth: 2).padding(2).opacity(0.15)
             )
             .compositingGroup()
-            .shadow(color: GameShow.inkBlack.opacity(0.45), radius: 0, x: 4, y: 5)
+            .shadow(color: theme.bind.opacity(0.45), radius: 0, x: 4, y: 5)
     }
 }
 
 /// Big arcade action button with a hard sticker shadow it presses into.
+/// A nil `text` uses the theme's bind (ink) color.
 public struct NeonButton: ButtonStyle {
     var fill: Color
-    var text: Color
-    public init(fill: Color, text: Color = GameShow.inkBlack) {
+    var text: Color?
+    public init(fill: Color, text: Color? = nil) {
         self.fill = fill
         self.text = text
     }
     public func makeBody(configuration: Configuration) -> some View {
-        let pressed = configuration.isPressed
-        return configuration.label
-            .font(.system(size: 14, weight: .black, design: .rounded))
-            .foregroundStyle(text)
-            .lineLimit(1)                    // never wrap button text
-            .minimumScaleFactor(0.7)         // shrink slightly to fit instead
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.vertical, 10)
-            .padding(.horizontal, 14)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(fill)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(LinearGradient(colors: [.white.opacity(0.35), .clear],
-                                                 startPoint: .top, endPoint: .center))
-                    )
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(GameShow.inkBlack, lineWidth: 2.5)
-            )
-            .compositingGroup()
-            .shadow(color: GameShow.inkBlack.opacity(0.55), radius: 0, x: 0, y: pressed ? 1 : 4)
-            .offset(y: pressed ? 3 : 0)
-            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: pressed)
+        // Environment isn't reliably refreshed on a ButtonStyle struct itself
+        // (it's not a View) — read it in a nested View instead.
+        Styled(configuration: configuration, fill: fill, text: text)
+    }
+
+    private struct Styled: View {
+        let configuration: Configuration
+        let fill: Color
+        let text: Color?
+        @Environment(\.theme) private var theme
+
+        var body: some View {
+            let pressed = configuration.isPressed
+            configuration.label
+                .font(.system(size: 14, weight: .black, design: .rounded))
+                .foregroundStyle(text ?? theme.bind)
+                .lineLimit(1)                    // never wrap button text
+                .minimumScaleFactor(0.7)         // shrink slightly to fit instead
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(fill)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(LinearGradient(colors: [.white.opacity(0.35), .clear],
+                                                     startPoint: .top, endPoint: .center))
+                        )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(theme.bind, lineWidth: 2.5)
+                )
+                .compositingGroup()
+                .shadow(color: theme.bind.opacity(0.55), radius: 0, x: 0, y: pressed ? 1 : 4)
+                .offset(y: pressed ? 3 : 0)
+                .animation(.spring(response: 0.2, dampingFraction: 0.7), value: pressed)
+        }
     }
 }
 
@@ -275,10 +291,11 @@ public struct NeonButton: ButtonStyle {
 /// sparkles, and a broadcast-style chyron. Fills whatever frame it's given.
 public struct EmbedGeneratingView: View {
     var label: String
+    @Environment(\.theme) private var theme
     public init(label: String = "EMBEDDING…") { self.label = label }
 
-    private static let wheel: AngularGradient = {
-        let colors = [GameShow.neonYellow, GameShow.hotPink, GameShow.neonCyan, GameShow.magenta]
+    private var wheel: AngularGradient {
+        let colors = [theme.celebrate, theme.command, theme.cool, theme.commandDeep]
         let segments = 16
         var stops: [Gradient.Stop] = []
         for i in 0..<segments {
@@ -287,7 +304,7 @@ public struct EmbedGeneratingView: View {
             stops.append(.init(color: c, location: Double(i + 1) / Double(segments) - 0.0001))
         }
         return AngularGradient(gradient: Gradient(stops: stops), center: .center)
-    }()
+    }
 
     public var body: some View {
         TimelineView(.animation) { timeline in
@@ -298,11 +315,11 @@ public struct EmbedGeneratingView: View {
                 let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
                 let orbit = min(geo.size.width, geo.size.height) * 0.32
                 ZStack {
-                    GameShow.inkBlack.opacity(0.06)
+                    theme.bind.opacity(0.06)
 
                     // Spinning sunburst pinwheel.
                     Circle()
-                        .fill(Self.wheel)
+                        .fill(wheel)
                         .frame(width: side, height: side)
                         .rotationEffect(.degrees(t * 45))
                         .opacity(0.9)
@@ -310,7 +327,7 @@ public struct EmbedGeneratingView: View {
                         .mask(Circle().frame(width: side, height: side).position(center))
 
                     // Soft ink vignette so the medallion pops.
-                    RadialGradient(colors: [.clear, GameShow.inkBlack.opacity(0.35)],
+                    RadialGradient(colors: [.clear, theme.bind.opacity(0.35)],
                                    center: .center, startRadius: orbit * 0.6, endRadius: side * 0.5)
                         .position(center)
 
@@ -320,7 +337,7 @@ public struct EmbedGeneratingView: View {
                         Image(systemName: "sparkle")
                             .font(.system(size: 16, weight: .black))
                             .foregroundStyle(.white)
-                            .shadow(color: GameShow.inkBlack, radius: 0, x: 1, y: 1)
+                            .shadow(color: theme.bind, radius: 0, x: 1, y: 1)
                             .opacity(0.55 + 0.45 * sin(t * 4 + Double(i)))
                             .position(x: center.x + CGFloat(cos(a)) * orbit,
                                       y: center.y + CGFloat(sin(a)) * orbit)
@@ -328,12 +345,12 @@ public struct EmbedGeneratingView: View {
 
                     // Pulsing medallion.
                     ZStack {
-                        Circle().fill(GameShow.inkBlack)
-                        Circle().stroke(GameShow.neonYellow, lineWidth: 4)
+                        Circle().fill(theme.bind)
+                        Circle().stroke(theme.celebrate, lineWidth: 4)
                             .padding(5)
                         Image(systemName: "cat.fill")
                             .font(.system(size: 34, weight: .black))
-                            .foregroundStyle(GameShow.neonYellow)
+                            .foregroundStyle(theme.celebrate)
                             .rotationEffect(.degrees(sin(t * 2) * 12))
                     }
                     .frame(width: orbit * 1.15, height: orbit * 1.15)
@@ -345,10 +362,10 @@ public struct EmbedGeneratingView: View {
                         Spacer()
                         Text(LocalizedStringKey(label))
                             .font(.system(size: 13, weight: .black, design: .rounded))
-                            .foregroundStyle(GameShow.inkBlack)
+                            .foregroundStyle(theme.bind)
                             .padding(.horizontal, 12).padding(.vertical, 5)
-                            .background(Capsule().fill(GameShow.neonYellow)
-                                .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 2)))
+                            .background(Capsule().fill(theme.celebrate)
+                                .overlay(Capsule().stroke(theme.bind, lineWidth: 2)))
                             .padding(.bottom, 10)
                     }
                 }
@@ -364,6 +381,7 @@ public struct EmbedGeneratingView: View {
 /// image itself being decoded. Fills whatever frame it's given.
 public struct MatrixDecodeView: View {
     var label: String
+    @Environment(\.theme) private var theme
     public init(label: String = "DECODING…") { self.label = label }
 
     // Halfwidth katakana + digits + symbols — echoes the ミャオ broadcast type.
@@ -374,7 +392,7 @@ public struct MatrixDecodeView: View {
             let t = timeline.date.timeIntervalSinceReferenceDate
             ZStack {
                 // Semi-opaque so the cat ghosts through — "decoding the image".
-                GameShow.inkBlack.opacity(0.88)
+                theme.bind.opacity(0.88)
 
                 Canvas { ctx, size in
                     let colW: CGFloat = 16, rowH: CGFloat = 18, tail = 10
@@ -390,7 +408,7 @@ public struct MatrixDecodeView: View {
                             if r < 0 || r >= rows { continue }
                             let bright = 1.0 - Double(k) / Double(tail)
                             let gi = abs(Int(t * 8 + Double(c) * 3) + r * 13) % Self.glyphs.count
-                            let base = (k == 0) ? Color.white : (c % 3 == 0 ? GameShow.neonCyan : GameShow.neonLime)
+                            let base = (k == 0) ? Color.white : (c % 3 == 0 ? theme.cool : theme.positive)
                             ctx.draw(
                                 Text(String(Self.glyphs[gi]))
                                     .font(.system(size: 13, weight: .bold, design: .monospaced))
@@ -405,7 +423,7 @@ public struct MatrixDecodeView: View {
                 GeometryReader { geo in
                     let y = (sin(t * 1.5) * 0.5 + 0.5) * geo.size.height
                     Rectangle()
-                        .fill(LinearGradient(colors: [.clear, GameShow.neonCyan.opacity(0.85), .clear],
+                        .fill(LinearGradient(colors: [.clear, theme.cool.opacity(0.85), .clear],
                                              startPoint: .top, endPoint: .bottom))
                         .frame(height: 24)
                         .position(x: geo.size.width / 2, y: y)
@@ -416,10 +434,10 @@ public struct MatrixDecodeView: View {
                     Spacer()
                     Text(LocalizedStringKey(label))
                         .font(.system(size: 13, weight: .black, design: .rounded))
-                        .foregroundStyle(GameShow.inkBlack)
+                        .foregroundStyle(theme.bind)
                         .padding(.horizontal, 12).padding(.vertical, 5)
-                        .background(Capsule().fill(GameShow.neonLime)
-                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 2)))
+                        .background(Capsule().fill(theme.positive)
+                            .overlay(Capsule().stroke(theme.bind, lineWidth: 2)))
                         .padding(.bottom, 10)
                 }
             }
@@ -433,6 +451,7 @@ public struct ChunkySlider: View {
     @Binding var value: Int
     let range: ClosedRange<Int>
     var tint: Color
+    @Environment(\.theme) private var theme
     private let thumbSize: CGFloat = 20
 
     public init(value: Binding<Int>, range: ClosedRange<Int>, tint: Color) {
@@ -448,18 +467,18 @@ public struct ChunkySlider: View {
             let pct = CGFloat(value - range.lowerBound) / span
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(GameShow.inkBlack.opacity(0.10))
-                    .overlay(Capsule().stroke(GameShow.inkBlack.opacity(0.30), lineWidth: 1.5))
+                    .fill(theme.bind.opacity(0.10))
+                    .overlay(Capsule().stroke(theme.bind.opacity(0.30), lineWidth: 1.5))
                     .frame(height: 8)
                 Capsule()
                     .fill(tint)
-                    .overlay(Capsule().stroke(GameShow.inkBlack.opacity(0.30), lineWidth: 1.5))
+                    .overlay(Capsule().stroke(theme.bind.opacity(0.30), lineWidth: 1.5))
                     .frame(width: thumbSize / 2 + travel * pct, height: 8)
                 Circle()
                     .fill(.white)
-                    .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                    .overlay(Circle().stroke(theme.bind, lineWidth: 2))
                     .frame(width: thumbSize, height: thumbSize)
-                    .shadow(color: GameShow.inkBlack.opacity(0.3), radius: 0, x: 0, y: 2)
+                    .shadow(color: theme.bind.opacity(0.3), radius: 0, x: 0, y: 2)
                     .offset(x: travel * pct)
             }
             .frame(maxHeight: .infinity, alignment: .center)
@@ -528,6 +547,7 @@ struct CoachOverlay: View {
     let anchors: [String: Anchor<CGRect>]
     let proxy: GeometryProxy
     @Binding var isActive: Bool
+    @Environment(\.theme) private var theme
     @State private var index: Int = {
         #if DEBUG
         // QA: jump straight to a step to verify spotlight alignment, e.g.
@@ -569,7 +589,7 @@ struct CoachOverlay: View {
 
             if let r = rect {
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(GameShow.neonYellow, lineWidth: 3)
+                    .stroke(theme.celebrate, lineWidth: 3)
                     .frame(width: r.width, height: r.height)
                     .position(x: r.midX, y: r.midY)
                     .allowsHitTesting(false)
@@ -601,22 +621,22 @@ struct CoachOverlay: View {
                     .font(.system(size: 15, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 10).padding(.vertical, 3)
-                    .background(Capsule().fill(GameShow.hotPink)
-                        .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5)))
+                    .background(Capsule().fill(theme.command)
+                        .overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
                 Spacer()
                 Text("\(index + 1)/\(steps.count)")
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(GameShow.inkBlack.opacity(0.55))
+                    .foregroundStyle(theme.bind.opacity(0.55))
             }
             Text(LocalizedStringKey(step.text))
                 .font(.system(size: 13, weight: .heavy, design: .rounded))
-                .foregroundStyle(GameShow.inkBlack)
+                .foregroundStyle(theme.bind)
                 .fixedSize(horizontal: false, vertical: true)
             HStack {
                 Button { finish() } label: {
                     Text("SKIP")
                         .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(GameShow.inkBlack.opacity(0.6))
+                        .foregroundStyle(theme.bind.opacity(0.6))
                 }
                 Spacer()
                 Button { advance() } label: {
@@ -624,15 +644,15 @@ struct CoachOverlay: View {
                         .font(.system(size: 13, weight: .black, design: .rounded))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 16).padding(.vertical, 8)
-                        .background(Capsule().fill(last ? GameShow.neonLime : GameShow.hotPink)
-                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 2)))
+                        .background(Capsule().fill(last ? theme.positive : theme.command)
+                            .overlay(Capsule().stroke(theme.bind, lineWidth: 2)))
                 }
             }
         }
         .padding(14)
         .frame(maxWidth: 340)
-        .background(RoundedRectangle(cornerRadius: 16).fill(GameShow.paperWhite)
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(GameShow.inkBlack, lineWidth: 2.5))
-            .shadow(color: GameShow.inkBlack.opacity(0.5), radius: 0, x: 0, y: 5))
+        .background(RoundedRectangle(cornerRadius: 16).fill(theme.surface)
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(theme.bind, lineWidth: 2.5))
+            .shadow(color: theme.bind.opacity(0.5), radius: 0, x: 0, y: 5))
     }
 }
