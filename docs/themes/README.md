@@ -7,10 +7,16 @@ format changes; only presentation tokens do.
 
 | Theme | Doc | Status | Distribution |
 |---|---|---|---|
-| **Shōwa Broadcast** | [`../DESIGN.md`](../DESIGN.md) | **default** | Free — always installed |
-| Spy Thriller ("00-Cat") | [`spy-thriller.md`](spy-thriller.md) | roadmap | In-app purchase |
-| Kremlin Cartoon (Russian parody) | [`kremlin.md`](kremlin.md) | roadmap | In-app purchase |
-| Pyongyang Poster (parody) | [`pyongyang.md`](pyongyang.md) | roadmap | In-app purchase |
+| **Shōwa Broadcast** | [`../DESIGN.md`](../DESIGN.md) | **default** — implemented | Free — always installed |
+| GameShow Classic | (the original neon look, preserved) | implemented | Free — always installed |
+| Spy Thriller ("00-Cat") | [`spy-thriller.md`](spy-thriller.md) | implemented (first-pass decorations) | In-app purchase |
+| Kremlin Cartoon (Russian parody) | [`kremlin.md`](kremlin.md) | implemented (first-pass decorations) | In-app purchase |
+| Pyongyang Poster (parody) | [`pyongyang.md`](pyongyang.md) | implemented (first-pass decorations) | In-app purchase |
+
+Implementation: semantic tokens in `Sources/MeowUI/Theme.swift` +
+`ThemeDefinitions.swift`, selection/ownership in `ThemeManager` (App Group),
+StoreKit 2 in `Sources/MeowThemeStore/`, store UI in `ThemeStudioView`. App
+Store Connect setup: [`../IAP.md`](../IAP.md).
 
 The parody packs are **affectionate, comedic send-ups of poster/broadcast art
 styles** — cosmetic only, never political commentary. Keep them light.
@@ -20,7 +26,7 @@ styles** — cosmetic only, never political commentary. Keep them light.
 Shōwa Broadcast (`DESIGN.md`) is the reference implementation. It centralizes
 styling in one place per platform:
 
-- **iOS/macOS:** the `GameShow` tokens in `Sources/MeowUI/MeowUI.swift`.
+- **iOS/macOS:** the `Theme` tokens in `Sources/MeowUI/Theme.swift` (definitions in `ThemeDefinitions.swift`).
 - **Android:** `app/src/main/kotlin/io/river/meowpassword/theme/GameShow.kt`.
 
 A theme = a swap of those tokens, applied app-wide (never per-view). Each theme

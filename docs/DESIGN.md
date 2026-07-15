@@ -93,12 +93,14 @@ paper, not pixels on a screen.
   paper-grain texture is welcome; a smooth screen-blend is not.
 - Slightly **sun-faded** — nudge saturation down a touch so nothing feels neon.
 
-> **Note on the current build:** `GameShow` in `Sources/MeowUI/MeowUI.swift` is
-> today a *neon* interpretation (hot pink, electric yellow, cyan, purple
-> gradient). Shōwa Broadcast is the refined target: migrate toward the printed
-> cream/red/yellow/teal/ink quota, replace the digital background gradient with
-> a flat cream field + sunburst + halftone, and add the hanko. Do this as a
-> deliberate reskin of the `GameShow` tokens, not a per-view override.
+> **Note on the current build:** implemented. The static `GameShow` enum is
+> gone; styling flows through the semantic `Theme` tokens in
+> `Sources/MeowUI/Theme.swift` (Floor/Command/Celebrate/Cool/Bind/Seal +
+> support roles), read via `@Environment(\.theme)`. Shōwa Broadcast is the
+> shipping default (`ThemeDefinitions.swift`), with the flat cream field +
+> sunburst + halftone as its `ThemedBackground` motif. The original neon look
+> survives byte-exactly as the free "GameShow Classic" theme. The hanko seal
+> art remains to add.
 
 ---
 
@@ -178,11 +180,11 @@ paper, not pixels on a screen.
 | Chyron | katakana labels in views (`ルール`, `にゃんメール`, …) | ✅ present |
 | Whisper labels | score/byte/`EP` captions | ✅ present |
 | Confetti | `SparkleField` (Core Animation, 3D) | ✅ present — keep subtle |
-| Palette | `GameShow` tokens | ⚠️ neon today → migrate to cream/red/yellow/teal/ink |
-| Sunburst rays | — | ➕ to add |
-| Halftone dot field | — | ➕ to add (background texture) |
-| Hanko seal | — | ➕ to add (e.g. "MEOW VERIFIED" stamp) |
+| Palette | `Theme` tokens (`Theme.showa`) | ✅ cream/red/yellow/teal/ink quota shipped as default |
+| Sunburst rays | `ThemedBackground` (.sunburstHalftone) | ✅ low-opacity wedge fan |
+| Halftone dot field | `ThemedBackground` (.sunburstHalftone) | ✅ bottom "audience" dots at 12–18% ink |
+| Hanko seal | — | ➕ to add (e.g. "MEOW VERIFIED" stamp; caption tokens exist as `Theme.sealCaption`) |
 
-When evolving the look, change the **`GameShow` tokens and shared components
+When evolving the look, change the **`Theme` definitions and shared components
 once**, so every surface (both apps + the iMessage extension) moves together.
 Never hand-tune colors per view.

@@ -103,4 +103,10 @@ existing app record.
 - [ ] `fastlane ios beta` succeeds → build appears in TestFlight
 - [ ] `fastlane mac beta` succeeds → macOS platform added under the same record
 - [ ] Fill App Store listing (privacy, category = Utilities, screenshots)
+- [ ] Theme-pack IAPs created + attached to the version — see [`IAP.md`](IAP.md)
 - [ ] `fastlane ios release` / `fastlane mac release` → Submit for Review in ASC
+
+## In-app purchases
+
+Theme packs are one-time non-consumable IAPs. Setup, product IDs, review
+screenshots, and the sandbox test matrix live in [`IAP.md`](IAP.md).
