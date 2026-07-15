@@ -57,3 +57,4 @@
 | abe9be3 | 2026-07-15T06:40:41Z | claude-fable-5 | 1297 | 2813 | 1572905 | 7102 | 1.8686 | Extensions migrated to theme tokens + GameShow enum retired; iOS/macOS builds ve |
 | eb6d733 | 2026-07-15T14:22:56Z | claude-fable-5 | 28669 | 44217 | 11056257 | 343737 | 20.4285 | Shōwa default flip + textOnCommand/danger contrast pass; 5-theme simulator verif |
 | 8c8770c | 2026-07-15T14:40:49Z | claude-fable-5 | 10707 | 127743 | 38588667 | 148829 | 48.0595 | StoreKit 2 MeowThemeStore module, Configuration.storekit, scheme/test wiring, Me |
+| 982c872 | 2026-07-15T14:43:22Z | claude-fable-5 | 10595 | 12174 | 5282360 | 19227 | 6.3815 | IAP docs: ASC checklist (docs/IAP.md), APPSTORE link, DESIGN/themes status updat |
