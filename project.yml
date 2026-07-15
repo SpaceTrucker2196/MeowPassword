@@ -44,6 +44,8 @@ targets:
         product: MeowPassCore
       - package: MeowLocal
         product: MeowUI
+      - package: MeowLocal
+        product: MeowThemeStore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword
@@ -78,6 +80,10 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword.Messages
         INFOPLIST_FILE: MessagesExtension/Info.plist
+        # App Group so the extension reads the selected/owned theme flags the
+        # app writes (ThemeManager); registers on the App ID at next build via
+        # -allowProvisioningUpdates.
+        CODE_SIGN_ENTITLEMENTS: MessagesExtension/MeowGramMessages.entitlements
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: "iMessage App Icon"
@@ -114,8 +120,15 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - path: iOSAppTests
+      # StoreKitTest's SKTestSession loads the local storefront definition
+      # from the test bundle.
+      - path: Configuration.storekit
+        buildPhase: resources
     dependencies:
       - target: MeowPassword
+      - package: MeowLocal
+        product: MeowThemeStore
+      - sdk: StoreKitTest.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword.tests
@@ -158,6 +171,8 @@ targets:
         product: MeowPassCore
       - package: MeowLocal
         product: MeowUI
+      - package: MeowLocal
+        product: MeowThemeStore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.river.meowpassword
@@ -185,6 +200,9 @@ schemes:
         MeowPassword: all
     run:
       config: Debug
+      # Local storefront so paid theme packs are purchasable in Debug runs
+      # without App Store Connect.
+      storeKitConfiguration: Configuration.storekit
     test:
       config: Debug
       targets:
@@ -198,5 +216,6 @@ schemes:
         MeowPasswordMac: all
     run:
       config: Debug
+      storeKitConfiguration: Configuration.storekit
     archive:
       config: Release

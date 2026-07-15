@@ -14,7 +14,8 @@ let package = Package(
         .library(name: "MeowGramKit", targets: ["MeowGramKit"]),
         .library(name: "MeowGramAssets", targets: ["MeowGramAssets"]),
         .library(name: "MeowPassCore", targets: ["MeowPassCore"]),
-        .library(name: "MeowUI", targets: ["MeowUI"])
+        .library(name: "MeowUI", targets: ["MeowUI"]),
+        .library(name: "MeowThemeStore", targets: ["MeowThemeStore"])
     ],
     targets: [
         // MeowStego: DCT-domain steganography library for cat-image passkeys.
@@ -50,6 +51,14 @@ let package = Package(
             name: "MeowUI",
             path: "Sources/MeowUI"
         ),
+        // MeowThemeStore: StoreKit 2 purchases for theme packs. Linked by the
+        // two APP targets only — extensions never talk to StoreKit; they read
+        // ownership from the App Group defaults via ThemeManager.
+        .target(
+            name: "MeowThemeStore",
+            dependencies: ["MeowUI"],
+            path: "Sources/MeowThemeStore"
+        ),
         .executableTarget(
             name: "meowpass",
             dependencies: ["MeowStego", "MeowGramKit", "MeowPassCore"],
@@ -60,7 +69,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "MeowPasswordApp",
-            dependencies: ["MeowStego", "MeowGramKit", "MeowGramAssets", "MeowPassCore", "MeowUI"],
+            dependencies: ["MeowStego", "MeowGramKit", "MeowGramAssets", "MeowPassCore", "MeowUI", "MeowThemeStore"],
             path: "Sources/MeowPasswordApp",
             exclude: [
                 "Resources",

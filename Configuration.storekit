@@ -1,0 +1,68 @@
+{
+  "identifier" : "3B24B7E1-3A0E-4E5C-9A9F-6C9F2D5D0001",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "3B24B7E1-3A0E-4E5C-9A9F-6C9F2D5D1001",
+      "localizations" : [
+        {
+          "description" : "Tuxedo black, champagne gold, a licence to unlock.",
+          "displayName" : "Spy Thriller — 00-Cat",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "io.river.meowPassword.spyThemePack",
+      "referenceName" : "Spy Thriller Theme Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "3B24B7E1-3A0E-4E5C-9A9F-6C9F2D5D1002",
+      "localizations" : [
+        {
+          "description" : "Constructivist poster drama for heroic passwords.",
+          "displayName" : "Kremlin Cartoon",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "io.river.meowPassword.kremlinThemePack",
+      "referenceName" : "Kremlin Cartoon Theme Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "3B24B7E1-3A0E-4E5C-9A9F-6C9F2D5D1003",
+      "localizations" : [
+        {
+          "description" : "Sunrise, gold beams, and a beaming hero cat.",
+          "displayName" : "Pyongyang Poster",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "io.river.meowPassword.pyongyangThemePack",
+      "referenceName" : "Pyongyang Poster Theme Pack",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
