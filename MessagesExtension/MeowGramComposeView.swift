@@ -13,6 +13,7 @@ struct MeowGramComposeView: View {
     var expand: () -> Void
     var insert: (URL) -> Void
 
+    @Environment(\.theme) private var theme
     @State private var catalog: [MeowGramCatalog.Entry] = []
     @State private var selectedID: String?
     @State private var message = ""
@@ -25,7 +26,7 @@ struct MeowGramComposeView: View {
 
     var body: some View {
         ZStack {
-            GameShow.bg.ignoresSafeArea()
+            ThemedBackground().ignoresSafeArea()
             SparkleField(count: 30).ignoresSafeArea()
             if state.isExpanded {
                 composer
@@ -33,11 +34,10 @@ struct MeowGramComposeView: View {
                 Button(action: expand) {
                     Label("TAP TO MAKE A MEOWGRAM", systemImage: "cat.fill")
                 }
-                .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                .buttonStyle(NeonButton(fill: theme.celebrate))
                 .padding()
             }
         }
-        .preferredColorScheme(.light)
         // Only enumerate the cats once the extension is expanded — keeps the
         // compact "tap to open" bar instant to load.
         .task(id: state.isExpanded) {
@@ -47,42 +47,42 @@ struct MeowGramComposeView: View {
 
     private var composer: some View {
         VStack(spacing: 10) {
-            GamePanel(tint: GameShow.neonLime) {
+            GamePanel(tint: theme.positive) {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        label("SECRET MESSAGE", tint: GameShow.magenta)
+                        label("SECRET MESSAGE", tint: theme.commandDeep)
                         Text("\(message.utf8.count)/\(MeowGram.maxMessageBytes)")
                             .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(message.utf8.count > MeowGram.maxMessageBytes ? .red : GameShow.inkBlack.opacity(0.6))
+                            .foregroundStyle(message.utf8.count > MeowGram.maxMessageBytes ? .red : theme.bind.opacity(0.6))
                     }
                     TextField("Psst… whisper something", text: $message, axis: .vertical)
                         .lineLimit(1...2)
                         .font(.system(size: 13, weight: .heavy, design: .monospaced))
                         .padding(7)
                         .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                     HStack(spacing: 8) {
                         TextField("Passphrase (optional)", text: $passphrase)
                             .font(.system(size: 12, weight: .heavy, design: .monospaced))
                             .autocorrectionDisabled().textInputAutocapitalization(.never)
                             .padding(7)
                             .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         Button { passphrase = MeowPass.meowKey() } label: {
                             Text("GENERATE")
                                 .font(.system(size: 11, weight: .black, design: .rounded))
-                                .foregroundStyle(GameShow.inkBlack)
+                                .foregroundStyle(theme.bind)
                                 .padding(.horizontal, 10).padding(.vertical, 9)
-                                .background(Capsule().fill(GameShow.neonYellow))
-                                .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                                .background(Capsule().fill(theme.celebrate))
+                                .overlay(Capsule().stroke(theme.bind, lineWidth: 1.5))
                         }
                     }
                 }
             }
 
-            GamePanel(tint: GameShow.neonCyan) {
+            GamePanel(tint: theme.cool) {
                 VStack(alignment: .leading, spacing: 6) {
-                    label("PICK A CAT!", tint: GameShow.hotPink)
+                    label("PICK A CAT!", tint: theme.command)
                     GeometryReader { geo in
                         ScrollView(.horizontal, showsIndicators: false) {
                             // Lazy so only visible cats decode a thumbnail — the
@@ -103,7 +103,7 @@ struct MeowGramComposeView: View {
             Button(action: send) {
                 Label(busy ? "SENDING…" : "SEND MEOWGRAM", systemImage: "paperplane.fill")
             }
-            .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+            .buttonStyle(NeonButton(fill: theme.command, text: .white))
             .disabled(!canSend)
 
             if let error {
@@ -117,7 +117,7 @@ struct MeowGramComposeView: View {
         .overlay {
             if busy {
                 EmbedGeneratingView(label: "SENDING…")
-                    .background(GameShow.paperWhite)
+                    .background(theme.surface)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .padding(8)
             }
@@ -157,7 +157,7 @@ struct MeowGramComposeView: View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
-                .background(Capsule().fill(tint).overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5)))
+                .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
         }
     }
@@ -167,17 +167,18 @@ private struct Thumb: View {
     let entry: MeowGramCatalog.Entry
     let selected: Bool
     var height: CGFloat = 100
+    @Environment(\.theme) private var theme
     @State private var img: UIImage?
     var body: some View {
         let h = max(80, height)
         ZStack {
             if let img { Image(uiImage: img).resizable().aspectRatio(contentMode: .fill) }
-            else { GameShow.inkBlack.opacity(0.1) }
+            else { theme.bind.opacity(0.1) }
         }
         .frame(width: h * 0.8, height: h)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10)
-            .stroke(selected ? GameShow.neonYellow : GameShow.inkBlack, lineWidth: selected ? 4 : 1.5))
+            .stroke(selected ? theme.celebrate : theme.bind, lineWidth: selected ? 4 : 1.5))
         .task(id: entry.id) {
             let url = entry.url
             img = await Task.detached {

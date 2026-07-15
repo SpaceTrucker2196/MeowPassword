@@ -12,27 +12,9 @@ import UIKit
 import AppKit
 #endif
 
-// MARK: - Palette
-
-public enum GameShow {
-    public static let hotPink    = Color(red: 1.00, green: 0.24, blue: 0.63)
-    public static let magenta    = Color(red: 0.69, green: 0.13, blue: 0.56)
-    public static let neonYellow = Color(red: 1.00, green: 0.92, blue: 0.00)
-    public static let neonCyan   = Color(red: 0.00, green: 0.90, blue: 1.00)
-    public static let neonLime   = Color(red: 0.65, green: 1.00, blue: 0.20)
-    public static let inkBlack   = Color(red: 0.09, green: 0.05, blue: 0.15)
-    public static let paperWhite = Color(red: 1.00, green: 0.98, blue: 0.94)
-
-    public static let bg = LinearGradient(
-        colors: [hotPink, magenta, Color(red: 0.35, green: 0.10, blue: 0.55)],
-        startPoint: .topLeading, endPoint: .bottomTrailing
-    )
-
-    public static let meter = LinearGradient(
-        colors: [neonCyan, neonLime, neonYellow, hotPink],
-        startPoint: .leading, endPoint: .trailing
-    )
-}
+// The palette lives in Theme.swift / ThemeDefinitions.swift — views read
+// `@Environment(\.theme)`. (The old static `GameShow` enum is preserved
+// byte-exactly as the GameShow Classic theme.)
 
 // MARK: - Decorations
 

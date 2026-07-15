@@ -1,6 +1,7 @@
 import UIKit
 import SwiftUI
 import UniformTypeIdentifiers
+import MeowUI
 import MeowGramKit
 
 /// Share-sheet target "Decode MeowGram": receives a shared image (from
@@ -10,6 +11,10 @@ import MeowGramKit
 @objc(ShareViewController)
 final class ShareViewController: UIViewController {
 
+    private let themeManager = ThemeManager()
+    private var host: UIHostingController<AnyView>?
+    private var imageData: Data?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
@@ -18,19 +23,40 @@ final class ShareViewController: UIViewController {
         }
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        themeManager.reload()
+        host?.rootView = themedRoot()
+        applyInterfaceStyle(to: host)
+    }
+
     private func presentInlineDecode(_ data: Data?) {
-        let root = ShareDecodeView(imageData: data, close: { [weak self] in
-            self?.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
-        })
-        let host = UIHostingController(rootView: root)
+        imageData = data
+        let host = UIHostingController(rootView: themedRoot())
         host.view.backgroundColor = .clear
-        host.overrideUserInterfaceStyle = .light
-        overrideUserInterfaceStyle = .light
+        applyInterfaceStyle(to: host)
         addChild(host)
         host.view.frame = view.bounds
         host.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(host.view)
         host.didMove(toParent: self)
+        self.host = host
+    }
+
+    private func themedRoot() -> AnyView {
+        AnyView(
+            ShareDecodeView(imageData: imageData, close: { [weak self] in
+                self?.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+            })
+            .environment(\.theme, themeManager.current)
+            .preferredColorScheme(themeManager.current.colorScheme)
+        )
+    }
+
+    private func applyInterfaceStyle(to host: UIHostingController<AnyView>?) {
+        let style: UIUserInterfaceStyle = themeManager.current.prefersDark ? .dark : .light
+        host?.overrideUserInterfaceStyle = style
+        overrideUserInterfaceStyle = style
     }
 
     /// Pull the shared image out as raw bytes, preferring exact PNG data

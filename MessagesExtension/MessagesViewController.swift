@@ -2,6 +2,7 @@ import UIKit
 import SwiftUI
 import Combine
 import Messages
+import MeowUI
 
 /// Observable bridge so the SwiftUI compose view reacts when Messages
 /// transitions the extension between compact and expanded presentation.
@@ -15,21 +16,16 @@ final class ExtensionState: ObservableObject {
 final class MessagesViewController: MSMessagesAppViewController {
 
     private let state = ExtensionState()
-    private var host: UIHostingController<MeowGramComposeView>?
+    private let themeManager = ThemeManager()
+    private var host: UIHostingController<AnyView>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let root = MeowGramComposeView(
-            state: state,
-            expand: { [weak self] in self?.requestPresentationStyle(.expanded) },
-            insert: { [weak self] url in self?.insertMeowGram(url) }
-        )
-        let controller = UIHostingController(rootView: root)
+        let controller = UIHostingController(rootView: themedRoot())
         controller.view.backgroundColor = .clear
-        // Force the fixed game-show palette regardless of the Messages host's
+        // Force the theme's fixed scheme regardless of the Messages host's
         // light/dark appearance, so text never lands white-on-white.
-        controller.overrideUserInterfaceStyle = .light
-        overrideUserInterfaceStyle = .light
+        applyInterfaceStyle(to: controller)
         addChild(controller)
         controller.view.frame = view.bounds
         controller.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -40,7 +36,28 @@ final class MessagesViewController: MSMessagesAppViewController {
 
     override func willBecomeActive(with conversation: MSConversation) {
         super.willBecomeActive(with: conversation)
+        themeManager.reload()
+        host?.rootView = themedRoot()
+        applyInterfaceStyle(to: host)
         state.isExpanded = (presentationStyle == .expanded)
+    }
+
+    private func themedRoot() -> AnyView {
+        AnyView(
+            MeowGramComposeView(
+                state: state,
+                expand: { [weak self] in self?.requestPresentationStyle(.expanded) },
+                insert: { [weak self] url in self?.insertMeowGram(url) }
+            )
+            .environment(\.theme, themeManager.current)
+            .preferredColorScheme(themeManager.current.colorScheme)
+        )
+    }
+
+    private func applyInterfaceStyle(to host: UIHostingController<AnyView>?) {
+        let style: UIUserInterfaceStyle = themeManager.current.prefersDark ? .dark : .light
+        host?.overrideUserInterfaceStyle = style
+        overrideUserInterfaceStyle = style
     }
 
     override func didTransition(to presentationStyle: MSMessagesAppPresentationStyle) {
