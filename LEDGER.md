@@ -61,3 +61,4 @@
 | 79844f9 | 2026-07-15T14:59:28Z | claude-fable-5 | 7549 | 65088 | 21384950 | 70194 | 26.1187 | Per-theme UI smoke tests + Theme Studio launch-transaction environment crash fix |
 | 9406c56 | 2026-07-15T15:18:01Z | claude-fable-5 | 7518 | 28859 | 15436660 | 84689 | 18.6486 | ThemeSeal stamps (hanko/iris/star/rosette) on winner panels + SealStyle token, s |
 | 1b289b9 | 2026-07-15T16:08:30Z | claude-fable-5 | 838 | 39388 | 13806677 | 27933 | 16.3431 | ASC IAP setup automated: 3 non-consumables created w/ localizations, pricing, av |
+| 242bad4 | 2026-07-15T16:19:14Z | claude-fable-5 | 155 | 11036 | 5781775 | 10934 | 6.5538 | Restore banner alpha cutout (transfer original alpha onto MEOW PASS! retext), bo |
