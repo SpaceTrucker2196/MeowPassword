@@ -24,23 +24,26 @@ differ in casing from the bundle id — do not "normalize" them, ever.
 
 ## App Store Connect setup (one-time)
 
+> **Status 2026-07-15: DONE via the ASC API** (steps 2–5). All three
+> products exist in state READY_TO_SUBMIT with localized metadata (en-US,
+> en-GB, de-DE, fr-FR, ja), $1.99 USA-base price schedule, availability in
+> all 175 territories (+ future), review notes, and a Theme Studio review
+> screenshot attached. ASC IAP ids: spy 6791235721, kremlin 6791235847,
+> pyongyang 6791235917. Remaining: steps 1 and 6 below.
+
 1. **Paid Apps agreement.** Business → Agreements, Tax, and Banking → the
    *Paid Apps* agreement must be Active (banking + tax forms complete).
    Without it, purchases fail in sandbox AND review rejects the build.
-2. **Create the IAPs.** App page → Monetization → In-App Purchases → “+”:
-   type **Non-Consumable**, reference name and product ID exactly per the
-   table. Repeat for all three.
-3. **Pricing.** $1.99 base (US), let ASC derive worldwide prices. Available
-   in all territories.
-4. **Localized metadata** per IAP — display name + description for en-US,
-   de-DE, fr-FR, ja, en-GB. Use the display names from the
-   `Localizable.xcstrings` theme entries so the store and the in-app Theme
-   Studio agree (e.g. de "AGENTENTHRILLER", ja "スパイスリラー").
-5. **Review screenshot** per IAP: ≥ 640×920, showing the actual purchase
-   surface — screenshot the Theme Studio with that pack's card visible
-   (`-openThemeStudio` launch arg; simulator screenshots are fine).
-   Review note: "Cosmetic theme pack — restyles the app's colors and
-   decorations app-wide. No feature changes."
+   (Record creation worked regardless — verify this before submitting.)
+2. ~~**Create the IAPs.**~~ Done — type **Non-Consumable**, reference name
+   and product ID exactly per the table.
+3. ~~**Pricing.**~~ Done — $1.99 base (US), ASC-derived worldwide prices,
+   available in all territories including future ones.
+4. ~~**Localized metadata**~~ Done for en-US, de-DE, fr-FR, ja, en-GB,
+   matching the in-app `Localizable.xcstrings` names.
+5. ~~**Review screenshot**~~ Done — Theme Studio simulator screenshot on
+   each IAP, review note: "Cosmetic theme pack - restyles the app's colors
+   and decorations app-wide. No feature changes."
 6. **Attach to a version.** First-time IAPs go to review **with an app
    version**: on the version page, in the In-App Purchases section, add all
    three before submitting the build. (After the first approval, IAP metadata
