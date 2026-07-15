@@ -65,11 +65,10 @@ struct MeowGramScreen: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 if let s = model.status { banner(s, color: theme.positive, text: theme.bind) }
-                if let e = model.errorText { banner(e, color: .red, text: .white) }
+                if let e = model.errorText { banner(e, color: theme.danger, text: .white) }
             }
             .padding(12)
         }
-        .preferredColorScheme(.light)
         .task {
             model.load()
             // Opened from the "Decode MeowGram" share extension: jump to decode
@@ -145,7 +144,7 @@ struct MeowGramScreen: View {
                 }
                 Text("MEOWGRAM")
                     .font(.system(size: 20, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(theme.textOnFloor)
                     .shadow(color: theme.bind, radius: 0, x: 2, y: 2)
                 Spacer()
                 Button { if model.mode == .compose { showComposeTour = true } else { showDecodeTour = true } } label: {
@@ -192,7 +191,7 @@ struct MeowGramScreen: View {
                         HStack(spacing: 8) {
                             if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
                                 ShareLink(item: url) { Label("SHARE", systemImage: "paperplane.fill") }
-                                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
+                                    .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
                             }
                             Button { model.saveToPhotos() } label: {
                                 Label("SAVE", systemImage: "square.and.arrow.down")
@@ -211,13 +210,13 @@ struct MeowGramScreen: View {
                         label("SECRET MESSAGE", tint: theme.commandDeep)
                         Text("\(model.bytesUsed)/\(model.bytesMax)")
                             .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(model.isOverBudget ? .red : theme.bind.opacity(0.6))
+                            .foregroundStyle(model.isOverBudget ? theme.danger : theme.bind.opacity(0.6))
                     }
                     TextField("Psst… whisper something", text: $model.message, axis: .vertical)
                         .lineLimit(1...2)
                         .font(.system(size: 13, weight: .heavy, design: .monospaced))
                         .padding(7)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         .coachAnchor("mg.message")
                     HStack(spacing: 8) {
@@ -225,7 +224,7 @@ struct MeowGramScreen: View {
                             .font(.system(size: 12, weight: .heavy, design: .monospaced))
                             .autocorrectionDisabled().textInputAutocapitalization(.never)
                             .padding(7)
-                            .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                            .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         Button { model.generateKey() } label: {
                             Text("GENERATE")
@@ -328,7 +327,7 @@ struct MeowGramScreen: View {
                             .foregroundStyle(theme.bind)
                             .autocorrectionDisabled().textInputAutocapitalization(.never)
                             .padding(10)
-                            .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                            .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 2))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -341,7 +340,7 @@ struct MeowGramScreen: View {
                     Button { model.decodeLoaded() } label: {
                         Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill")
                     }
-                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
+                    .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
                     .disabled(model.loadedData == nil || model.isDecoding)
                     .coachAnchor("mg.ddecode")
 
@@ -365,7 +364,7 @@ struct MeowGramScreen: View {
     private func label(_ text: LocalizedStringKey, tint: Color) -> some View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
+                .foregroundStyle(theme.textOnCommand).padding(.horizontal, 8).padding(.vertical, 2)
                 .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
         }

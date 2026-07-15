@@ -15,8 +15,10 @@ public final class ThemeManager: ObservableObject {
     public static let selectedKey = "theme.selected"
     public static let ownedKey = "theme.owned"
 
-    /// Flips to `.showa` when the Shōwa migration lands (Phase 3).
-    static let defaultThemeID: Theme.ID = .gameShowClassic
+    /// The free default every install starts on (and the fallback when a
+    /// selected pack turns out to be unowned). Keep in sync with
+    /// ThemeKey.defaultValue.
+    public static let defaultThemeID: Theme.ID = .showa
 
     private let defaults: UserDefaults
 

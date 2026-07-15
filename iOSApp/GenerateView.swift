@@ -211,7 +211,7 @@ struct GenerateView: View {
                         Spacer()
                         Text(String(format: "%.2f", c.score))
                             .font(.system(size: 11, weight: .black, design: .rounded))
-                            .monospacedDigit().foregroundStyle(.white)
+                            .monospacedDigit().foregroundStyle(theme.textOnCommand)
                             .padding(.horizontal, 6).padding(.vertical, 1)
                             .background(Capsule().fill(theme.commandDeep))
                         Button { UIPasteboard.general.string = c.password } label: {
@@ -235,12 +235,12 @@ struct GenerateView: View {
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
                         .foregroundStyle(theme.bind)
                         .padding(8)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                     Button { model.analyze() } label: { Label("GO", systemImage: "magnifyingglass") }
-                        .buttonStyle(NeonButton(fill: theme.command, text: .white))
+                        .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
                         .fixedSize()
                         .disabled(model.analyzeInput.isEmpty)
                 }
@@ -279,7 +279,7 @@ struct GenerateView: View {
             ChunkySlider(value: value, range: range, tint: tint)
             Text("\(value.wrappedValue)")
                 .font(.system(size: 14, weight: .black, design: .rounded)).monospacedDigit()
-                .foregroundStyle(.white).frame(width: 34, height: 24)
+                .foregroundStyle(theme.textOnCommand).frame(width: 34, height: 24)
                 .background(RoundedRectangle(cornerRadius: 6).fill(tint))
         }
     }
@@ -287,7 +287,7 @@ struct GenerateView: View {
     private func label(_ text: LocalizedStringKey, tint: Color) -> some View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
+                .foregroundStyle(theme.textOnCommand).padding(.horizontal, 8).padding(.vertical, 2)
                 .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
         }

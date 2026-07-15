@@ -31,6 +31,9 @@ public struct ThemePalette: Equatable, Sendable {
     public let surface: UInt32
     /// Body text sitting directly on the floor.
     public let textOnFloor: UInt32
+    /// Text/glyphs on command-colored plates (buttons, banners, headline
+    /// plates). White on tomato/pink; near-black on champagne gold.
+    public let textOnCommand: UInt32
     /// Success accents (decode OK, "GOT IT!"). May coincide with another role.
     public let positive: UInt32
     /// Errors and alerts. Rare by every theme's quota.
@@ -40,8 +43,8 @@ public struct ThemePalette: Equatable, Sendable {
 
     public init(floor: UInt32, command: UInt32, commandDeep: UInt32,
                 celebrate: UInt32, cool: UInt32, bind: UInt32, seal: UInt32,
-                surface: UInt32, textOnFloor: UInt32, positive: UInt32,
-                danger: UInt32, meterStops: [UInt32]) {
+                surface: UInt32, textOnFloor: UInt32, textOnCommand: UInt32,
+                positive: UInt32, danger: UInt32, meterStops: [UInt32]) {
         self.floor = floor
         self.command = command
         self.commandDeep = commandDeep
@@ -51,6 +54,7 @@ public struct ThemePalette: Equatable, Sendable {
         self.seal = seal
         self.surface = surface
         self.textOnFloor = textOnFloor
+        self.textOnCommand = textOnCommand
         self.positive = positive
         self.danger = danger
         self.meterStops = meterStops
@@ -131,6 +135,7 @@ public struct Theme: Identifiable, Equatable, Sendable {
     public var seal: Color         { Color(hex: palette.seal) }
     public var surface: Color      { Color(hex: palette.surface) }
     public var textOnFloor: Color  { Color(hex: palette.textOnFloor) }
+    public var textOnCommand: Color { Color(hex: palette.textOnCommand) }
     public var positive: Color     { Color(hex: palette.positive) }
     public var danger: Color       { Color(hex: palette.danger) }
 
@@ -155,9 +160,9 @@ public extension Color {
 // MARK: - Environment
 
 private struct ThemeKey: EnvironmentKey {
-    // Default stays GameShow Classic until the Shōwa flip (Phase 3) so the
-    // token migration is a zero-visual-change refactor.
-    static let defaultValue: Theme = .gameShowClassic
+    // Shōwa Broadcast is the house default (docs/themes/README.md). Keep in
+    // sync with ThemeManager.defaultThemeID.
+    static let defaultValue: Theme = .showa
 }
 
 public extension EnvironmentValues {

@@ -50,11 +50,11 @@ struct MeowGramView: View {
                 .shadow(color: theme.bind, radius: 0, x: 1, y: 1)
             Text("MEOWGRAM")
                 .font(.system(size: 22, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(theme.textOnFloor)
                 .shadow(color: theme.bind, radius: 0, x: 2, y: 2)
             Text("にゃんメール")
                 .font(.system(size: 12, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(theme.textOnFloor.opacity(0.7))
             Spacer()
         }
     }
@@ -96,7 +96,7 @@ struct MeowGramView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         sectionLabel("SECRET MESSAGE", tint: theme.commandDeep)
                         ZStack(alignment: .topLeading) {
-                            RoundedRectangle(cornerRadius: 8).fill(.white)
+                            RoundedRectangle(cornerRadius: 8).fill(theme.surface)
                             TextEditor(text: $model.message)
                                 .font(.system(size: 12, weight: .heavy, design: .monospaced))
                                 .foregroundStyle(theme.bind)
@@ -116,7 +116,7 @@ struct MeowGramView: View {
                         HStack {
                             Text("\(model.payloadBytesUsed)/\(model.payloadBytesMax) BYTES")
                                 .font(.system(size: 10, weight: .black, design: .rounded))
-                                .foregroundStyle(model.isOverBudget ? Color.red : theme.bind.opacity(0.6))
+                                .foregroundStyle(model.isOverBudget ? theme.danger : theme.bind.opacity(0.6))
                             Spacer()
                         }
 
@@ -168,7 +168,7 @@ struct MeowGramView: View {
                                 Button { model.sendViaMail() } label: {
                                     Label("EMAIL", systemImage: "envelope.fill")
                                 }
-                                .buttonStyle(NeonButton(fill: theme.command, text: .white))
+                                .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
                             }
                             HStack(spacing: 10) {
                                 Button { model.copyToPasteboard() } label: {
@@ -231,7 +231,7 @@ struct MeowGramView: View {
                     Button { model.decodeLoaded() } label: {
                         Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill")
                     }
-                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
+                    .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
                     .disabled(model.loadedData == nil || model.isDecoding)
 
                     // Pick the source last (or drag a PNG onto the panel above).
@@ -309,7 +309,7 @@ struct MeowGramView: View {
     ) -> some View {
         let trailing: CGFloat = onGenerate != nil ? 96 : 8
         return ZStack(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 8).fill(.white)
+            RoundedRectangle(cornerRadius: 8).fill(theme.surface)
             Group {
                 if secure {
                     SecureField("", text: $model.passphrase)
@@ -359,7 +359,7 @@ struct MeowGramView: View {
         HStack(spacing: 6) {
             Text(text)
                 .font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(theme.textOnCommand)
                 .padding(.horizontal, 8).padding(.vertical, 2)
                 .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
@@ -390,7 +390,7 @@ struct MeowGramView: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color.red)
+        .background(RoundedRectangle(cornerRadius: 10).fill(theme.danger)
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(theme.bind, lineWidth: 2)))
     }
 }

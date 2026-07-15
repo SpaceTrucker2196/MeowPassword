@@ -41,7 +41,7 @@ struct ShareDecodeView: View {
                         .foregroundStyle(theme.bind)
                         .autocorrectionDisabled().textInputAutocapitalization(.never)
                         .padding(8)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,7 +51,7 @@ struct ShareDecodeView: View {
 
                 // Decode (and the animation) only run once tapped, with an image.
                 Button { decode() } label: { Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill") }
-                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
+                    .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
                     .disabled(imageData == nil || decoding)
 
                 if let message {
@@ -83,7 +83,7 @@ struct ShareDecodeView: View {
                 .shadow(color: theme.bind, radius: 0, x: 1, y: 1)
             Text("DECODE MEOWGRAM")
                 .font(.system(size: 18, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(theme.textOnFloor)
                 .shadow(color: theme.bind, radius: 0, x: 2, y: 2)
             Spacer()
         }
@@ -115,7 +115,7 @@ struct ShareDecodeView: View {
 
     private func tag(_ text: String, tint: Color) -> some View {
         Text(text).font(.system(size: 13, weight: .black, design: .rounded))
-            .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
+            .foregroundStyle(theme.textOnCommand).padding(.horizontal, 8).padding(.vertical, 2)
             .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
     }
 

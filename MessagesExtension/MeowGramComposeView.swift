@@ -53,20 +53,20 @@ struct MeowGramComposeView: View {
                         label("SECRET MESSAGE", tint: theme.commandDeep)
                         Text("\(message.utf8.count)/\(MeowGram.maxMessageBytes)")
                             .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(message.utf8.count > MeowGram.maxMessageBytes ? .red : theme.bind.opacity(0.6))
+                            .foregroundStyle(message.utf8.count > MeowGram.maxMessageBytes ? theme.danger : theme.bind.opacity(0.6))
                     }
                     TextField("Psst… whisper something", text: $message, axis: .vertical)
                         .lineLimit(1...2)
                         .font(.system(size: 13, weight: .heavy, design: .monospaced))
                         .padding(7)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                     HStack(spacing: 8) {
                         TextField("Passphrase (optional)", text: $passphrase)
                             .font(.system(size: 12, weight: .heavy, design: .monospaced))
                             .autocorrectionDisabled().textInputAutocapitalization(.never)
                             .padding(7)
-                            .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                            .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         Button { passphrase = MeowPass.meowKey() } label: {
                             Text("GENERATE")
@@ -103,14 +103,14 @@ struct MeowGramComposeView: View {
             Button(action: send) {
                 Label(busy ? "SENDING…" : "SEND MEOWGRAM", systemImage: "paperplane.fill")
             }
-            .buttonStyle(NeonButton(fill: theme.command, text: .white))
+            .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
             .disabled(!canSend)
 
             if let error {
                 Text(error).font(.system(.footnote, design: .rounded).weight(.bold))
                     .foregroundStyle(.white).padding(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(Color.red))
+                    .background(RoundedRectangle(cornerRadius: 8).fill(theme.danger))
             }
         }
         .padding(12)
@@ -156,7 +156,7 @@ struct MeowGramComposeView: View {
     private func label(_ text: String, tint: Color) -> some View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
+                .foregroundStyle(theme.textOnCommand).padding(.horizontal, 8).padding(.vertical, 2)
                 .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
         }

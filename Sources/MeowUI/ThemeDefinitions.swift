@@ -45,6 +45,7 @@ public extension Theme {
             seal:        0xC1272D,   // Hanko Red
             surface:     0xFAF3E3,   // lighter paper for readable cards
             textOnFloor: 0x1A1712,   // ink on cream
+            textOnCommand: 0xFAF3E3, // cream caps on tomato plates
             positive:    0x1B8A8A,   // success wears the teal
             danger:      0xC1272D,
             meterStops:  [0x1B8A8A, 0xF2B417, 0xE23B2E]
@@ -71,6 +72,7 @@ public extension Theme {
             seal:        0xFF3DA1,   // hot pink
             surface:     0xFFFAF0,   // paper white
             textOnFloor: 0xFFFAF0,   // paper white on the neon gradient
+            textOnCommand: 0xFFFFFF, // the original white-on-pink
             positive:    0xA6FF33,   // neon lime
             danger:      0xFF3B30,   // matches the old `Color.red` error states
             meterStops:  [0x00E6FF, 0xA6FF33, 0xFFEB00, 0xFF3DA1]
@@ -97,6 +99,7 @@ public extension Theme {
             seal:        0xF4F1EA,   // Gun-Barrel White
             surface:     0xEDE7D6,   // dossier cards hold all readable text
             textOnFloor: 0xEDE7D6,   // dossier paper on the night
+            textOnCommand: 0x0E0E10, // night-black type on gilt
             positive:    0xC8A24C,   // success is gilt
             danger:      0xB0201C,   // Blood Red — the one drop
             meterStops:  [0x4A6A82, 0xC8A24C]
@@ -123,6 +126,7 @@ public extension Theme {
             seal:        0xA8140A,   // Star Red
             surface:     0xF4EDDC,   // a cleaner sheet for readable panels
             textOnFloor: 0x161310,   // press black on newsprint
+            textOnCommand: 0xEDE3CE, // newsprint caps on poster red
             positive:    0xD9A625,   // a gold medal for the worker
             danger:      0xA8140A,
             meterStops:  [0x3E5A6E, 0xD9A625, 0xC21807]
@@ -149,6 +153,7 @@ public extension Theme {
             seal:        0xBE1B32,   // Rosette Red
             surface:     0xFBE9E1,   // sunlit paper for readable panels
             textOnFloor: 0x211A1C,   // poster ink on dawn rose
+            textOnCommand: 0xFBE9E1, // sunlit caps on poppy red
             positive:    0xF3B21B,   // achievements are golden
             danger:      0xBE1B32,
             meterStops:  [0x3F86C4, 0xF3B21B, 0xD5203A]

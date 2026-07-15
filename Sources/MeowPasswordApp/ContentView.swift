@@ -152,7 +152,7 @@ struct ContentView: View {
             Text("\(value.wrappedValue)")
                 .font(.system(size: 15, weight: .black, design: .rounded))
                 .monospacedDigit()
-                .foregroundStyle(.white)
+                .foregroundStyle(theme.textOnCommand)
                 .frame(width: 36, height: 24)
                 .background(
                     RoundedRectangle(cornerRadius: 6).fill(tint)
@@ -165,7 +165,7 @@ struct ContentView: View {
         HStack(spacing: 6) {
             Text(text)
                 .font(.system(size: 14, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(theme.textOnCommand)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 2)
                 .background(
@@ -296,7 +296,7 @@ struct ContentView: View {
             HStack(spacing: 8) {
                 Text("\(index)")
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(isChampion ? theme.bind : .white)
+                    .foregroundStyle(isChampion ? theme.bind : theme.textOnCommand)
                     .frame(width: 18, height: 18)
                     .background(Circle().fill(isChampion ? theme.celebrate : theme.command))
                     .overlay(Circle().stroke(theme.bind, lineWidth: 1.5))
@@ -320,7 +320,7 @@ struct ContentView: View {
                 Text(String(format: "%.2f", candidate.score))
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(.white)
+                    .foregroundStyle(theme.textOnCommand)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 1)
                     .background(
@@ -370,7 +370,7 @@ struct ContentView: View {
                         .font(.system(size: 11, weight: .heavy, design: .monospaced))
                         .foregroundStyle(theme.bind)
                         .padding(8)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(.white))
+                        .background(RoundedRectangle(cornerRadius: 8).fill(theme.surface))
                         .overlay(alignment: .leading) {
                             // The .plain field style drops TextField's prompt,
                             // so draw the placeholder ourselves.
@@ -390,7 +390,7 @@ struct ContentView: View {
                     } label: {
                         Label("ANALYZE!", systemImage: "magnifyingglass")
                     }
-                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
+                    .buttonStyle(NeonButton(fill: theme.command, text: theme.textOnCommand))
                     .fixedSize()
                     .disabled(model.analyzeInput.isEmpty || model.isBusy)
                     .opacity(model.analyzeInput.isEmpty || model.isBusy ? 0.6 : 1)
@@ -433,7 +433,7 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color.red)
+                .fill(theme.danger)
                 .overlay(RoundedRectangle(cornerRadius: 10).stroke(theme.bind, lineWidth: 2))
         )
         .compositingGroup()
