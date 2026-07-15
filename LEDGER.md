@@ -53,3 +53,4 @@
 | 54fdac4 | 2026-07-15T00:46:30Z | claude-fable-5 | 552 | 6376 | 1449731 | 15191 | 2.0779 | Rename app to MeowPass! (Info.plists, App Store metadata) + MEOW PASS! banner ar |
 | 396cb96 | 2026-07-15T04:23:32Z | claude-fable-5 | 45560 | 47665 | 4912261 | 225524 | 12.2616 | README user-facing rename to MeowPass! (title, install comment, Keychain prose) |
 | aa02d1f | 2026-07-15T04:59:23Z | claude-fable-5 | 24526 | 128441 | 9531182 | 586957 | 27.9376 | Theme engine in MeowUI: semantic Theme/palettes for 5 themes, ThemeManager, Them |
+| f84062b | 2026-07-15T06:39:15Z | claude-fable-5 | 4789 | 48803 | 8181748 | 455456 | 19.7789 | macOS views migrated to theme tokens (ContentView, MeowGramView, App root inject |
