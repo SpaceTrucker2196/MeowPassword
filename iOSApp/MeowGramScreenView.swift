@@ -20,6 +20,7 @@ struct MeowGramScreen: View {
     @AppStorage("meow.tut.mg.decode.v1") private var seenDecode = false
     @State private var showComposeTour = false
     @State private var showDecodeTour = false
+    @Environment(\.theme) private var theme
 
     private var composeSteps: [CoachStep] {
         [
@@ -53,7 +54,7 @@ struct MeowGramScreen: View {
 
     var body: some View {
         ZStack {
-            GameShow.bg.ignoresSafeArea()
+            ThemedBackground().ignoresSafeArea()
             SparkleField(count: 50).ignoresSafeArea()
             VStack(spacing: 10) {
                 topBar
@@ -63,7 +64,7 @@ struct MeowGramScreen: View {
                     if model.mode == .compose { composePane } else { decodePane }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                if let s = model.status { banner(s, color: GameShow.neonLime, text: GameShow.inkBlack) }
+                if let s = model.status { banner(s, color: theme.positive, text: theme.bind) }
                 if let e = model.errorText { banner(e, color: .red, text: .white) }
             }
             .padding(12)
@@ -136,24 +137,24 @@ struct MeowGramScreen: View {
                     Button { onClose() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .black))
-                            .foregroundStyle(GameShow.inkBlack)
+                            .foregroundStyle(theme.bind)
                             .padding(8)
-                            .background(Circle().fill(GameShow.paperWhite))
-                            .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                            .background(Circle().fill(theme.surface))
+                            .overlay(Circle().stroke(theme.bind, lineWidth: 2))
                     }
                 }
                 Text("MEOWGRAM")
                     .font(.system(size: 20, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
-                    .shadow(color: GameShow.inkBlack, radius: 0, x: 2, y: 2)
+                    .shadow(color: theme.bind, radius: 0, x: 2, y: 2)
                 Spacer()
                 Button { if model.mode == .compose { showComposeTour = true } else { showDecodeTour = true } } label: {
                     Image(systemName: "questionmark")
                         .font(.system(size: 15, weight: .black))
-                        .foregroundStyle(GameShow.inkBlack)
+                        .foregroundStyle(theme.bind)
                         .frame(width: 34, height: 34)
-                        .background(Circle().fill(GameShow.paperWhite))
-                        .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                        .background(Circle().fill(theme.surface))
+                        .overlay(Circle().stroke(theme.bind, lineWidth: 2))
                 }
             }
             HStack(spacing: 12) {
@@ -161,7 +162,7 @@ struct MeowGramScreen: View {
                     Button { model.mode = m } label: {
                         Label(LocalizedStringKey(m.rawValue), systemImage: m == .compose ? "square.and.pencil" : "eye.fill")
                     }
-                    .buttonStyle(NeonButton(fill: model.mode == m ? GameShow.neonYellow : GameShow.paperWhite))
+                    .buttonStyle(NeonButton(fill: model.mode == m ? theme.celebrate : theme.surface))
                 }
             }
             .coachAnchor("mg.mode")
@@ -176,14 +177,14 @@ struct MeowGramScreen: View {
             // full width: the embedding animation while working, then the
             // finished cat with SHARE / SAVE.
             if model.isEmbedding {
-                GamePanel(tint: GameShow.neonYellow) {
+                GamePanel(tint: theme.celebrate) {
                     EmbedGeneratingView()
                         .frame(maxWidth: .infinity)
                         .frame(height: 220)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             } else if let img = model.previewImage {
-                GamePanel(tint: GameShow.neonYellow) {
+                GamePanel(tint: theme.celebrate) {
                     VStack(spacing: 8) {
                         Image(uiImage: img).resizable().aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity)
@@ -191,12 +192,12 @@ struct MeowGramScreen: View {
                         HStack(spacing: 8) {
                             if let url = model.encodedPNG != nil ? model.shareFileURL() : nil {
                                 ShareLink(item: url) { Label("SHARE", systemImage: "paperplane.fill") }
-                                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
                             }
                             Button { model.saveToPhotos() } label: {
                                 Label("SAVE", systemImage: "square.and.arrow.down")
                             }
-                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                            .buttonStyle(NeonButton(fill: theme.cool))
                             .disabled(model.encodedPNG == nil)
                         }
                     }
@@ -204,20 +205,20 @@ struct MeowGramScreen: View {
             }
 
             // Message + passphrase — tight.
-            GamePanel(tint: GameShow.neonLime) {
+            GamePanel(tint: theme.positive) {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        label("SECRET MESSAGE", tint: GameShow.magenta)
+                        label("SECRET MESSAGE", tint: theme.commandDeep)
                         Text("\(model.bytesUsed)/\(model.bytesMax)")
                             .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(model.isOverBudget ? .red : GameShow.inkBlack.opacity(0.6))
+                            .foregroundStyle(model.isOverBudget ? .red : theme.bind.opacity(0.6))
                     }
                     TextField("Psst… whisper something", text: $model.message, axis: .vertical)
                         .lineLimit(1...2)
                         .font(.system(size: 13, weight: .heavy, design: .monospaced))
                         .padding(7)
                         .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         .coachAnchor("mg.message")
                     HStack(spacing: 8) {
                         TextField("Passphrase (optional)", text: $model.passphrase)
@@ -225,14 +226,14 @@ struct MeowGramScreen: View {
                             .autocorrectionDisabled().textInputAutocapitalization(.never)
                             .padding(7)
                             .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         Button { model.generateKey() } label: {
                             Text("GENERATE")
                                 .font(.system(size: 11, weight: .black, design: .rounded))
-                                .foregroundStyle(GameShow.inkBlack)
+                                .foregroundStyle(theme.bind)
                                 .padding(.horizontal, 10).padding(.vertical, 9)
-                                .background(Capsule().fill(GameShow.neonYellow))
-                                .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                                .background(Capsule().fill(theme.celebrate))
+                                .overlay(Capsule().stroke(theme.bind, lineWidth: 1.5))
                         }
                     }
                     .coachAnchor("mg.pass")
@@ -240,9 +241,9 @@ struct MeowGramScreen: View {
             }
 
             // Cat picker — horizontal side-scroller, flexible height, in the middle.
-            GamePanel(tint: GameShow.neonCyan) {
+            GamePanel(tint: theme.cool) {
                 VStack(alignment: .leading, spacing: 6) {
-                    label("PICK A CAT!", tint: GameShow.hotPink)
+                    label("PICK A CAT!", tint: theme.command)
                     GeometryReader { geo in
                         ScrollView(.horizontal, showsIndicators: false) {
                             // Lazy so only visible cats decode a thumbnail.
@@ -265,7 +266,7 @@ struct MeowGramScreen: View {
             Button { model.embed() } label: {
                 Label("EMBED!", systemImage: "wand.and.stars")
             }
-            .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+            .buttonStyle(NeonButton(fill: theme.celebrate))
             .disabled(model.selectedID == nil || model.message.isEmpty || model.isOverBudget)
             .coachAnchor("mg.embed")
         }
@@ -277,34 +278,34 @@ struct MeowGramScreen: View {
         VStack(spacing: 12) {
             // Decoded message lands right at the top, under the mode buttons.
             if let msg = model.decodedMessage {
-                GamePanel(tint: GameShow.neonYellow) {
+                GamePanel(tint: theme.celebrate) {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 6) {
-                            label("MESSAGE!", tint: GameShow.hotPink)
+                            label("MESSAGE!", tint: theme.command)
                             if let guid = model.decodedGUID {
                                 Text("🐱 \(guid.prefix(8))")
                                     .font(.system(size: 9, weight: .heavy, design: .monospaced))
-                                    .foregroundStyle(GameShow.inkBlack.opacity(0.5))
+                                    .foregroundStyle(theme.bind.opacity(0.5))
                             }
                         }
                         HStack {
                             Text(msg).font(.system(size: 13, weight: .heavy, design: .monospaced))
-                                .foregroundStyle(GameShow.neonYellow).textSelection(.enabled).padding(10)
+                                .foregroundStyle(theme.celebrate).textSelection(.enabled).padding(10)
                             Spacer()
                             Button { UIPasteboard.general.string = msg } label: {
                                 Image(systemName: "doc.on.clipboard.fill")
-                                    .foregroundStyle(GameShow.inkBlack).padding(7)
-                                    .background(Circle().fill(GameShow.neonYellow))
+                                    .foregroundStyle(theme.bind).padding(7)
+                                    .background(Circle().fill(theme.celebrate))
                             }.padding(.trailing, 6)
                         }
-                        .background(RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack))
+                        .background(RoundedRectangle(cornerRadius: 10).fill(theme.bind))
                     }
                 }
             }
 
-            GamePanel(tint: GameShow.neonCyan) {
+            GamePanel(tint: theme.cool) {
                 VStack(spacing: 10) {
-                    label("DECODE A MEOWGRAM", tint: GameShow.hotPink)
+                    label("DECODE A MEOWGRAM", tint: theme.command)
                     // The MeowGram itself — full width, the panel resizes to it.
                     if let img = model.decodedImage {
                         // The decode animation lays over the MeowGram, so it's
@@ -321,26 +322,26 @@ struct MeowGramScreen: View {
                     }
                     // Bright callout so the passphrase field is unmissable.
                     VStack(alignment: .leading, spacing: 6) {
-                        label("PASSPHRASE", tint: GameShow.hotPink)
+                        label("PASSPHRASE", tint: theme.command)
                         TextField("Enter it if this MeowGram is locked", text: $model.passphrase)
                             .font(.system(size: 13, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(GameShow.inkBlack)
+                            .foregroundStyle(theme.bind)
                             .autocorrectionDisabled().textInputAutocapitalization(.never)
                             .padding(10)
                             .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 2))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 2))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(10)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(GameShow.neonYellow))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(GameShow.inkBlack, lineWidth: 2))
+                    .background(RoundedRectangle(cornerRadius: 12).fill(theme.celebrate))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(theme.bind, lineWidth: 2))
                     .coachAnchor("mg.dpass")
 
                     // Primary action, full width, right under the passphrase.
                     Button { model.decodeLoaded() } label: {
                         Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill")
                     }
-                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
                     .disabled(model.loadedData == nil || model.isDecoding)
                     .coachAnchor("mg.ddecode")
 
@@ -349,11 +350,11 @@ struct MeowGramScreen: View {
                         PhotosPicker(selection: $pickerItem, matching: .images) {
                             Label("PHOTOS", systemImage: "photo")
                         }
-                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        .buttonStyle(NeonButton(fill: theme.celebrate))
                         Button { showFileImporter = true } label: { Label("FILES", systemImage: "folder") }
-                            .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                            .buttonStyle(NeonButton(fill: theme.positive))
                         Button { model.pasteAndLoad() } label: { Label("PASTE", systemImage: "doc.on.clipboard") }
-                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                            .buttonStyle(NeonButton(fill: theme.cool))
                     }
                     .coachAnchor("mg.dsource")
                 }
@@ -365,7 +366,7 @@ struct MeowGramScreen: View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
-                .background(Capsule().fill(tint).overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5)))
+                .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
         }
     }
@@ -375,7 +376,7 @@ struct MeowGramScreen: View {
             .foregroundStyle(textColor).padding(10)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(RoundedRectangle(cornerRadius: 10).fill(color)
-                .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 2)))
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(theme.bind, lineWidth: 2)))
     }
 }
 
@@ -384,16 +385,17 @@ private struct Thumb: View {
     let selected: Bool
     var height: CGFloat = 100
     @State private var img: UIImage?
+    @Environment(\.theme) private var theme
     var body: some View {
         let h = max(80, height)
         ZStack {
             if let img { Image(uiImage: img).resizable().aspectRatio(contentMode: .fill) }
-            else { GameShow.inkBlack.opacity(0.1) }
+            else { theme.bind.opacity(0.1) }
         }
         .frame(width: h * 0.8, height: h)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10)
-            .stroke(selected ? GameShow.neonYellow : GameShow.inkBlack, lineWidth: selected ? 4 : 1.5))
+            .stroke(selected ? theme.celebrate : theme.bind, lineWidth: selected ? 4 : 1.5))
         .task(id: entry.id) {
             let url = entry.url
             img = await Task.detached { IOSThumbnailCache.shared.thumbnail(for: url) }.value

@@ -4,19 +4,30 @@ import MeowGramKit
 
 @main
 struct MeowPasswordApp: App {
+    @StateObject private var themeManager = ThemeManager()
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some Scene {
         WindowGroup {
             RootView()
-                // The game-show palette is a fixed print aesthetic — it must
-                // render identically regardless of the device's light/dark
-                // setting, so text never lands white-on-white.
-                .preferredColorScheme(.light)
+                .environmentObject(themeManager)
+                .environment(\.theme, themeManager.current)
+                // Every theme is a fixed print aesthetic — the theme, not the
+                // device's light/dark setting, decides the scheme, so text
+                // never lands white-on-white.
+                .preferredColorScheme(themeManager.current.colorScheme)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Pick up purchases/selection made elsewhere (e.g. a future
+            // widget or a reinstalled device) whenever we come forward.
+            if phase == .active { themeManager.reload() }
         }
     }
 }
 
 struct RootView: View {
     @Environment(\.horizontalSizeClass) private var hSize
+    @Environment(\.theme) private var theme
     // `-openMeowGram` launch arg opens MeowGram immediately (QA / screenshots).
     @State private var showMeowGram = ProcessInfo.processInfo.arguments.contains("-openMeowGram")
     @State private var decodeOnOpen: Data?
@@ -28,7 +39,7 @@ struct RootView: View {
             HStack(spacing: 0) {
                 GenerateView(showsMeowGramButton: false, autoTour: false)
                     .frame(maxWidth: .infinity)
-                Rectangle().fill(GameShow.inkBlack)
+                Rectangle().fill(theme.bind)
                     .frame(width: 2).ignoresSafeArea()
                 MeowGramScreen(embedded: true)
                     .frame(maxWidth: .infinity)

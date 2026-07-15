@@ -64,6 +64,7 @@ struct GenerateView: View {
 
     @AppStorage("meow.tut.generate.v1") private var seenTour = false
     @State private var showTour = false
+    @Environment(\.theme) private var theme
 
     private var tourSteps: [CoachStep] {
         [
@@ -82,7 +83,7 @@ struct GenerateView: View {
 
     var body: some View {
         ZStack {
-            GameShow.bg.ignoresSafeArea()
+            ThemedBackground().ignoresSafeArea()
             SparkleField(count: 50).ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
@@ -92,7 +93,7 @@ struct GenerateView: View {
                         Button { model.generate() } label: {
                             Label("GENERATE!", systemImage: "sparkles")
                         }
-                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        .buttonStyle(NeonButton(fill: theme.celebrate))
                         .disabled(model.isBusy)
                         .opacity(model.isBusy ? 0.6 : 1)
                         .coachAnchor("gen.generate")
@@ -101,7 +102,7 @@ struct GenerateView: View {
                             Button { onMeowGram() } label: {
                                 Label("MEOWGRAM!", systemImage: "envelope.badge.fill")
                             }
-                            .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                            .buttonStyle(NeonButton(fill: theme.positive))
                             .coachAnchor("gen.meowgram")
                         }
                     }
@@ -130,10 +131,10 @@ struct GenerateView: View {
         Button { showTour = true } label: {
             Image(systemName: "questionmark")
                 .font(.system(size: 15, weight: .black))
-                .foregroundStyle(GameShow.inkBlack)
+                .foregroundStyle(theme.bind)
                 .frame(width: 34, height: 34)
-                .background(Circle().fill(GameShow.paperWhite))
-                .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 2))
+                .background(Circle().fill(theme.surface))
+                .overlay(Circle().stroke(theme.bind, lineWidth: 2))
         }
         .padding(.trailing, 16).padding(.top, 8)
     }
@@ -146,13 +147,13 @@ struct GenerateView: View {
     }
 
     private func winner(_ best: Candidate) -> some View {
-        GamePanel(tint: GameShow.neonYellow) {
+        GamePanel(tint: theme.celebrate) {
             VStack(alignment: .leading, spacing: 8) {
-                label("WINNER!", tint: GameShow.hotPink)
+                label("WINNER!", tint: theme.command)
                 HStack {
                     Text(best.password)
                         .font(.system(size: 15, weight: .heavy, design: .monospaced))
-                        .foregroundStyle(GameShow.neonYellow)
+                        .foregroundStyle(theme.celebrate)
                         .textSelection(.enabled)
                         .lineLimit(1).truncationMode(.middle)
                         .padding(10)
@@ -160,14 +161,14 @@ struct GenerateView: View {
                     Button { UIPasteboard.general.string = best.password } label: {
                         Image(systemName: "doc.on.clipboard.fill")
                             .font(.system(size: 14, weight: .black))
-                            .foregroundStyle(GameShow.inkBlack)
+                            .foregroundStyle(theme.bind)
                             .padding(7)
-                            .background(Circle().fill(GameShow.neonYellow))
-                            .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                            .background(Circle().fill(theme.celebrate))
+                            .overlay(Circle().stroke(theme.bind, lineWidth: 1.5))
                     }
                     .padding(.trailing, 6)
                 }
-                .background(RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack))
+                .background(RoundedRectangle(cornerRadius: 10).fill(theme.bind))
                 scoreMeter(best.score)
             }
         }
@@ -178,19 +179,19 @@ struct GenerateView: View {
         return VStack(alignment: .leading, spacing: 3) {
             HStack {
                 Text("SCORE").font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(GameShow.inkBlack)
+                    .foregroundStyle(theme.bind)
                 Spacer()
                 Text(String(format: "%.2f / 10.00", score))
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .monospacedDigit().foregroundStyle(GameShow.inkBlack)
+                    .monospacedDigit().foregroundStyle(theme.bind)
             }
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 6).fill(GameShow.inkBlack.opacity(0.1))
-                    RoundedRectangle(cornerRadius: 6).fill(GameShow.meter)
+                    RoundedRectangle(cornerRadius: 6).fill(theme.bind.opacity(0.1))
+                    RoundedRectangle(cornerRadius: 6).fill(theme.meter)
                         .mask(HStack { RoundedRectangle(cornerRadius: 6)
                             .frame(width: geo.size.width * pct); Spacer(minLength: 0) })
-                    RoundedRectangle(cornerRadius: 6).stroke(GameShow.inkBlack, lineWidth: 1.5)
+                    RoundedRectangle(cornerRadius: 6).stroke(theme.bind, lineWidth: 1.5)
                 }
             }
             .frame(height: 12)
@@ -198,25 +199,25 @@ struct GenerateView: View {
     }
 
     private var candidatesPanel: some View {
-        GamePanel(tint: GameShow.hotPink) {
+        GamePanel(tint: theme.command) {
             VStack(alignment: .leading, spacing: 4) {
-                label("CANDIDATES", tint: GameShow.neonCyan)
+                label("CANDIDATES", tint: theme.cool)
                 ForEach(model.candidates) { c in
                     HStack {
                         Text(c.password)
                             .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(GameShow.inkBlack)
+                            .foregroundStyle(theme.bind)
                             .lineLimit(1).truncationMode(.middle)
                         Spacer()
                         Text(String(format: "%.2f", c.score))
                             .font(.system(size: 11, weight: .black, design: .rounded))
                             .monospacedDigit().foregroundStyle(.white)
                             .padding(.horizontal, 6).padding(.vertical, 1)
-                            .background(Capsule().fill(GameShow.magenta))
+                            .background(Capsule().fill(theme.commandDeep))
                         Button { UIPasteboard.general.string = c.password } label: {
                             Image(systemName: "doc.on.clipboard")
                                 .font(.system(size: 11, weight: .black))
-                                .foregroundStyle(GameShow.inkBlack)
+                                .foregroundStyle(theme.bind)
                         }
                     }
                     .padding(.vertical, 3)
@@ -226,20 +227,20 @@ struct GenerateView: View {
     }
 
     private var analyzePanel: some View {
-        GamePanel(tint: GameShow.neonLime) {
+        GamePanel(tint: theme.positive) {
             VStack(alignment: .leading, spacing: 8) {
-                label("JUDGE!", tint: GameShow.magenta)
+                label("JUDGE!", tint: theme.commandDeep)
                 HStack {
                     TextField("Paste a password…", text: $model.analyzeInput)
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                        .foregroundStyle(GameShow.inkBlack)
+                        .foregroundStyle(theme.bind)
                         .padding(8)
                         .background(RoundedRectangle(cornerRadius: 8).fill(.white))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                     Button { model.analyze() } label: { Label("GO", systemImage: "magnifyingglass") }
-                        .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                        .buttonStyle(NeonButton(fill: theme.command, text: .white))
                         .fixedSize()
                         .disabled(model.analyzeInput.isEmpty)
                 }
@@ -250,10 +251,10 @@ struct GenerateView: View {
                 } else if !model.analyzeResult.isEmpty {
                     Text(model.analyzeResult)
                         .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                        .foregroundStyle(GameShow.neonLime)
+                        .foregroundStyle(theme.positive)
                         .padding(8)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(GameShow.inkBlack))
+                        .background(RoundedRectangle(cornerRadius: 8).fill(theme.bind))
                         .textSelection(.enabled)
                 }
             }
@@ -261,12 +262,12 @@ struct GenerateView: View {
     }
 
     private var rulesPanel: some View {
-        GamePanel(tint: GameShow.neonCyan) {
+        GamePanel(tint: theme.cool) {
             VStack(alignment: .leading, spacing: 8) {
-                label("RULES", tint: GameShow.hotPink)
-                rule("NUMBERS", value: $model.numbers, range: 1...10, tint: GameShow.hotPink)
-                rule("SYMBOLS", value: $model.symbols, range: 1...10, tint: GameShow.neonCyan)
-                rule("MAX LENGTH", value: $model.maxLength, range: 15...50, tint: GameShow.neonLime)
+                label("RULES", tint: theme.command)
+                rule("NUMBERS", value: $model.numbers, range: 1...10, tint: theme.command)
+                rule("SYMBOLS", value: $model.symbols, range: 1...10, tint: theme.cool)
+                rule("MAX LENGTH", value: $model.maxLength, range: 15...50, tint: theme.positive)
             }
         }
     }
@@ -274,7 +275,7 @@ struct GenerateView: View {
     private func rule(_ title: LocalizedStringKey, value: Binding<Int>, range: ClosedRange<Int>, tint: Color) -> some View {
         HStack(spacing: 10) {
             Text(title).font(.system(size: 11, weight: .black, design: .rounded))
-                .foregroundStyle(GameShow.inkBlack).frame(width: 96, alignment: .leading)
+                .foregroundStyle(theme.bind).frame(width: 96, alignment: .leading)
             ChunkySlider(value: value, range: range, tint: tint)
             Text("\(value.wrappedValue)")
                 .font(.system(size: 14, weight: .black, design: .rounded)).monospacedDigit()
@@ -287,7 +288,7 @@ struct GenerateView: View {
         HStack {
             Text(text).font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundStyle(.white).padding(.horizontal, 8).padding(.vertical, 2)
-                .background(Capsule().fill(tint).overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5)))
+                .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
         }
     }
