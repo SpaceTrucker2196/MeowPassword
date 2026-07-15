@@ -114,29 +114,30 @@ public extension Theme {
 
     // MARK: Kremlin Cartoon (IAP)
 
-    /// Constructivist poster engine pointed at something silly. Newsprint,
-    /// Poster Red doing most of the work, press black binding it.
+    /// Constructivist poster machine with a Soyuzmultfilm soul: Lissitzky's
+    /// red wedge and paper circle, colors gouache-dusted like Golden
+    /// Collection cels, one Norstein fog note.
     static let kremlinCartoon = Theme(
         id: .kremlinCartoon,
         nameKey: "KREMLIN CARTOON",
         palette: ThemePalette(
-            floor:       0xEDE3CE,   // Newsprint
-            command:     0xC21807,   // Poster Red
-            commandDeep: 0xA8140A,   // Star Red
-            celebrate:   0xD9A625,   // Machine Gold
-            cool:        0x3E5A6E,   // Worker Steel
-            bind:        0x161310,   // Press Black
-            seal:        0xA8140A,   // Star Red
-            surface:     0xF4EDDC,   // a cleaner sheet for readable panels
-            textOnFloor: 0x161310,   // press black on newsprint
-            textOnCommand: 0xEDE3CE, // newsprint caps on poster red
-            positive:    0xD9A625,   // a gold medal for the worker
-            danger:      0xA8140A,
-            meterStops:  [0x3E5A6E, 0xD9A625, 0xC21807]
+            floor:       0xEBE5D8,   // Gouache Paper
+            command:     0xC73B2B,   // Wedge Red (Lissitzky vermilion, muted)
+            commandDeep: 0x9E2B20,   // Stamp Red
+            celebrate:   0xD28F3A,   // Story Ochre
+            cool:        0x5F7482,   // Fog Blue
+            bind:        0x211D19,   // Print Black (warm animation ink)
+            seal:        0x9E2B20,   // Stamp Red
+            surface:     0xF3EEE2,   // a cleaner sheet for readable panels
+            textOnFloor: 0x211D19,   // print black on gouache paper
+            textOnCommand: 0xEBE5D8, // paper caps on wedge red
+            positive:    0xD28F3A,   // an ochre medal for the worker
+            danger:      0x9E2B20,
+            meterStops:  [0x5F7482, 0xD28F3A, 0xC73B2B]
         ),
         prefersDark: false,
-        motif: .wedgeRays,
-        sealStyle: .star,
+        motif: .redWedge,
+        sealStyle: .wedgeCircle,
         sealCaption: "ОДОБРЕНО · MEOW APPROVED"
     )
 

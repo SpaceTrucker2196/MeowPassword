@@ -95,8 +95,9 @@ public struct Theme: Identifiable, Equatable, Sendable {
         case hanko
         /// Concentric gun-barrel rings (Spy Thriller).
         case iris
-        /// Five-point star (Kremlin Cartoon).
-        case star
+        /// Red wedge piercing a paper circle, after Lissitzky 1919
+        /// (Kremlin Cartoon).
+        case wedgeCircle
         /// Flower-burst rosette (Pyongyang Poster).
         case rosette
     }
@@ -109,8 +110,9 @@ public struct Theme: Identifiable, Equatable, Sendable {
         case neonGradient
         /// Spy: flat tuxedo black + gold glint diagonal + faint reticle grid.
         case reticleNight
-        /// Kremlin: newsprint + angular red wedge rays.
-        case wedgeRays
+        /// Kremlin: gouache paper + the red wedge driving at a paper circle
+        /// + thin diagonal rules + a low fog band.
+        case redWedge
         /// Pyongyang: dawn rose + gold beam fan + the one permitted soft glow.
         case sunrise
     }

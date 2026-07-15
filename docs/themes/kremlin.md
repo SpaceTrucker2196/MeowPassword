@@ -1,118 +1,173 @@
-# Kremlin Cartoon — Russian parody theme (IAP)
+# Kremlin Cartoon — constructivist × Soyuzmultfilm theme (IAP)
 
-> Constructivist propaganda poster, but the Five-Year Plan is about passwords and
-> the hero of labour is a cat with a wrench.
+> A Lissitzky poster staged as a Saturday-morning cartoon: the red wedge
+> chases a gouache-painted cat across cheap paper, and everybody has fun.
 
-An affectionate, cold-war-**cartoon** send-up of 1920s–30s Soviet
-constructivist *poster art* (Rodchenko / Stenberg energy) — the art movement,
-played for laughs. Cosmetic only, no politics. Read [`README.md`](README.md) for
-the token contract.
+An affectionate hybrid of two golden ages of Russian graphic art, played for
+laughs and **cosmetic only — no politics, no leaders, no slogans**:
+
+1. **Russian constructivism** (1919–1930s) — El Lissitzky, Alexander
+   Rodchenko, Gustav Klutsis, the Stenberg brothers. The poster as a machine:
+   diagonals, photomontage, letters as objects, red/black/paper discipline.
+2. **Soviet children's animation** (Soyuzmultfilm's "Golden Collection,"
+   1950s–80s) — cutout and gouache films, *Nu, Pogodi!* chase comedy,
+   Cheburashka's felt warmth, the dusty fog of Norstein's
+   *Hedgehog in the Fog*.
+
+Read [`README.md`](README.md) for the token contract this fills in.
 
 ---
 
 ## Philosophy
 
-Constructivism is geometry with a megaphone: bold diagonals, a giant condensed
-headline shouting up a slope, a red star, photomontage, and everything set at a
-heroic angle as if the whole poster is marching left-to-right into the future.
-Kremlin Cartoon borrows that *engine* and points it at something silly — a
-tabby "Hero of Socialist Labour" holding a wrench, a Five-Year Plan for Strong
-Passwords, a red star that says 認証 no wait, that's the other theme — here it
-says a cheerful faux-slogan.
+Constructivism built posters the way engineers build bridges. Its three
+articles of faith translate straight into UI:
 
-Three colors, maximum drama. Poster Red does almost everything; black binds and
-shouts; a warm off-white newsprint is the paper. Type is enormous, condensed,
-and set on a diagonal, with a Cyrillic-flavoured chyron running the machine-age
-rhythm. The energy is loud like Shōwa but *angular* where Shōwa is rounded —
-wedges and rays instead of inflatable balloons.
+- **Tectonics** — show the structure. Panels are visibly constructed: hard
+  edges, exposed geometry, nothing decorative that isn't load-bearing.
+- **Faktura** — honor the material. Our material is cheap paper and gouache
+  paint: flat spot-color fields, visible halftone, a hair of mis-registration.
+- **Construction** — assemble, don't illustrate. Compositions are cut and
+  pasted (photomontage!), not painted into a scene.
 
-Bombastic, geometric, and entirely tongue-in-cheek.
+The palette is constructivism's coded triad — **red the energy, black the
+printed word, paper the active space** — famously compressed into one image:
+Lissitzky's 1919 *Beat the Whites with the Red Wedge*, a red triangle piercing
+a white circle. That wedge-and-circle is this theme's signature geometry (here
+the wedge is only ever chasing a cat, never a politic).
+
+But pure constructivism is a cold machine — so Soyuzmultfilm supplies the
+heart. The Golden Collection's cutout-and-gouache films soften every hard
+edge: colors go dusty and hand-mixed rather than ink-pure, shapes get the
+rounded charm of a felt puppet, and a faint fog (Norstein's glass-layered
+mist) hangs at the bottom of the frame. The energy is *Nu, Pogodi!* — a
+chase-comedy wolf never quite catching anyone — bolted onto Stenberg-poster
+drama: exaggerated scale, distorted perspective, creative cropping.
+
+A poster machine with a storybook soul. Bombastic geometry, gouache fur.
 
 ---
 
 ## Principles
 
-1. **Diagonal is destiny.** Compose on a slope; the poster marches.
-2. **Three colors, all conviction.** Red commands, black binds, newsprint reads.
-3. **Condensed and colossal.** One giant slanted headline; everything else falls in line.
-4. **Photomontage.** Hard-cut cat cutouts pasted at heroic angles.
-5. **The red star is the seal.** A five-point star stamp, tilted ~8°.
-6. **Rays and wedges, not curves.** Angular sunbursts; sharp banners.
+1. **Diagonal is destiny.** Compose on a slope (the constructivist axis);
+   the poster marches, the cartoon chases.
+2. **Red energy, black word, paper air.** The coded triad does the work;
+   everything else is rationed.
+3. **Tectonics: show the construction.** Hard geometry, exposed structure,
+   wedges and circles — never soft gradients pretending to be light.
+4. **Faktura: gouache on cheap paper.** Dusty hand-mixed color, halftone,
+   mis-registration. Print honesty, painted warmth.
+5. **Photomontage, but make it a puppet show.** Hard-cut cat cutouts pasted
+   at heroic angles — rounded, friendly, felt-textured like Cheburashka.
+6. **The wedge-in-circle is the seal.** Lissitzky's geometry as an approval
+   stamp: "ОДОБРЕНО · MEOW APPROVED."
+7. **A breath of fog.** One quiet Norstein note per screen — a low dusty
+   mist band, never a glow.
 
 ---
 
 ## Color — the quota
 
-Ink on newsprint, printed one-and-a-half colors like a real cheap poster.
+Constructivism's triad, mixed with gouache instead of printer's ink — every
+color a step dustier than the poster-pure version, like the Golden
+Collection's cels after fifty years in the archive.
 
 | Role | Name | Hex | Usage |
 |---|---|---|---|
-| **Floor** (dominant) | Newsprint | `#EDE3CE` | Backgrounds, panels. Cheap warm paper. ~55%. |
-| **Command** | Poster Red | `#C21807` | The shout — headline banners, the CTA, the star. Does most of the work. ~25%. |
-| **Bind** | Press Black | `#161310` | Outlines, the condensed headline, hard shadows. |
-| **Celebrate** | Machine Gold | `#D9A625` | Small industrial accents — cogs, rays, a medal. Rationed. |
-| **Cool** (single accent) | Worker Steel | `#3E5A6E` | Exactly one cool note — meters, secondary. |
-| **Seal** | Star Red | `#A8140A` | The five-point star approval stamp. |
+| **Floor** (dominant) | Gouache Paper | `#EBE5D8` | Backgrounds, panels. Cheap paper under matte paint, a grey-fog cast. ~55%. |
+| **Command** | Wedge Red | `#C73B2B` | The shout — the wedge, banners, the CTA. Lissitzky vermilion, gouache-muted. ~25%. |
+| **Bind** | Print Black | `#211D19` | Outlines, the condensed headline, hard shadows. A warm animation-ink black. |
+| **Celebrate** | Story Ochre | `#D28F3A` | Warm accents — medals, the fox-fur note in every Soyuzmultfilm frame. Rationed. |
+| **Cool** (single accent) | Fog Blue | `#5F7482` | Exactly one cool note — meters, secondary lines. Norstein's mist, dustier than steel. |
+| **Seal** | Stamp Red | `#9E2B20` | The wedge-in-circle approval stamp. Deeper than Wedge Red. |
 
-**Rules** — newsprint 55 · red 25 · black 15 · gold ≤4 · steel ≤2. Flat spot-color
+**Rules** — paper 55 · red 25 · black 12 · ochre ≤5 · fog ≤3. Flat matte
 fields only; allow visible halftone and mild mis-registration (a hair of red
-offset from black) for that printed-poster honesty. No gradients, no gloss.
+offset from black). The only permitted softness is the low fog band — a
+translucent paper mist, never a bloom or glow.
 
 ---
 
 ## Type
 
-- **The Shout** — a **heavy condensed** grotesque (Impact / a constructivist
-  slab), ALL-CAPS, often set **on a diagonal** or up a wedge. Colossal.
-- **The Chyron** — a **Cyrillic-flavoured** ticker running the industrial rhythm,
-  e.g. `ПЛАН · ПАРОЛЬ · МЯУ` (real Cyrillic, kept cheerful and nonsensical/parody,
-  never sloganeering). Keep a small `スコア` katakana nod to the house voice.
+- **The Shout** — a **heavy condensed** grotesque, ALL-CAPS, set **on the
+  diagonal** or climbing a wedge. Letters are objects (Rodchenko): crop them,
+  overlap them, let scale jump 4:1 between words.
+- **The Chyron** — a Cyrillic-flavoured ticker in the machine rhythm,
+  e.g. `ПЛАН · ПАРОЛЬ · МЯУ` — real Cyrillic, kept cheerful and
+  nonsensical/parody, never sloganeering. Keep a small `スコア` katakana nod
+  to the house voice.
 - **The Whisper** — plan numbers and quotas: `ПЛАН 5 · НОРМА 8.81 · ЭП. 01`.
-- Latin/Cyrillic share billing; both loud.
+- Latin/Cyrillic share billing; both loud, both constructed.
 
 ---
 
 ## Materials & motifs
 
-- **Red star seal.** A five-point star, tilted ~8°, stamped as approval —
-  "ОДОБРЕНО · MEOW APPROVED."
-- **Diagonal banners.** Red parallelograms slicing across panels at a heroic angle.
-- **Angular sunburst / rays.** Sharp wedge rays (not the rounded Shōwa fan).
-- **Photomontage cutouts.** Hard-edged cat cutouts pasted at a dynamic tilt,
-  fist/paw raised, holding a wrench or a giant key.
-- **Cog & wrench.** Machine-age gold cogs as small accents; a "paw & wrench"
-  emblem parodying the hammer-and-sickle silhouette.
-- **Mis-registration + halftone.** Cheap-print honesty; a sliver of red off black.
+- **The red wedge & white circle.** The signature geometry (after Lissitzky
+  1919): a red triangle drives diagonally toward a paper circle. In this
+  house it's a chase gag — the wedge never catches the cat.
+- **Wedge-in-circle seal.** The approval stamp: paper circle, black ring,
+  red wedge piercing to center, "ОДОБРЕНО · MEOW APPROVED," tilted ~8°.
+- **Photomontage puppet cutouts.** Hard-edged cat cutouts at dynamic tilts —
+  but rounded and felt-soft like Cheburashka, paw raised mid-chase
+  (*Nu, Pogodi!* energy), holding a wrench or a giant key.
+- **Stenberg staging.** Exaggerated scale, distorted perspective, creative
+  cropping — a cat's head can be the size of a building if the composition
+  demands it.
+- **Fog band.** A low translucent mist across the bottom (Norstein) — dusty
+  paper-grey, one per screen, quiet.
+- **Cog & wrench.** Machine-age ochre cogs as small accents; a "paw &
+  wrench" emblem parodying machine-club insignia.
+- **Mis-registration + halftone.** Cheap-print honesty; a sliver of red off
+  black.
 
 ---
 
 ## Layout, rotation & rhythm
 
 - **March the composition:** strong bottom-left-to-top-right diagonal; the
-  headline climbs it; a red wedge counter-balances.
-- **Rotation:** banners and cutouts tilt 6–10°; the star ~8°; readable panels
+  headline climbs it; the wedge counter-balances; the circle floats
+  upper-right.
+- **Rotation:** wedges and cutouts tilt 6–10°; the seal ~8°; readable panels
   stay near-level with true baselines.
-- **Repetition:** rows of stars, a fan of red rays, a column of plan numbers.
+- **Repetition:** rows of circles, a fan of thin black rules, a column of
+  plan numbers.
 
 ## Do / Don't
 
-**Do** — compose on a diagonal; let Poster Red dominate; giant condensed caps;
-photomontage cats at heroic angles; keep it silly. **Don't** — reference real
-politics, leaders, or slogans (it's parody of an *art style*); use gradients or
-gloss; go full neon; make the Cyrillic mean anything pointed — keep it cheerful
-nonsense.
+**Do** — compose on the diagonal; let Wedge Red dominate; giant condensed
+caps; puppet-soft photomontage cats at heroic angles; one fog note; keep it
+silly. **Don't** — reference real politics, leaders, or slogans (this is
+parody of two *art styles*); use digital gradients or gloss; go ink-pure
+bright (everything is gouache-dusty); make the Cyrillic mean anything
+pointed — keep it cheerful nonsense.
 
 ## Token mapping
 
 | Contract role | Value |
 |---|---|
-| Floor | Newsprint `#EDE3CE` |
-| Command | Poster Red `#C21807` |
-| Celebrate | Machine Gold `#D9A625` |
-| Cool | Worker Steel `#3E5A6E` |
-| Bind | Press Black `#161310` |
-| Seal | Red five-point star, "ОДОБРЕНО · MEOW APPROVED" |
-| Background motif | Newsprint + angular red wedge rays + halftone; slight mis-registration |
+| Floor | Gouache Paper `#EBE5D8` |
+| Command | Wedge Red `#C73B2B` |
+| Celebrate | Story Ochre `#D28F3A` |
+| Cool | Fog Blue `#5F7482` |
+| Bind | Print Black `#211D19` |
+| Seal | Wedge-in-circle, "ОДОБРЕНО · MEOW APPROVED" |
+| Background motif | Gouache paper + red wedge driving at a paper circle + thin black rules + low fog band |
 | Frame treatment | Black border + hard shadow; red diagonal banner accents; heroic tilt |
-| Signature stamp | Red star (replaces the hanko) |
+| Signature stamp | Red wedge piercing a paper circle (replaces the hanko) |
 | Chyron script | Cyrillic-flavoured ticker; keep a small katakana nod |
+
+## Sources (the homework)
+
+- El Lissitzky, *Beat the Whites with the Red Wedge* (1919) — the
+  wedge/circle geometry and the red-white-black code.
+- Alexander Rodchenko — letters as objects, diagonal typography, photomontage.
+- Gustav Klutsis — political photomontage technique (borrowed, depoliticized).
+- Vladimir & Georgii Stenberg — film-poster staging: scale, crop, perspective.
+- Constructivist doctrine: tectonics · faktura · construction.
+- Soyuzmultfilm "Golden Collection" (1950s–80s) — gouache/cutout warmth;
+  *Nu, Pogodi!* (1969–) chase comedy; Kachanov's *Cheburashka* (1969) felt
+  charm; Norstein's *Hedgehog in the Fog* (1975) layered mist and dusty
+  desaturation.

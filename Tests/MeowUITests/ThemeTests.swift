@@ -59,13 +59,14 @@ final class ThemeDefinitionTests: XCTestCase {
     }
 
     func testKremlinCartoonPaletteMatchesSpec() {
+        // Constructivist triad, gouache-dusted (docs/themes/kremlin.md).
         let p = Theme.kremlinCartoon.palette
-        XCTAssertEqual(p.floor, 0xEDE3CE)      // Newsprint
-        XCTAssertEqual(p.command, 0xC21807)    // Poster Red
-        XCTAssertEqual(p.celebrate, 0xD9A625)  // Machine Gold
-        XCTAssertEqual(p.cool, 0x3E5A6E)       // Worker Steel
-        XCTAssertEqual(p.bind, 0x161310)       // Press Black
-        XCTAssertEqual(p.seal, 0xA8140A)       // Star Red
+        XCTAssertEqual(p.floor, 0xEBE5D8)      // Gouache Paper
+        XCTAssertEqual(p.command, 0xC73B2B)    // Wedge Red
+        XCTAssertEqual(p.celebrate, 0xD28F3A)  // Story Ochre
+        XCTAssertEqual(p.cool, 0x5F7482)       // Fog Blue
+        XCTAssertEqual(p.bind, 0x211D19)       // Print Black
+        XCTAssertEqual(p.seal, 0x9E2B20)       // Stamp Red
         XCTAssertFalse(Theme.kremlinCartoon.prefersDark)
     }
 
@@ -106,7 +107,8 @@ final class ThemeDefinitionTests: XCTestCase {
         XCTAssertEqual(Theme.showa.sealStyle, .hanko)
         XCTAssertEqual(Theme.gameShowClassic.sealStyle, .hanko)
         XCTAssertEqual(Theme.spyThriller.sealStyle, .iris, "gun-barrel iris")
-        XCTAssertEqual(Theme.kremlinCartoon.sealStyle, .star, "five-point star")
+        XCTAssertEqual(Theme.kremlinCartoon.sealStyle, .wedgeCircle,
+                       "red wedge piercing a paper circle, after Lissitzky")
         XCTAssertEqual(Theme.pyongyangPoster.sealStyle, .rosette, "flower-burst rosette")
     }
 }

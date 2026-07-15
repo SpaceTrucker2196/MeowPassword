@@ -17,7 +17,7 @@ public struct ThemedBackground: View {
         case .neonGradient:     neonGradient
         case .sunburstHalftone: sunburstHalftone
         case .reticleNight:     reticleNight
-        case .wedgeRays:        wedgeRays
+        case .redWedge:         redWedge
         case .sunrise:          sunrise
         }
     }
@@ -102,30 +102,48 @@ public struct ThemedBackground: View {
         }
     }
 
-    // MARK: Kremlin — newsprint with sharp red wedge rays marching upward.
+    // MARK: Kremlin — the red wedge drives at a paper circle (after
+    // Lissitzky 1919), thin diagonal rules, and one low Norstein fog note.
 
-    private var wedgeRays: some View {
-        ZStack {
+    private var redWedge: some View {
+        ZStack(alignment: .bottom) {
             theme.floor
             Canvas { ctx, size in
-                // Angular rays fanning from the bottom-left corner.
-                let origin = CGPoint(x: -size.width * 0.1, y: size.height * 1.1)
-                let reach = max(size.width, size.height) * 1.8
-                let rays = 7
-                for i in 0..<rays {
-                    // Sweep from -80° to -10° (up-and-right), thin wedges.
-                    let a0 = (-80.0 + Double(i) * 10.0) * .pi / 180
-                    let a1 = a0 + 3.5 * .pi / 180
-                    var path = Path()
-                    path.move(to: origin)
-                    path.addLine(to: CGPoint(x: origin.x + Foundation.cos(a0) * reach,
-                                             y: origin.y + Foundation.sin(a0) * reach))
-                    path.addLine(to: CGPoint(x: origin.x + Foundation.cos(a1) * reach,
-                                             y: origin.y + Foundation.sin(a1) * reach))
-                    path.closeSubpath()
-                    ctx.fill(path, with: .color(theme.command.opacity(0.12)))
+                // The paper circle, floating upper-right — never caught.
+                let radius = min(size.width, size.height) * 0.32
+                let center = CGPoint(x: size.width * 0.78, y: size.height * 0.20)
+                let circleRect = CGRect(x: center.x - radius, y: center.y - radius,
+                                        width: radius * 2, height: radius * 2)
+                ctx.fill(Path(ellipseIn: circleRect),
+                         with: .color(theme.surface.opacity(0.7)))
+                ctx.stroke(Path(ellipseIn: circleRect),
+                           with: .color(theme.bind.opacity(0.10)), lineWidth: 1.5)
+
+                // The red wedge, driving up from the lower-left; its tip just
+                // reaches the circle's rim.
+                let tip = CGPoint(x: center.x - radius * 0.55,
+                                  y: center.y + radius * 0.55)
+                var wedge = Path()
+                wedge.move(to: CGPoint(x: -size.width * 0.12, y: size.height * 1.02))
+                wedge.addLine(to: tip)
+                wedge.addLine(to: CGPoint(x: size.width * 0.30, y: size.height * 1.10))
+                wedge.closeSubpath()
+                ctx.fill(wedge, with: .color(theme.command.opacity(0.15)))
+
+                // Two thin black rules echoing the diagonal (the constructed
+                // axis, visible per tectonics).
+                for offset in [0.16, 0.24] {
+                    var rule = Path()
+                    rule.move(to: CGPoint(x: size.width * offset, y: size.height * 1.02))
+                    rule.addLine(to: CGPoint(x: size.width * (offset + 0.62),
+                                             y: -size.height * 0.02))
+                    ctx.stroke(rule, with: .color(theme.bind.opacity(0.06)), lineWidth: 1)
                 }
             }
+            // The one permitted softness: a low dusty fog band.
+            LinearGradient(colors: [.clear, theme.cool.opacity(0.12)],
+                           startPoint: .top, endPoint: .bottom)
+                .frame(height: 170)
         }
     }
 

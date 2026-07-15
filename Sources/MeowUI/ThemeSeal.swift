@@ -18,10 +18,10 @@ public struct ThemeSeal: View {
     public var body: some View {
         ZStack {
             switch theme.sealStyle {
-            case .hanko:   hanko
-            case .iris:    iris
-            case .star:    star
-            case .rosette: rosette
+            case .hanko:       hanko
+            case .iris:        iris
+            case .wedgeCircle: wedgeCircle
+            case .rosette:     rosette
             }
         }
         .frame(width: size, height: size)
@@ -74,14 +74,18 @@ public struct ThemeSeal: View {
         }
     }
 
-    // Kremlin: the five-point star, caption punched out in newsprint.
-    private var star: some View {
+    // Kremlin: the red wedge pierces a paper circle (after Lissitzky 1919),
+    // the verdict printed beneath the point.
+    private var wedgeCircle: some View {
         ZStack {
-            StarShape().fill(theme.seal)
-            StarShape().stroke(theme.bind, lineWidth: size * 0.02)
-            caption(theme.floor, scale: 0.62)
-                .offset(y: -size * 0.01)
+            Circle().fill(theme.surface)
+            Circle().stroke(theme.bind, lineWidth: size * 0.04)
+            WedgeShape().fill(theme.seal)
+            caption(theme.bind, scale: 0.72)
+                .offset(y: size * 0.16)
         }
+        .clipShape(Circle())
+        .overlay(Circle().stroke(theme.bind, lineWidth: size * 0.04))
     }
 
     // Pyongyang: a flower-burst rosette — petals, gold heart, ink caption.
@@ -103,20 +107,17 @@ public struct ThemeSeal: View {
     }
 }
 
-/// A crisp five-point star centered in its rect.
-struct StarShape: Shape {
+/// The red wedge: a slim triangle entering from the upper-left, its point
+/// landing just past the center of the seal.
+struct WedgeShape: Shape {
     func path(in rect: CGRect) -> Path {
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let outer = min(rect.width, rect.height) / 2
-        let inner = outer * 0.42
         var path = Path()
-        for i in 0..<10 {
-            let angle = Double(i) * .pi / 5 - .pi / 2
-            let radius = i.isMultiple(of: 2) ? outer : inner
-            let point = CGPoint(x: center.x + Foundation.cos(angle) * radius,
-                                y: center.y + Foundation.sin(angle) * radius)
-            if i == 0 { path.move(to: point) } else { path.addLine(to: point) }
-        }
+        path.move(to: CGPoint(x: rect.minX - rect.width * 0.05,
+                              y: rect.minY + rect.height * 0.28))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.58,
+                                 y: rect.minY + rect.height * 0.46))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.20,
+                                 y: rect.minY - rect.height * 0.05))
         path.closeSubpath()
         return path
     }
