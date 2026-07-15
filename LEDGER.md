@@ -55,3 +55,4 @@
 | aa02d1f | 2026-07-15T04:59:23Z | claude-fable-5 | 24526 | 128441 | 9531182 | 586957 | 27.9376 | Theme engine in MeowUI: semantic Theme/palettes for 5 themes, ThemeManager, Them |
 | f84062b | 2026-07-15T06:39:15Z | claude-fable-5 | 4789 | 48803 | 8181748 | 455456 | 19.7789 | macOS views migrated to theme tokens (ContentView, MeowGramView, App root inject |
 | abe9be3 | 2026-07-15T06:40:41Z | claude-fable-5 | 1297 | 2813 | 1572905 | 7102 | 1.8686 | Extensions migrated to theme tokens + GameShow enum retired; iOS/macOS builds ve |
+| eb6d733 | 2026-07-15T14:22:56Z | claude-fable-5 | 28669 | 44217 | 11056257 | 343737 | 20.4285 | Shōwa default flip + textOnCommand/danger contrast pass; 5-theme simulator verif |
