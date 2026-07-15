@@ -28,11 +28,12 @@ func loadBundledImage(_ name: String, ext: String) -> NSImage? {
 struct ContentView: View {
     @EnvironmentObject var model: GenerationModel
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.theme) private var theme
     @Namespace private var reveal
 
     var body: some View {
         ZStack {
-            GameShow.bg.ignoresSafeArea()
+            ThemedBackground().ignoresSafeArea()
             SparkleField(count: 60).ignoresSafeArea()
 
             ScrollView {
@@ -46,7 +47,7 @@ struct ContentView: View {
                             Label("GENERATE!", systemImage: "sparkles")
                         }
                         .keyboardShortcut("g", modifiers: [.command])
-                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        .buttonStyle(NeonButton(fill: theme.celebrate))
                         .disabled(model.isBusy)
                         .opacity(model.isBusy ? 0.6 : 1)
 
@@ -57,7 +58,7 @@ struct ContentView: View {
                             Label("MEOWGRAM!", systemImage: "envelope.badge.fill")
                         }
                         .keyboardShortcut("m", modifiers: [.command, .shift])
-                        .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                        .buttonStyle(NeonButton(fill: theme.positive))
                     }
 
                     if !model.bestPassword.isEmpty {
@@ -98,7 +99,7 @@ struct ContentView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 } else {
-                    Rectangle().fill(GameShow.hotPink)
+                    Rectangle().fill(theme.command)
                 }
             }
             // Cap the banner so the action buttons and winner stay above
@@ -114,7 +115,7 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
-                .background(Capsule().fill(GameShow.inkBlack.opacity(0.75)))
+                .background(Capsule().fill(theme.bind.opacity(0.75)))
                 .padding(8)
             }
         }
@@ -124,12 +125,12 @@ struct ContentView: View {
     // MARK: controls
 
     private var controlsPanel: some View {
-        GamePanel(tint: GameShow.neonCyan) {
+        GamePanel(tint: theme.cool) {
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("RULES", jp: "ルール", tint: GameShow.hotPink)
-                stepperRow(title: "NUMBERS",     jp: "すうじ",  value: $model.numbers, range: 1...10, tint: GameShow.hotPink)
-                stepperRow(title: "SYMBOLS",     jp: "きごう",  value: $model.symbols, range: 1...10, tint: GameShow.neonCyan)
-                stepperRow(title: "MAX LENGTH",  jp: "ながさ",  value: $model.maxLength, range: 15...50, tint: GameShow.neonLime)
+                sectionLabel("RULES", jp: "ルール", tint: theme.command)
+                stepperRow(title: "NUMBERS",     jp: "すうじ",  value: $model.numbers, range: 1...10, tint: theme.command)
+                stepperRow(title: "SYMBOLS",     jp: "きごう",  value: $model.symbols, range: 1...10, tint: theme.cool)
+                stepperRow(title: "MAX LENGTH",  jp: "ながさ",  value: $model.maxLength, range: 15...50, tint: theme.positive)
             }
         }
     }
@@ -139,10 +140,10 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(GameShow.inkBlack)
+                    .foregroundStyle(theme.bind)
                 Text(jp)
                     .font(.system(size: 9, weight: .heavy, design: .rounded))
-                    .foregroundStyle(GameShow.inkBlack.opacity(0.55))
+                    .foregroundStyle(theme.bind.opacity(0.55))
             }
             .frame(width: 86, alignment: .leading)
 
@@ -155,7 +156,7 @@ struct ContentView: View {
                 .frame(width: 36, height: 24)
                 .background(
                     RoundedRectangle(cornerRadius: 6).fill(tint)
-                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.bind, lineWidth: 1.5))
                 )
         }
     }
@@ -169,11 +170,11 @@ struct ContentView: View {
                 .padding(.vertical, 2)
                 .background(
                     Capsule().fill(tint)
-                        .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(Capsule().stroke(theme.bind, lineWidth: 1.5))
                 )
             Text(jp)
                 .font(.system(size: 10, weight: .heavy, design: .rounded))
-                .foregroundStyle(GameShow.inkBlack.opacity(0.6))
+                .foregroundStyle(theme.bind.opacity(0.6))
             Spacer()
         }
     }
@@ -181,23 +182,23 @@ struct ContentView: View {
     // MARK: best
 
     private var bestSection: some View {
-        GamePanel(tint: GameShow.neonYellow) {
+        GamePanel(tint: theme.celebrate) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 6) {
-                    sectionLabel("WINNER!", jp: "ゆうしょう", tint: GameShow.hotPink)
+                    sectionLabel("WINNER!", jp: "ゆうしょう", tint: theme.command)
                     Image(systemName: "crown.fill")
                         .font(.system(size: 14, weight: .black))
-                        .foregroundStyle(GameShow.neonYellow)
-                        .shadow(color: GameShow.inkBlack, radius: 0, x: 1, y: 1)
+                        .foregroundStyle(theme.celebrate)
+                        .shadow(color: theme.bind, radius: 0, x: 1, y: 1)
                 }
 
                 ZStack(alignment: .topLeading) {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(GameShow.inkBlack)
+                        .fill(theme.bind)
                     HStack {
                         Text(model.bestPassword)
                             .font(.system(size: 14, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(GameShow.neonYellow)
+                            .foregroundStyle(theme.celebrate)
                             .textSelection(.enabled)
                             .lineLimit(1)
                             .truncationMode(.middle)
@@ -209,10 +210,10 @@ struct ContentView: View {
                         } label: {
                             Image(systemName: "doc.on.clipboard.fill")
                                 .font(.system(size: 14, weight: .black))
-                                .foregroundStyle(GameShow.inkBlack)
+                                .foregroundStyle(theme.bind)
                                 .padding(6)
-                                .background(Circle().fill(GameShow.neonYellow))
-                                .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                                .background(Circle().fill(theme.celebrate))
+                                .overlay(Circle().stroke(theme.bind, lineWidth: 1.5))
                         }
                         .buttonStyle(.plain)
                         .padding(.trailing, 6)
@@ -231,24 +232,24 @@ struct ContentView: View {
             HStack {
                 Text("SCORE")
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(GameShow.inkBlack)
+                    .foregroundStyle(theme.bind)
                 Text("スコア")
                     .font(.system(size: 9, weight: .heavy, design: .rounded))
-                    .foregroundStyle(GameShow.inkBlack.opacity(0.55))
+                    .foregroundStyle(theme.bind.opacity(0.55))
                 Spacer()
                 Text(String(format: "%.2f / 10.00", score))
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(GameShow.inkBlack)
+                    .foregroundStyle(theme.bind)
             }
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(GameShow.inkBlack.opacity(0.1))
+                        .fill(theme.bind.opacity(0.1))
                     // Full-width gradient masked to the fill, so the leading
                     // edge color always reflects the score's position.
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(GameShow.meter)
+                        .fill(theme.meter)
                         .mask(
                             HStack {
                                 RoundedRectangle(cornerRadius: 6)
@@ -258,7 +259,7 @@ struct ContentView: View {
                         )
                         .animation(.spring(response: 0.5, dampingFraction: 0.8), value: pct)
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(GameShow.inkBlack, lineWidth: 1.5)
+                        .stroke(theme.bind, lineWidth: 1.5)
                 }
             }
             .frame(height: 12)
@@ -269,9 +270,9 @@ struct ContentView: View {
 
     private var candidatesSection: some View {
         let topScore = model.candidates.map(\.score).max()
-        return GamePanel(tint: GameShow.hotPink) {
+        return GamePanel(tint: theme.command) {
             VStack(alignment: .leading, spacing: 2) {
-                sectionLabel("CANDIDATES", jp: "こうほ", tint: GameShow.neonCyan)
+                sectionLabel("CANDIDATES", jp: "こうほ", tint: theme.cool)
                     .padding(.bottom, 4)
                 ForEach(Array(model.candidates.enumerated()), id: \.element.id) { idx, c in
                     CandidateRow(
@@ -288,20 +289,21 @@ struct ContentView: View {
         let index: Int
         let candidate: GenerationModel.Candidate
         let isChampion: Bool
+        @Environment(\.theme) private var theme
         @State private var hovering = false
 
         var body: some View {
             HStack(spacing: 8) {
                 Text("\(index)")
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(isChampion ? GameShow.inkBlack : .white)
+                    .foregroundStyle(isChampion ? theme.bind : .white)
                     .frame(width: 18, height: 18)
-                    .background(Circle().fill(isChampion ? GameShow.neonYellow : GameShow.hotPink))
-                    .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                    .background(Circle().fill(isChampion ? theme.celebrate : theme.command))
+                    .overlay(Circle().stroke(theme.bind, lineWidth: 1.5))
 
                 Text(candidate.password)
                     .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                    .foregroundStyle(GameShow.inkBlack)
+                    .foregroundStyle(theme.bind)
                     .textSelection(.enabled)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -309,8 +311,8 @@ struct ContentView: View {
                 if isChampion {
                     Image(systemName: "crown.fill")
                         .font(.system(size: 10, weight: .black))
-                        .foregroundStyle(GameShow.neonYellow)
-                        .shadow(color: GameShow.inkBlack, radius: 0, x: 1, y: 1)
+                        .foregroundStyle(theme.celebrate)
+                        .shadow(color: theme.bind, radius: 0, x: 1, y: 1)
                 }
 
                 Spacer()
@@ -322,8 +324,8 @@ struct ContentView: View {
                     .padding(.horizontal, 6)
                     .padding(.vertical, 1)
                     .background(
-                        Capsule().fill(GameShow.magenta)
-                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        Capsule().fill(theme.commandDeep)
+                            .overlay(Capsule().stroke(theme.bind, lineWidth: 1.5))
                     )
 
                 Button {
@@ -331,10 +333,10 @@ struct ContentView: View {
                 } label: {
                     Image(systemName: "doc.on.clipboard")
                         .font(.system(size: 10, weight: .black))
-                        .foregroundStyle(GameShow.inkBlack)
+                        .foregroundStyle(theme.bind)
                         .padding(4)
-                        .background(Circle().fill(GameShow.neonYellow))
-                        .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .background(Circle().fill(theme.celebrate))
+                        .overlay(Circle().stroke(theme.bind, lineWidth: 1.5))
                 }
                 .buttonStyle(.plain)
                 .opacity(hovering ? 1 : 0.55)
@@ -346,8 +348,8 @@ struct ContentView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(
                         hovering
-                            ? GameShow.neonCyan.opacity(0.20)
-                            : (isChampion ? GameShow.neonYellow.opacity(0.18) : .clear)
+                            ? theme.cool.opacity(0.20)
+                            : (isChampion ? theme.celebrate.opacity(0.18) : .clear)
                     )
             )
             .onHover { hovering = $0 }
@@ -358,15 +360,15 @@ struct ContentView: View {
     // MARK: analyze
 
     private var analyzePanel: some View {
-        GamePanel(tint: GameShow.neonLime) {
+        GamePanel(tint: theme.positive) {
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("JUDGE!", jp: "しんさ", tint: GameShow.magenta)
+                sectionLabel("JUDGE!", jp: "しんさ", tint: theme.commandDeep)
 
                 HStack(spacing: 8) {
                     TextField("", text: $model.analyzeInput)
                         .textFieldStyle(.plain)
                         .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                        .foregroundStyle(GameShow.inkBlack)
+                        .foregroundStyle(theme.bind)
                         .padding(8)
                         .background(RoundedRectangle(cornerRadius: 8).fill(.white))
                         .overlay(alignment: .leading) {
@@ -375,12 +377,12 @@ struct ContentView: View {
                             if model.analyzeInput.isEmpty {
                                 Text("PASTE A PASSWORD…")
                                     .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                                    .foregroundStyle(GameShow.inkBlack.opacity(0.35))
+                                    .foregroundStyle(theme.bind.opacity(0.35))
                                     .padding(.leading, 8)
                                     .allowsHitTesting(false)
                             }
                         }
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                         .onSubmit { model.analyze() }
 
                     Button {
@@ -388,7 +390,7 @@ struct ContentView: View {
                     } label: {
                         Label("ANALYZE!", systemImage: "magnifyingglass")
                     }
-                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
                     .fixedSize()
                     .disabled(model.analyzeInput.isEmpty || model.isBusy)
                     .opacity(model.analyzeInput.isEmpty || model.isBusy ? 0.6 : 1)
@@ -398,19 +400,19 @@ struct ContentView: View {
                     EmbedGeneratingView(label: "JUDGING…")
                         .frame(height: 150)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                 } else if !model.analyzeResult.isEmpty {
                     ScrollView {
                         Text(model.analyzeResult)
                             .font(.system(size: 10, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(GameShow.neonLime)
+                            .foregroundStyle(theme.positive)
                             .textSelection(.enabled)
                             .padding(8)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .frame(maxHeight: 150)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(GameShow.inkBlack))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                    .background(RoundedRectangle(cornerRadius: 8).fill(theme.bind))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
                 }
             }
         }
@@ -422,7 +424,7 @@ struct ContentView: View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 13, weight: .black))
-                .foregroundStyle(GameShow.neonYellow)
+                .foregroundStyle(theme.celebrate)
             Text(message)
                 .font(.system(.footnote, design: .rounded).weight(.bold))
                 .foregroundStyle(.white)
@@ -432,9 +434,9 @@ struct ContentView: View {
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color.red)
-                .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 2))
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(theme.bind, lineWidth: 2))
         )
         .compositingGroup()
-        .shadow(color: GameShow.inkBlack.opacity(0.45), radius: 0, x: 4, y: 5)
+        .shadow(color: theme.bind.opacity(0.45), radius: 0, x: 4, y: 5)
     }
 }

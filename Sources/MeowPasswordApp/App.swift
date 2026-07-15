@@ -1,17 +1,23 @@
 import SwiftUI
 import AppKit
+import MeowUI
 
 @main
 struct MeowPasswordApp: App {
     @StateObject private var model = GenerationModel()
     @StateObject private var meowGramModel = MeowGramModel()
+    @StateObject private var themeManager = ThemeManager()
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
         WindowGroup("MeowPassword", id: "main") {
             ContentView()
                 .environmentObject(model)
-                .preferredColorScheme(.light)   // fixed game-show palette; never adapt to dark
+                .environmentObject(themeManager)
+                .environment(\.theme, themeManager.current)
+                // The theme, not the OS setting, decides the scheme — every
+                // theme is a fixed print aesthetic.
+                .preferredColorScheme(themeManager.current.colorScheme)
                 .onAppear { appDelegate.model = model }
                 .onOpenURL { url in handleURL(url) }
         }
@@ -68,6 +74,9 @@ struct MeowPasswordApp: App {
         // Help window scene, opened from the Help menu or meowpass://help
         Window("MeowPassword Help", id: "help") {
             HelpView()
+                .environmentObject(themeManager)
+                .environment(\.theme, themeManager.current)
+                .preferredColorScheme(themeManager.current.colorScheme)
         }
         .defaultSize(width: 620, height: 700)
 
@@ -75,7 +84,9 @@ struct MeowPasswordApp: App {
         Window("MeowGram", id: "meowgram") {
             MeowGramView()
                 .environmentObject(meowGramModel)
-                .preferredColorScheme(.light)
+                .environmentObject(themeManager)
+                .environment(\.theme, themeManager.current)
+                .preferredColorScheme(themeManager.current.colorScheme)
         }
         .defaultSize(width: 820, height: 700)
         .windowResizability(.contentMinSize)

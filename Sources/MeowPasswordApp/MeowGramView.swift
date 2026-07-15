@@ -5,10 +5,11 @@ import MeowUI
 
 struct MeowGramView: View {
     @EnvironmentObject var model: MeowGramModel
+    @Environment(\.theme) private var theme
 
     var body: some View {
         ZStack {
-            GameShow.bg.ignoresSafeArea()
+            ThemedBackground().ignoresSafeArea()
             SparkleField(count: 60).ignoresSafeArea()
 
             VStack(spacing: 12) {
@@ -45,12 +46,12 @@ struct MeowGramView: View {
         HStack(spacing: 10) {
             Image(systemName: "cat.fill")
                 .font(.system(size: 22, weight: .black))
-                .foregroundStyle(GameShow.neonYellow)
-                .shadow(color: GameShow.inkBlack, radius: 0, x: 1, y: 1)
+                .foregroundStyle(theme.celebrate)
+                .shadow(color: theme.bind, radius: 0, x: 1, y: 1)
             Text("MEOWGRAM")
                 .font(.system(size: 22, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
-                .shadow(color: GameShow.inkBlack, radius: 0, x: 2, y: 2)
+                .shadow(color: theme.bind, radius: 0, x: 2, y: 2)
             Text("にゃんメール")
                 .font(.system(size: 12, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white.opacity(0.7))
@@ -64,7 +65,7 @@ struct MeowGramView: View {
                 Button { model.mode = m } label: {
                     Label(LocalizedStringKey(m.rawValue), systemImage: m == .compose ? "square.and.pencil" : "eye.fill")
                 }
-                .buttonStyle(NeonButton(fill: model.mode == m ? GameShow.neonYellow : GameShow.paperWhite))
+                .buttonStyle(NeonButton(fill: model.mode == m ? theme.celebrate : theme.surface))
             }
         }
     }
@@ -73,9 +74,9 @@ struct MeowGramView: View {
 
     private var composePane: some View {
         HStack(alignment: .top, spacing: 12) {
-            GamePanel(tint: GameShow.neonCyan) {
+            GamePanel(tint: theme.cool) {
                 VStack(alignment: .leading, spacing: 6) {
-                    sectionLabel("PICK A CAT!", tint: GameShow.hotPink)
+                    sectionLabel("PICK A CAT!", tint: theme.command)
                     ScrollView {
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: 8)], spacing: 8) {
                             ForEach(model.catalog) { entry in
@@ -91,31 +92,31 @@ struct MeowGramView: View {
             .frame(minWidth: 300, maxWidth: 360)
 
             VStack(spacing: 12) {
-                GamePanel(tint: GameShow.neonLime) {
+                GamePanel(tint: theme.positive) {
                     VStack(alignment: .leading, spacing: 8) {
-                        sectionLabel("SECRET MESSAGE", tint: GameShow.magenta)
+                        sectionLabel("SECRET MESSAGE", tint: theme.commandDeep)
                         ZStack(alignment: .topLeading) {
                             RoundedRectangle(cornerRadius: 8).fill(.white)
                             TextEditor(text: $model.message)
                                 .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                                .foregroundStyle(GameShow.inkBlack)
+                                .foregroundStyle(theme.bind)
                                 .scrollContentBackground(.hidden)
                                 .padding(6)
                             if model.message.isEmpty {
                                 Text("PSST… WHISPER SOMETHING")
                                     .font(.system(size: 12, weight: .heavy, design: .monospaced))
-                                    .foregroundStyle(GameShow.inkBlack.opacity(0.3))
+                                    .foregroundStyle(theme.bind.opacity(0.3))
                                     .padding(.horizontal, 11).padding(.vertical, 14)
                                     .allowsHitTesting(false)
                             }
                         }
                         .frame(height: 84)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
 
                         HStack {
                             Text("\(model.payloadBytesUsed)/\(model.payloadBytesMax) BYTES")
                                 .font(.system(size: 10, weight: .black, design: .rounded))
-                                .foregroundStyle(model.isOverBudget ? Color.red : GameShow.inkBlack.opacity(0.6))
+                                .foregroundStyle(model.isOverBudget ? Color.red : theme.bind.opacity(0.6))
                             Spacer()
                         }
 
@@ -127,7 +128,7 @@ struct MeowGramView: View {
                             Label(model.isEmbedding ? LocalizedStringKey("EMBEDDING…") : LocalizedStringKey("EMBED!"),
                                   systemImage: "wand.and.stars")
                         }
-                        .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                        .buttonStyle(NeonButton(fill: theme.celebrate))
                         .disabled(model.selectedID == nil || model.message.isEmpty
                                   || model.isOverBudget || model.isEmbedding)
                         .opacity((model.selectedID == nil || model.message.isEmpty
@@ -135,11 +136,11 @@ struct MeowGramView: View {
                     }
                 }
 
-                GamePanel(tint: GameShow.neonYellow) {
+                GamePanel(tint: theme.celebrate) {
                     VStack(spacing: 8) {
-                        sectionLabel("PREVIEW", tint: GameShow.neonCyan)
+                        sectionLabel("PREVIEW", tint: theme.cool)
                         ZStack {
-                            RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack.opacity(0.1))
+                            RoundedRectangle(cornerRadius: 10).fill(theme.bind.opacity(0.1))
                             if model.isEmbedding {
                                 EmbedGeneratingView()
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -153,7 +154,7 @@ struct MeowGramView: View {
                                     Text("Embed to preview")
                                         .font(.system(size: 11, weight: .heavy, design: .rounded))
                                 }
-                                .foregroundStyle(GameShow.inkBlack.opacity(0.4))
+                                .foregroundStyle(theme.bind.opacity(0.4))
                             }
                         }
                         .frame(minHeight: 200, maxHeight: 240)
@@ -163,22 +164,22 @@ struct MeowGramView: View {
                                 Button { model.sendViaMessages() } label: {
                                     Label("MESSAGE", systemImage: "message.fill")
                                 }
-                                .buttonStyle(NeonButton(fill: GameShow.neonLime))
+                                .buttonStyle(NeonButton(fill: theme.positive))
                                 Button { model.sendViaMail() } label: {
                                     Label("EMAIL", systemImage: "envelope.fill")
                                 }
-                                .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                                .buttonStyle(NeonButton(fill: theme.command, text: .white))
                             }
                             HStack(spacing: 10) {
                                 Button { model.copyToPasteboard() } label: {
                                     Label("COPY", systemImage: "doc.on.doc.fill")
                                 }
                                 .keyboardShortcut("c", modifiers: [.command])
-                                .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                                .buttonStyle(NeonButton(fill: theme.cool))
                                 Button { model.savePNG() } label: {
                                     Label("SAVE", systemImage: "square.and.arrow.down")
                                 }
-                                .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                                .buttonStyle(NeonButton(fill: theme.celebrate))
                             }
                         }
                         .disabled(model.encodedPNG == nil)
@@ -196,9 +197,9 @@ struct MeowGramView: View {
             // Decoded message lands at the top, under the mode toggle.
             if let msg = model.decodedMessage { decodedMessagePanel(msg) }
 
-            GamePanel(tint: GameShow.neonCyan) {
+            GamePanel(tint: theme.cool) {
                 VStack(spacing: 10) {
-                    sectionLabel("DECODE A MEOWGRAM", tint: GameShow.hotPink)
+                    sectionLabel("DECODE A MEOWGRAM", tint: theme.command)
 
                     // The MeowGram — full width; the decode rain lays over it.
                     ZStack {
@@ -219,27 +220,27 @@ struct MeowGramView: View {
 
                     // Bright callout so the passphrase field is unmissable.
                     VStack(alignment: .leading, spacing: 6) {
-                        sectionLabel("PASSPHRASE", tint: GameShow.hotPink)
+                        sectionLabel("PASSPHRASE", tint: theme.command)
                         passphraseField(placeholder: "ENTER IT IF THIS MEOWGRAM IS LOCKED", secure: false)
                     }
                     .padding(10)
-                    .background(RoundedRectangle(cornerRadius: 12).fill(GameShow.neonYellow))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(GameShow.inkBlack, lineWidth: 2))
+                    .background(RoundedRectangle(cornerRadius: 12).fill(theme.celebrate))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(theme.bind, lineWidth: 2))
 
                     // Primary action, full width, right under the passphrase.
                     Button { model.decodeLoaded() } label: {
                         Label("DECODE MEOWGRAM!", systemImage: "envelope.open.fill")
                     }
-                    .buttonStyle(NeonButton(fill: GameShow.hotPink, text: .white))
+                    .buttonStyle(NeonButton(fill: theme.command, text: .white))
                     .disabled(model.loadedData == nil || model.isDecoding)
 
                     // Pick the source last (or drag a PNG onto the panel above).
                     HStack(spacing: 10) {
                         Button { model.openAndLoad() } label: { Label("OPEN", systemImage: "folder") }
-                            .buttonStyle(NeonButton(fill: GameShow.neonYellow))
+                            .buttonStyle(NeonButton(fill: theme.celebrate))
                         Button { model.pasteAndLoad() } label: { Label("PASTE", systemImage: "doc.on.clipboard") }
                             .keyboardShortcut("v", modifiers: [.command])
-                            .buttonStyle(NeonButton(fill: GameShow.neonCyan))
+                            .buttonStyle(NeonButton(fill: theme.cool))
                     }
                 }
             }
@@ -249,9 +250,9 @@ struct MeowGramView: View {
     private var dropZone: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(GameShow.paperWhite.opacity(model.isDropTargeted ? 1.0 : 0.85))
+                .fill(theme.surface.opacity(model.isDropTargeted ? 1.0 : 0.85))
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(model.isDropTargeted ? GameShow.neonLime : GameShow.neonCyan,
+                .stroke(model.isDropTargeted ? theme.positive : theme.cool,
                         style: StrokeStyle(lineWidth: 4, dash: [10, 8]))
             VStack(spacing: 8) {
                 Image(systemName: "arrow.down.doc.fill").font(.system(size: 40, weight: .black))
@@ -260,37 +261,37 @@ struct MeowGramView: View {
                 Text("かくされたメッセージをさがす")
                     .font(.system(size: 10, weight: .heavy, design: .rounded)).opacity(0.6)
             }
-            .foregroundStyle(GameShow.inkBlack.opacity(0.6))
+            .foregroundStyle(theme.bind.opacity(0.6))
         }
     }
 
     private func decodedMessagePanel(_ msg: String) -> some View {
-        GamePanel(tint: GameShow.neonYellow) {
+        GamePanel(tint: theme.celebrate) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 6) {
-                    sectionLabel("MESSAGE!", tint: GameShow.hotPink)
+                    sectionLabel("MESSAGE!", tint: theme.command)
                     if let guid = model.decodedGUID {
                         Text("🐱 authentic · \(guid.prefix(8))")
                             .font(.system(size: 9, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(GameShow.inkBlack.opacity(0.5))
+                            .foregroundStyle(theme.bind.opacity(0.5))
                     }
                 }
                 ZStack(alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: 10).fill(GameShow.inkBlack)
+                    RoundedRectangle(cornerRadius: 10).fill(theme.bind)
                     HStack(alignment: .top) {
                         Text(msg)
                             .font(.system(size: 13, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(GameShow.neonYellow)
+                            .foregroundStyle(theme.celebrate)
                             .textSelection(.enabled)
                             .padding(.horizontal, 10).padding(.vertical, 8)
                         Spacer()
                         Button { Clipboard.copy(msg) } label: {
                             Image(systemName: "doc.on.clipboard.fill")
                                 .font(.system(size: 13, weight: .black))
-                                .foregroundStyle(GameShow.inkBlack)
+                                .foregroundStyle(theme.bind)
                                 .padding(6)
-                                .background(Circle().fill(GameShow.neonYellow))
-                                .overlay(Circle().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                                .background(Circle().fill(theme.celebrate))
+                                .overlay(Circle().stroke(theme.bind, lineWidth: 1.5))
                         }
                         .buttonStyle(.plain)
                         .padding(6)
@@ -319,7 +320,7 @@ struct MeowGramView: View {
             }
             .textFieldStyle(.plain)
             .font(.system(size: 12, weight: .heavy, design: .monospaced))
-            .foregroundStyle(GameShow.inkBlack)
+            .foregroundStyle(theme.bind)
             .padding(.vertical, 8)
             .padding(.leading, 8)
             .padding(.trailing, trailing)
@@ -327,7 +328,7 @@ struct MeowGramView: View {
             if model.passphrase.isEmpty {
                 Text(placeholder)
                     .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                    .foregroundStyle(GameShow.inkBlack.opacity(0.3))
+                    .foregroundStyle(theme.bind.opacity(0.3))
                     .padding(.leading, 9)
                     .allowsHitTesting(false)
             }
@@ -338,11 +339,11 @@ struct MeowGramView: View {
                     Button(action: onGenerate) {
                         Text("GENERATE")
                             .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(GameShow.inkBlack)
+                            .foregroundStyle(theme.bind)
                             .padding(.horizontal, 9)
                             .padding(.vertical, 5)
-                            .background(Capsule().fill(GameShow.neonYellow))
-                            .overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5))
+                            .background(Capsule().fill(theme.celebrate))
+                            .overlay(Capsule().stroke(theme.bind, lineWidth: 1.5))
                     }
                     .buttonStyle(.plain)
                     .padding(.trailing, 5)
@@ -351,7 +352,7 @@ struct MeowGramView: View {
             }
         }
         .frame(height: 32)
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(GameShow.inkBlack, lineWidth: 1.5))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(theme.bind, lineWidth: 1.5))
     }
 
     private func sectionLabel(_ text: LocalizedStringKey, tint: Color) -> some View {
@@ -360,7 +361,7 @@ struct MeowGramView: View {
                 .font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 8).padding(.vertical, 2)
-                .background(Capsule().fill(tint).overlay(Capsule().stroke(GameShow.inkBlack, lineWidth: 1.5)))
+                .background(Capsule().fill(tint).overlay(Capsule().stroke(theme.bind, lineWidth: 1.5)))
             Spacer()
         }
     }
@@ -368,21 +369,21 @@ struct MeowGramView: View {
     private func statusBanner(_ message: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.seal.fill")
-                .foregroundStyle(GameShow.inkBlack)
+                .foregroundStyle(theme.bind)
             Text(message)
                 .font(.system(.footnote, design: .rounded).weight(.bold))
-                .foregroundStyle(GameShow.inkBlack)
+                .foregroundStyle(theme.bind)
         }
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 10).fill(GameShow.neonLime)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 2)))
+        .background(RoundedRectangle(cornerRadius: 10).fill(theme.positive)
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(theme.bind, lineWidth: 2)))
     }
 
     private func errorBanner(_ message: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(GameShow.neonYellow)
+                .foregroundStyle(theme.celebrate)
             Text(message)
                 .font(.system(.footnote, design: .rounded).weight(.bold))
                 .foregroundStyle(.white)
@@ -390,7 +391,7 @@ struct MeowGramView: View {
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoundedRectangle(cornerRadius: 10).fill(Color.red)
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(GameShow.inkBlack, lineWidth: 2)))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(theme.bind, lineWidth: 2)))
     }
 }
 
@@ -399,6 +400,7 @@ struct MeowGramView: View {
 private struct MeowgramThumb: View {
     let entry: MeowgramCatalog.Entry
     let isSelected: Bool
+    @Environment(\.theme) private var theme
     @State private var thumb: NSImage?
 
     var body: some View {
@@ -406,14 +408,14 @@ private struct MeowgramThumb: View {
             if let thumb {
                 Image(nsImage: thumb).resizable().aspectRatio(contentMode: .fill)
             } else {
-                GameShow.inkBlack.opacity(0.1)
+                theme.bind.opacity(0.1)
             }
         }
         .frame(width: 84, height: 105)   // 4:5 like the sources
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isSelected ? GameShow.neonYellow : GameShow.inkBlack,
+                .stroke(isSelected ? theme.celebrate : theme.bind,
                         lineWidth: isSelected ? 4 : 1.5)
         )
         .task(id: entry.id) {
