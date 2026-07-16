@@ -175,6 +175,14 @@ private struct ThemeCard: View {
                 trailingBadge
             }
             swatches
+            if candidate.meowgramSet != nil {
+                Text("+ 100 EXCLUSIVE MEOWGRAM CATS!")
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(Color(hex: candidate.palette.textOnCommand))
+                    .padding(.horizontal, 7).padding(.vertical, 2)
+                    .background(Capsule().fill(Color(hex: candidate.palette.commandDeep))
+                        .overlay(Capsule().stroke(Color(hex: candidate.palette.bind), lineWidth: 1.5)))
+            }
             HStack(spacing: 6) {
                 Text(candidate.sealCaption)
                     .font(.system(size: 10, weight: .heavy, design: .monospaced))

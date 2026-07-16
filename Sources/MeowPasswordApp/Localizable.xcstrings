@@ -3596,6 +3596,35 @@
           }
         }
       }
+    },
+    "+ 100 EXCLUSIVE MEOWGRAM CATS!": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+ 100 EXKLUSIVE MEOWGRAM-KATZEN!"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+ 100 EXCLUSIVE MEOWGRAM CATS!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+ 100 CHATS MEOWGRAM EXCLUSIFS !"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+ どくせんミャウグラムねこ100ぴき！"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
