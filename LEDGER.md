@@ -66,3 +66,4 @@
 | dd6f7bf | 2026-07-15T21:51:30Z | claude-fable-5 | 2016 | 71918 | 48441279 | 1576552 | 83.5884 | Per-theme MeowGram sets (meowgramSet token, catalog set param, 3 pickers) + Sovi |
 | 49f9e22 | 2026-07-16T06:11:57Z | claude-fable-5 | 1011 | 26562 | 26365098 | 3299651 | 93.6963 | Theme Studio cat-set callout (localized) + full-image verification of all 100 so |
 | 5d923b4 | 2026-07-20T13:43:35Z | claude-fable-5,claude-opus-4-8 | 396090 | 3296293 | 2572449396 | 308817442 | 4590.8991 | Import Pyongyang + Shōwa (100-img Japanese game-show pack) MeowGram sets: keyed  |
+| 8786aeb | 2026-07-20T17:08:47Z | claude-opus-4-8 | 1021 | 76059 | 43627369 | 5040381 | 74.1241 | Version bump to 1.2.0 for tagged theme-pack release |
