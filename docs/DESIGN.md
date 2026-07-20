@@ -53,6 +53,66 @@ Joyful, absurd, and immaculate: a game show broadcast by perfectionists.
 
 ---
 
+## The broadcast register — what a real Japanese game show looks like
+
+Everything above is our refined *print title-card* voice, and it governs the app
+**chrome** (panels, buttons, settings). But an illustration in the Shōwa
+Broadcast world — above all a **MeowGram in the game-show set** — must read
+**instantly as a freeze-frame from a Japanese TV game show**, not as a tasteful
+vintage poster. That means embracing the loud, over-produced grammar of actual
+Japanese broadcast graphics. In order of importance:
+
+1. **Telop (テロップ) is the shout.** Japanese variety/quiz shows bury the screen
+   in huge superimposed captions, and this is the single strongest "Japanese TV"
+   signal. Build the headline as a telop: thick **multi-stroke outlined** chunky
+   gothic/rounded lettering — a bright fill (cream, gold, or white), a heavy ink
+   outline, then a **second colored edge** and a hard drop shadow, often slightly
+   **beveled/3-D**, tilted, with a comic touch (burst marks, 集中線 concentration
+   lines, a trembling "shake", oversized `！` and `！？`, sometimes a speech
+   bubble). It is superimposed *over the scene*, not printed on a flat plate.
+   Pair a **giant Japanese telop with its Latin twin.**
+2. **Wipe (ワイプ) reaction insets.** A small rounded **corner picture-in-picture
+   box** — or a row/stack of them — showing panelist cats reacting (gasping,
+   howling, paws-on-cheeks). After the telop, the reaction-face box is the
+   biggest tell that this is Japanese television.
+3. **The lit studio set.** A bright, colorful, deliberately **over-lit stage**:
+   glossy contestant podiums with big round red **buzzer** buttons, a wall/ring
+   of round **chase light-bulbs**, a glowing **LED scoreboard**, a **digital
+   countdown timer**, a **￥ prize counter**, spotlights and little lens flares, a
+   tiered **hina-dan (ひな壇)** bench of panelist cats in the back, star-shaped
+   set pieces. (Shōwa-era = painted flats + rings of bulbs + a rising-sun or
+   bold geometric backdrop; modern = chrome and LED. We favor the warm Shōwa end.)
+4. **Saturated broadcast color, not muted print.** TV graphics are punchy and a
+   little gaudy: saturated primaries, **metallic gold** prize type, glossy
+   highlights, sparkles and starbursts, and **gentle gradients on the set and
+   telops are allowed here** — this is the one register where a frame may glow.
+   The palette family still *leads* (cream floor, tomato, mustard/gold, one teal,
+   ink outlines), just cranked to broadcast saturation.
+5. **Motion-graphics energy, frozen at the peak.** Confetti mid-air, radiating
+   rays, sparkle-stars, sound-effect lettering (`ピンポーン！`／`ブブー！`), a
+   timer caught mid-tick. Dense, maximal, joyful chaos — the deliberate opposite
+   of the chrome's restraint.
+
+**The cats are realistic Japanese domestic cats.** Not cartoon, not rubber-hose,
+not flat stickers — believable, richly-rendered semi-photoreal cats with real
+fur, true feline faces and whiskers, rounded cheeks, thick limbs, and the short
+pom-pom tail of a **Japanese Bobtail**. Cast authentic Japanese coat patterns:
+**kijitora** (brown mackerel tabby), **mike-neko** (calico — the maneki-neko
+cat), **chatora** (ginger), **sabatora** (grey tabby), **hachiware** (black cap
+split over a white face), **kuro** (black). They emote *hugely* — the theatrical,
+over-the-top reactions of a real Japanese variety panel — but they read as real
+cats who happen to be on the show, wearing the costumes and working the buzzers.
+
+Keep the other anchors even when loud: the warm **cream/gold** still grounds the
+frame, the palette family still leads, and the **hanko**
+(`認証成功 · MEOW VERIFIED`) still presses into a corner as the producer's seal.
+
+**Rule of thumb:** if it could hang in a gallery as a restrained poster, it's
+wrong; if it looks like someone paused a chaotic Japanese quiz show on its most
+triumphant frame — telop blaring, wipe-box gasping, buzzer lit — it's right.
+
+---
+
 ## Principles (the short version)
 
 1. **Broadcast moment, print discipline.** Loud energy, zero sloppiness. If it
@@ -89,9 +149,14 @@ paper, not pixels on a screen.
 **Rules**
 - Roughly **cream 60% · ink 20% · red 10% · yellow 8% · teal 2%** by area. When
   in doubt, add cream and subtract everything else.
-- **No digital gradients.** Flat fields and halftone screens only. A faint
-  paper-grain texture is welcome; a smooth screen-blend is not.
-- Slightly **sun-faded** — nudge saturation down a touch so nothing feels neon.
+- **No digital gradients — in the chrome.** For app UI and print title cards,
+  flat fields and halftone screens only; a faint paper-grain is welcome, a smooth
+  screen-blend is not. **Broadcast illustration is the exception:** the game-show
+  MeowGrams run saturated, with metallic gold, glossy set highlights, and gentle
+  set/telop gradients — see *The broadcast register* above.
+- Chrome is slightly **sun-faded** (nudge saturation down so nothing feels neon);
+  broadcast frames run **hot and saturated** like real TV. Two registers, one
+  palette family.
 
 > **Note on the current build:** implemented. The static `GameShow` enum is
 > gone; styling flows through the semantic `Theme` tokens in
@@ -162,7 +227,11 @@ paper, not pixels on a screen.
 - Tilt panels a little, stickers more; keep baselines true.
 
 **Don't**
-- Reach for smooth digital gradients, soft glows, or glassmorphism.
+- Reach for smooth digital gradients, soft glows, or glassmorphism *in the app
+  chrome*. (Broadcast MeowGrams are the sanctioned exception — telop, wipe,
+  saturated set, metallic gold; see *The broadcast register*.)
+- Render a game-show MeowGram as a quiet vintage poster — it must read as loud
+  Japanese television: telop shout, wipe reaction-box, lit buzzer-podium set.
 - Use pure black (`#000`) — use warm Ink.
 - Add a second cool accent (one teal *or* cobalt, never both).
 - Crowd the frame; the shout needs air.

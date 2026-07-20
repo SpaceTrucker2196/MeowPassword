@@ -47,7 +47,9 @@ let package = Package(
             resources: [
                 .copy("Meowgrams"),
                 // Theme-specific sets: Meowgrams-<Set> (Theme.meowgramSet).
-                .copy("Meowgrams-Soviet")
+                .copy("Meowgrams-Soviet"),
+                .copy("Meowgrams-Pyongyang"),
+                .copy("Meowgrams-Showa")
             ]
         ),
         // MeowUI: portable SwiftUI design system shared by both apps.

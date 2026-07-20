@@ -53,7 +53,8 @@ public extension Theme {
         prefersDark: false,
         motif: .sunburstHalftone,
         sealStyle: .hanko,
-        sealCaption: "認証成功 · MEOW VERIFIED"
+        sealCaption: "認証成功 · MEOW VERIFIED",
+        meowgramSet: "Showa"
     )
 
     // MARK: GameShow Classic (free)
@@ -167,6 +168,7 @@ public extension Theme {
         prefersDark: false,
         motif: .sunrise,
         sealStyle: .rosette,
-        sealCaption: "だいせいこう · MEOW SUCCESS"
+        sealCaption: "だいせいこう · MEOW SUCCESS",
+        meowgramSet: "Pyongyang"
     )
 }

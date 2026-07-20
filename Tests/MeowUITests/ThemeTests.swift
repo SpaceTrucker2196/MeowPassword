@@ -104,12 +104,12 @@ final class ThemeDefinitionTests: XCTestCase {
     }
 
     func testMeowgramSetsMatchTheThemeDocs() {
-        // Themes may bundle their own MeowGram set; only Kremlin has one so far.
-        XCTAssertNil(Theme.showa.meowgramSet)
+        // Themes may bundle their own MeowGram set; Shōwa, Kremlin and Pyongyang do.
+        XCTAssertEqual(Theme.showa.meowgramSet, "Showa")
         XCTAssertNil(Theme.gameShowClassic.meowgramSet)
         XCTAssertNil(Theme.spyThriller.meowgramSet)
         XCTAssertEqual(Theme.kremlinCartoon.meowgramSet, "Soviet")
-        XCTAssertNil(Theme.pyongyangPoster.meowgramSet)
+        XCTAssertEqual(Theme.pyongyangPoster.meowgramSet, "Pyongyang")
     }
 
     func testSealStylesMatchTheThemeDocs() {
