@@ -110,3 +110,36 @@ existing app record.
 
 Theme packs are one-time non-consumable IAPs. Setup, product IDs, review
 screenshots, and the sandbox test matrix live in [`IAP.md`](IAP.md).
+
+## Known release-pipeline issues (2026-07-21)
+
+Two things currently make Xcode Cloud builds go "missing" in App Store Connect —
+they upload but never become available for TestFlight. Diagnosed, not yet fixed:
+
+1. **Build number is frozen at `1`.** `project.yml` pins
+   `CURRENT_PROJECT_VERSION: "1"`, and `ci_scripts/ci_post_clone.sh` only
+   `export`s the bumped value — which (a) happens *after* `xcodegen generate`
+   bakes in `"1"`, and (b) doesn't survive into the separate shell Xcode Cloud
+   uses for `xcodebuild archive`. So every archive uploads as `1.2.1 (1)`; ASC
+   keeps the first and silently rejects the rest as duplicates. Fix: set the
+   build number *inside* `ci_post_clone.sh` before/at generate time (interpolate
+   `$BUILD_NUMBER` into `project.yml`, or `agvtool new-version -all` on the
+   generated project), not via an exported env var. App + both extensions all
+   read `$(CURRENT_PROJECT_VERSION)`, so they stay in sync once this is fixed.
+2. **Missing export-compliance key.** No `ITSAppUsesNonExemptEncryption` in any
+   plist, but the app does real crypto (ChaCha20-Poly1305 in
+   `MeowGramKit/MeowGram.swift`), so every build sits in "Missing Compliance"
+   until manually cleared. Fix: add `ITSAppUsesNonExemptEncryption` to the app
+   (and extension) Info.plist with the correct exemption value.
+
+Separately, shipping the iMessage extension puts the app in the **iMessage App
+Store**, which requires its *own* screenshot set — a submission/metadata gap,
+not a build-availability one.
+
+## Cross-platform note
+
+The Android sibling (`~/projects/meowpassword-android`) now ships the same
+five-theme system with the three paid packs as Play Billing IAPs whose product
+IDs are byte-identical to the App Store SKUs (the parity rule in
+[`IAP.md`](IAP.md)). Keep theme palettes and SKU strings in lockstep across the
+two repos.
