@@ -91,10 +91,12 @@ existing app record.
 
 ## Versioning
 
-`MARKETING_VERSION` lives in `project.yml` (currently `1.1.0`). Build numbers
+`MARKETING_VERSION` lives in `project.yml` (currently `1.2.1`). Build numbers
 (`CURRENT_PROJECT_VERSION`) are set to the git commit count by
-`ci_scripts/ci_post_clone.sh` (Xcode Cloud) — bump `MARKETING_VERSION` in
-`project.yml` for each new App Store version.
+`ci_scripts/ci_post_clone.sh`, which **patches the value into `project.yml`
+before `xcodegen generate`** (an exported env var doesn't reach `xcodebuild
+archive` — see below). Bump `MARKETING_VERSION` in `project.yml` for each new
+App Store version.
 
 ## First-run checklist
 
@@ -111,30 +113,33 @@ existing app record.
 Theme packs are one-time non-consumable IAPs. Setup, product IDs, review
 screenshots, and the sandbox test matrix live in [`IAP.md`](IAP.md).
 
-## Known release-pipeline issues (2026-07-21)
+## Release-pipeline fixes (2026-07-21)
 
-Two things currently make Xcode Cloud builds go "missing" in App Store Connect —
-they upload but never become available for TestFlight. Diagnosed, not yet fixed:
+Two things had been making Xcode Cloud builds go "missing" in App Store Connect —
+they uploaded but never became available for TestFlight. Both are now fixed:
 
-1. **Build number is frozen at `1`.** `project.yml` pins
+1. **Build number was frozen at `1`.** `project.yml` pins
    `CURRENT_PROJECT_VERSION: "1"`, and `ci_scripts/ci_post_clone.sh` only
-   `export`s the bumped value — which (a) happens *after* `xcodegen generate`
-   bakes in `"1"`, and (b) doesn't survive into the separate shell Xcode Cloud
-   uses for `xcodebuild archive`. So every archive uploads as `1.2.1 (1)`; ASC
-   keeps the first and silently rejects the rest as duplicates. Fix: set the
-   build number *inside* `ci_post_clone.sh` before/at generate time (interpolate
-   `$BUILD_NUMBER` into `project.yml`, or `agvtool new-version -all` on the
-   generated project), not via an exported env var. App + both extensions all
-   read `$(CURRENT_PROJECT_VERSION)`, so they stay in sync once this is fixed.
+   `export`ed the bumped value — which (a) happened *after* `xcodegen generate`
+   baked in `"1"`, and (b) didn't survive into the separate shell Xcode Cloud
+   uses for `xcodebuild archive`. So every archive uploaded as `1.2.1 (1)`; ASC
+   kept the first and silently rejected the rest as duplicates. **Fixed:**
+   `ci_post_clone.sh` now `sed`-patches `CURRENT_PROJECT_VERSION` (= git commit
+   count) into `project.yml` *before* generate. App + both extensions all read
+   `$(CURRENT_PROJECT_VERSION)`, so they stay in sync.
 2. **Missing export-compliance key.** No `ITSAppUsesNonExemptEncryption` in any
    plist, but the app does real crypto (ChaCha20-Poly1305 in
-   `MeowGramKit/MeowGram.swift`), so every build sits in "Missing Compliance"
-   until manually cleared. Fix: add `ITSAppUsesNonExemptEncryption` to the app
-   (and extension) Info.plist with the correct exemption value.
+   `MeowGramKit/MeowGram.swift`), so every build sat in "Missing Compliance"
+   until manually cleared. **Fixed:** added `ITSAppUsesNonExemptEncryption =
+   false` to both the iOS (`iOSApp/Info.plist`) and macOS
+   (`Sources/MeowPasswordApp/Resources/Info.plist`) app plists, on the basis that
+   the app uses only standard Apple-framework encryption for the user's own local
+   data (EAR 740.17(b)(1) exemption). **This is an export-classification
+   assertion — the owner should confirm it before the next submission.**
 
 Separately, shipping the iMessage extension puts the app in the **iMessage App
 Store**, which requires its *own* screenshot set — a submission/metadata gap,
-not a build-availability one.
+not a build-availability one, and still open.
 
 ## Cross-platform note
 

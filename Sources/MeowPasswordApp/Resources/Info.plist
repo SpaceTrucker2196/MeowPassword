@@ -39,6 +39,12 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Export compliance: standard Apple-framework encryption (ChaCha20-Poly1305
+	     via CryptoKit) for the user's own local data — exempt under US EAR
+	     15 CFR 740.17(b)(1). Declaring it stops "Missing Compliance" in ASC.
+	     NOTE: export-classification assertion — confirm before shipping. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>

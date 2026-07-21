@@ -18,13 +18,21 @@ if ! command -v xcodegen >/dev/null 2>&1; then
   brew install xcodegen
 fi
 
+# Build number = commit count (monotonic). MARKETING_VERSION stays in project.yml.
+#
+# This MUST be patched into project.yml *before* `xcodegen generate`, not exported
+# as an env var. The old `export CURRENT_PROJECT_VERSION=…` never reached the
+# build: xcodegen had already baked the static "1" into the project, and Xcode
+# Cloud runs `xcodebuild archive` in a *separate shell* that never sees the export.
+# Every archive uploaded as build 1, so App Store Connect kept the first and
+# rejected the rest as duplicates ("some builds not available"). Editing the
+# gitignored, freshly-cloned project.yml here is safe — the CI VM is ephemeral.
+BUILD_NUMBER="$(git rev-list --count HEAD)"
+echo "  • CURRENT_PROJECT_VERSION → $BUILD_NUMBER (patching project.yml)"
+/usr/bin/sed -i '' -E "s/^([[:space:]]*CURRENT_PROJECT_VERSION: )\"[0-9]+\"/\1\"$BUILD_NUMBER\"/" project.yml
+grep -n "CURRENT_PROJECT_VERSION:" project.yml   # echo the patched line into the CI log
+
 echo "  • generating MeowPassword.xcodeproj from project.yml"
 xcodegen generate
-
-# Build number = commit count (monotonic). MARKETING_VERSION stays in project.yml.
-BUILD_NUMBER="$(git rev-list --count HEAD)"
-echo "  • CURRENT_PROJECT_VERSION → $BUILD_NUMBER"
-/usr/libexec/PlistBuddy -c "Print" project.yml >/dev/null 2>&1 || true
-export CURRENT_PROJECT_VERSION="$BUILD_NUMBER"
 
 echo "✓ ci_post_clone.sh done"

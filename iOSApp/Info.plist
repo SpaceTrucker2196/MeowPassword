@@ -39,6 +39,13 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Export compliance: the app uses only standard encryption from Apple's
+	     frameworks (ChaCha20-Poly1305 via CryptoKit) to protect the user's own
+	     local data — exempt under US EAR 15 CFR 740.17(b)(1). Declaring it here
+	     stops every upload landing in App Store Connect "Missing Compliance".
+	     NOTE: this is an export-classification assertion — confirm before shipping. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
