@@ -69,3 +69,4 @@
 | 8786aeb | 2026-07-20T17:08:47Z | claude-opus-4-8 | 1021 | 76059 | 43627369 | 5040381 | 74.1241 | Version bump to 1.2.0 for tagged theme-pack release |
 | 8f5aa3d | 2026-07-21T00:16:59Z | claude-opus-4-8 | 602 | 56682 | 13572426 | 2589088 | 34.0972 | Ship regenerated v2 Soviet MeowGram set (re-keyed 100 masters) |
 | 478d515 | 2026-07-21T00:18:01Z | claude-opus-4-8 | 6 | 1140 | 2596446 | 3981 | 1.3666 | Version bump to 1.2.1 (fold regenerated Soviet set into tagged release) |
+| c78561a | 2026-07-21T16:31:31Z | claude-opus-4-8 | 1802 | 130449 | 49434243 | 5549664 | 83.4840 | Gitignore build artifacts + per-set MeowGram source JPGs (repo cleanup) |
