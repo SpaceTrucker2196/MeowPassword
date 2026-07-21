@@ -72,3 +72,4 @@
 | c78561a | 2026-07-21T16:31:31Z | claude-opus-4-8 | 1802 | 130449 | 49434243 | 5549664 | 83.4840 | Gitignore build artifacts + per-set MeowGram source JPGs (repo cleanup) |
 | 205babc | 2026-07-21T19:22:44Z | claude-opus-4-8 | 76525 | 228837 | 45349594 | 755843 | 36.3368 | Android theme-pack + IAP port (5 themes, Play Billing, Play Asset Delivery on-de |
 | 87695dc | 2026-07-21T20:45:44Z | claude-opus-4-8 | 574 | 41182 | 2979398 | 492467 | 7.4468 | Fix Xcode Cloud build-number bump (patch project.yml pre-generate) + declare ITS |
+| e429f7a | 2026-07-21T21:58:14Z | claude-opus-4-8 | 1110 | 79264 | 5012808 | 620947 | 10.7030 | Docs: Play Console IAP setup (Android, localized + CSV) + iMessage App Store scr |
