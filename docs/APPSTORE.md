@@ -105,6 +105,7 @@ App Store version.
 - [ ] `fastlane ios beta` succeeds → build appears in TestFlight
 - [ ] `fastlane mac beta` succeeds → macOS platform added under the same record
 - [ ] Fill App Store listing (privacy, category = Utilities, screenshots)
+- [ ] iMessage App Store screenshot set — see [`imessage-screenshots.md`](imessage-screenshots.md)
 - [ ] Theme-pack IAPs created + attached to the version — see [`IAP.md`](IAP.md)
 - [ ] `fastlane ios release` / `fastlane mac release` → Submit for Review in ASC
 
