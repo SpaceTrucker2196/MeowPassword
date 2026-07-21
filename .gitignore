@@ -20,13 +20,17 @@ test_meowpass_combined.swift
 /MeowPassword.app
 /*.dmg
 /*.pkg
+/*.ipa
 /AppIcon.icns
 
 # git-crypt symmetric key — never commit
 *.key
 
 # MeowGram source images — only the keyed PNG masters ship with the app
+# (sources live in per-set subdirs, e.g. meowgrams/showa/; keep the manifests)
 meowgrams/*.jpg
+meowgrams/**/*.jpg
+meowgrams/**/*.jpeg
 /.build-ios
 /.build-dev
 /.build-mac
