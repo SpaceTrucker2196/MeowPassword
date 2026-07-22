@@ -133,10 +133,14 @@ they uploaded but never became available for TestFlight. Both are now fixed:
    `MeowGramKit/MeowGram.swift`), so every build sat in "Missing Compliance"
    until manually cleared. **Fixed:** added `ITSAppUsesNonExemptEncryption =
    false` to both the iOS (`iOSApp/Info.plist`) and macOS
-   (`Sources/MeowPasswordApp/Resources/Info.plist`) app plists, on the basis that
-   the app uses only standard Apple-framework encryption for the user's own local
-   data (EAR 740.17(b)(1) exemption). **This is an export-classification
-   assertion — the owner should confirm it before the next submission.**
+   (`Sources/MeowPasswordApp/Resources/Info.plist`) app plists. **Confirmed
+   correct (2026-07-22):** the app's only crypto is Apple's **CryptoKit**
+   (`ChaChaPoly` + `SymmetricKey` in `Sources/MeowGramKit/MeowGram.swift` and
+   `Sources/MeowPassword/main.swift`) — no third-party or custom implementation —
+   so it is "encryption within Apple's operating system," which is exempt (EAR
+   740.17(b)(1)). No **App Encryption Documentation** upload is required in ASC
+   (App Information → App Encryption Documentation); the plist key satisfies the
+   declaration automatically when the build is processed.
 
 Separately, shipping the iMessage extension puts the app in the **iMessage App
 Store**, which requires its *own* screenshot set — a submission/metadata gap,

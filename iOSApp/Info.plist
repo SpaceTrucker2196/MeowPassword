@@ -39,11 +39,11 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<!-- Export compliance: the app uses only standard encryption from Apple's
-	     frameworks (ChaCha20-Poly1305 via CryptoKit) to protect the user's own
-	     local data — exempt under US EAR 15 CFR 740.17(b)(1). Declaring it here
-	     stops every upload landing in App Store Connect "Missing Compliance".
-	     NOTE: this is an export-classification assertion — confirm before shipping. -->
+	<!-- Export compliance: the app's only crypto is Apple CryptoKit (ChaChaPoly +
+	     SymmetricKey) protecting the user's own local data — encryption within
+	     Apple's OS, exempt under US EAR 15 CFR 740.17(b)(1). No third-party/custom
+	     crypto (verified 2026-07-22). Declaring it here keeps uploads out of App
+	     Store Connect "Missing Compliance"; no ASC documentation upload is needed. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
